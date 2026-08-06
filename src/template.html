@@ -1,0 +1,1045 @@
+<title>妖怪ウォッチバスターズ 月兎組 妖怪大辞典チェック表</title>
+
+<style>
+:root{
+  --ground:#EDEFF5; --panel:#FFFFFF; --panel-2:#F5F6FA; --panel-3:#E9ECF3;
+  --ink:#181B24; --ink-2:#4B5162; --ink-3:#7B8296;
+  --line:#DCDFE9; --line-2:#C6CBDA;
+  --gold:#9A6F17; --gold-line:#C9A03C; --gold-wash:#F3E8CB;
+  --stamp:#B23528; --stamp-wash:#F6E3E0;
+  --ok:#2C7A57;
+  --aka:#BC4038; --shiro:#37699F; --tsuki:#71539F;
+  --shadow:0 1px 2px rgba(20,25,45,.06), 0 8px 24px -16px rgba(20,25,45,.28);
+  --serif:"Yu Mincho","YuMincho","Hiragino Mincho ProN","HiraMinProN-W3","Noto Serif JP","Songti SC",serif;
+  --sans:"Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic","Meiryo","Noto Sans JP",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Courier New",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#11131A; --panel:#181B25; --panel-2:#1F232F; --panel-3:#262B39;
+    --ink:#E8EAF1; --ink-2:#AFB6C6; --ink-3:#7D8496;
+    --line:#2A2F3D; --line-2:#3A4152;
+    --gold:#DDB55F; --gold-line:#8A6E2E; --gold-wash:#2E2712;
+    --stamp:#E0685B; --stamp-wash:#331C19;
+    --ok:#5CBE91;
+    --aka:#E0736A; --shiro:#78A6E2; --tsuki:#AE8DE2;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#11131A; --panel:#181B25; --panel-2:#1F232F; --panel-3:#262B39;
+  --ink:#E8EAF1; --ink-2:#AFB6C6; --ink-3:#7D8496;
+  --line:#2A2F3D; --line-2:#3A4152;
+  --gold:#DDB55F; --gold-line:#8A6E2E; --gold-wash:#2E2712;
+  --stamp:#E0685B; --stamp-wash:#331C19;
+  --ok:#5CBE91;
+  --aka:#E0736A; --shiro:#78A6E2; --tsuki:#AE8DE2;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+:root[data-theme="light"]{
+  --ground:#EDEFF5; --panel:#FFFFFF; --panel-2:#F5F6FA; --panel-3:#E9ECF3;
+  --ink:#181B24; --ink-2:#4B5162; --ink-3:#7B8296;
+  --line:#DCDFE9; --line-2:#C6CBDA;
+  --gold:#9A6F17; --gold-line:#C9A03C; --gold-wash:#F3E8CB;
+  --stamp:#B23528; --stamp-wash:#F6E3E0;
+  --ok:#2C7A57;
+  --aka:#BC4038; --shiro:#37699F; --tsuki:#71539F;
+  --shadow:0 1px 2px rgba(20,25,45,.06), 0 8px 24px -16px rgba(20,25,45,.28);
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit; color:inherit; background:none; border:none; cursor:pointer}
+:focus-visible{outline:2px solid var(--gold-line); outline-offset:2px; border-radius:3px}
+.wrap{max-width:1140px; margin:0 auto; padding:0 20px}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* ---------- header ---------- */
+header.top{
+  position:sticky; top:0; z-index:30;
+  background:color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.masthead{display:flex; flex-wrap:wrap; align-items:flex-end; gap:8px 20px; padding:14px 0 10px}
+.eyebrow{
+  font-size:11px; letter-spacing:.18em; color:var(--ink-3);
+  text-transform:none; margin:0 0 2px; font-weight:600;
+}
+h1{
+  font-family:var(--serif); font-weight:600; font-size:26px; line-height:1.2;
+  margin:0; letter-spacing:.04em; text-wrap:balance;
+}
+h1 .sub{font-size:13px; color:var(--ink-3); letter-spacing:.08em; font-family:var(--sans); font-weight:500; margin-left:10px}
+.total{margin-left:auto; display:flex; align-items:baseline; gap:10px}
+.total .big{font-family:var(--mono); font-size:30px; font-weight:600; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.total .of{font-family:var(--mono); font-size:14px; color:var(--ink-3)}
+.total .pct{font-size:12px; color:var(--gold); font-weight:700; font-family:var(--mono)}
+
+.meterbar{height:4px; background:var(--panel-3); border-radius:99px; overflow:hidden}
+.meterbar > i{display:block; height:100%; background:var(--gold-line); border-radius:99px; transition:width .35s ease}
+
+.summary{display:flex; flex-wrap:wrap; gap:6px 22px; padding:8px 0 12px; align-items:center}
+.stat{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-2)}
+.stat b{font-family:var(--mono); font-size:13px; color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
+.stat .meterbar{width:52px}
+.stat .k{color:var(--ink-3); letter-spacing:.04em}
+.sep{width:1px; height:18px; background:var(--line); margin:0 -8px}
+
+/* ---------- tabs ---------- */
+nav.tabs{display:flex; gap:2px; overflow-x:auto; scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{
+  padding:9px 15px 8px; font-size:13.5px; font-weight:600; color:var(--ink-3);
+  border-bottom:2px solid transparent; white-space:nowrap; letter-spacing:.02em;
+}
+.tab:hover{color:var(--ink-2)}
+.tab[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--stamp)}
+.tab .c{font-family:var(--mono); font-size:11px; color:var(--ink-3); margin-left:6px; font-variant-numeric:tabular-nums}
+
+/* ---------- toolbar ---------- */
+.toolbar{padding:14px 0 10px; display:flex; flex-direction:column; gap:9px}
+.searchrow{display:flex; gap:9px; flex-wrap:wrap; align-items:center}
+.search{
+  flex:1 1 260px; min-width:0; display:flex; align-items:center; gap:8px;
+  background:var(--panel); border:1px solid var(--line-2); border-radius:7px; padding:7px 11px;
+}
+.search:focus-within{border-color:var(--gold-line); box-shadow:0 0 0 3px var(--gold-wash)}
+.search input{
+  flex:1; min-width:0; border:none; background:none; font:inherit; font-size:14px; color:var(--ink); outline:none;
+}
+.search svg{flex:none; opacity:.5}
+select.sel{
+  background:var(--panel); border:1px solid var(--line-2); border-radius:7px;
+  padding:7px 9px; font-size:13px; color:var(--ink); cursor:pointer;
+}
+.chips{display:flex; flex-wrap:wrap; gap:5px; align-items:center}
+.chiplabel{font-size:11px; color:var(--ink-3); letter-spacing:.1em; margin-right:2px; font-weight:600}
+.chip{
+  border:1px solid var(--line-2); background:var(--panel); border-radius:99px;
+  padding:3px 11px; font-size:12.5px; color:var(--ink-2); line-height:1.5;
+  display:inline-flex; align-items:center; gap:5px; transition:background .12s, border-color .12s;
+}
+.chip:hover{border-color:var(--ink-3)}
+.chip[aria-pressed="true"]{background:var(--ink); color:var(--panel); border-color:var(--ink)}
+.chip .dot{width:6px; height:6px; border-radius:99px; background:currentColor; opacity:.85}
+.chip .n{font-family:var(--mono); font-size:10.5px; opacity:.65}
+.chip.warm[aria-pressed="true"]{background:var(--stamp); border-color:var(--stamp); color:#fff}
+.tools{display:flex; gap:5px; margin-left:auto; flex-wrap:wrap}
+.ghost{
+  border:1px solid var(--line-2); border-radius:7px; padding:6px 11px; font-size:12.5px; color:var(--ink-2); background:var(--panel);
+}
+.ghost:hover{border-color:var(--ink-3); color:var(--ink)}
+.resultline{font-size:12px; color:var(--ink-3); display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+
+/* ---------- ledger list ---------- */
+main{padding-bottom:80px}
+.ledger{background:var(--panel); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow); overflow:hidden}
+.row{border-top:1px solid var(--line)}
+.row:first-child{border-top:none}
+.rowhead{
+  display:grid; grid-template-columns:46px 52px minmax(0,1fr) auto; align-items:center;
+  gap:0 12px; width:100%; text-align:left; padding:0 14px 0 0;
+}
+.rowhead:hover{background:var(--panel-2)}
+.row.got .rowhead{background:linear-gradient(90deg,var(--stamp-wash),transparent 320px)}
+.row.got .rowhead:hover{background:linear-gradient(90deg,var(--stamp-wash),var(--panel-2) 320px)}
+.stampcell{display:flex; align-items:center; justify-content:center; align-self:stretch; border-right:1px solid var(--line); padding:7px 0}
+.stamp{
+  width:28px; height:28px; border-radius:99px; border:1.5px dashed var(--line-2);
+  display:grid; place-items:center; font-family:var(--serif); font-size:13px; font-weight:700;
+  color:transparent; transition:transform .15s ease, border-color .15s, color .15s, background .15s;
+}
+.stamp:hover{border-color:var(--ink-3); color:var(--line-2)}
+.stamp[aria-pressed="true"]{
+  border:2px solid var(--stamp); color:var(--stamp);
+  background:var(--stamp-wash); transform:rotate(-9deg);
+}
+.no{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); font-variant-numeric:tabular-nums; letter-spacing:-.02em; padding:9px 0}
+.namecell{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; padding:9px 0; min-width:0}
+.nm{font-size:15px; font-weight:600; letter-spacing:.01em}
+.row.got .nm{color:var(--ink-2)}
+.ym{font-size:11px; color:var(--ink-3); font-family:var(--sans)}
+.metacell{display:flex; align-items:center; gap:7px; flex-wrap:wrap; justify-content:flex-end; padding:9px 0}
+.rank{
+  font-family:var(--mono); font-weight:700; font-size:11.5px; width:20px; height:20px;
+  display:grid; place-items:center; border-radius:4px; border:1px solid var(--line-2); color:var(--ink-2);
+}
+.rank[data-r="S"]{border-color:var(--gold-line); color:var(--gold); background:var(--gold-wash)}
+.rank[data-r="A"]{border-color:var(--line-2); color:var(--ink)}
+.tag{
+  font-size:11px; padding:1px 8px; border-radius:99px; border:1px solid var(--line-2); color:var(--ink-3);
+  white-space:nowrap; line-height:1.6;
+}
+.tag.tribe{color:var(--ink-2)}
+.tag.role{color:var(--ink-3)}
+.tag.lg{border-color:var(--gold-line); color:var(--gold); background:var(--gold-wash); font-weight:700}
+.tag.rare{border-color:var(--gold-line); color:var(--gold)}
+.tag.boss{border-color:var(--ink-3); color:var(--ink-2); font-weight:600}
+.tag.koten{border-style:dashed}
+.tag.aka{border-color:var(--aka); color:var(--aka)}
+.tag.shiro{border-color:var(--shiro); color:var(--shiro)}
+.tag.tsuki{border-color:var(--tsuki); color:var(--tsuki)}
+/* 逆引き: この妖怪が必要になるところ */
+.uses{display:inline-flex; gap:3px; align-items:center; margin-left:3px; padding-left:8px; border-left:1px solid var(--line-2)}
+.use{
+  font-size:10.5px; font-weight:700; line-height:1.65; min-width:1.15em; text-align:center;
+  padding:0 3px; border-radius:4px; border:1px solid var(--gold-line); color:var(--gold);
+  background:var(--gold-wash); white-space:nowrap; font-family:var(--serif);
+}
+.chip .use{margin-right:2px}
+.chev{color:var(--ink-3); font-size:10px; transition:transform .2s; display:inline-block}
+.row.open .chev{transform:rotate(90deg)}
+
+/* ---------- detail ---------- */
+.detail{padding:4px 18px 20px 46px; border-top:1px dashed var(--line); background:var(--panel-2)}
+.dgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:2px 26px}
+.dblock{padding:10px 0 4px; min-width:0}
+.dh{
+  font-size:10.5px; letter-spacing:.14em; color:var(--ink-3); font-weight:700; margin:0 0 4px;
+  border-bottom:1px solid var(--line); padding-bottom:3px;
+}
+.dbody{font-size:13.5px; color:var(--ink-2); white-space:pre-wrap; line-height:1.7}
+.dbody .em{color:var(--ink); font-weight:600}
+.flavor{font-family:var(--serif); font-size:14px; line-height:1.85; color:var(--ink-2); white-space:pre-wrap}
+.kv{display:flex; gap:8px; font-size:13.5px; padding:1px 0}
+.kv .k{color:var(--ink-3); flex:none; min-width:4.5em}
+.movelist{display:flex; flex-wrap:wrap; gap:4px}
+.move{font-size:12px; border:1px solid var(--line-2); border-radius:5px; padding:1px 7px; color:var(--ink-2); background:var(--panel)}
+.recipe{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-size:13.5px;
+  background:var(--panel); border:1px solid var(--line-2); border-radius:7px; padding:8px 11px;
+}
+.recipe .op{color:var(--ink-3); font-size:12px}
+.cost{font-family:var(--mono); font-size:12px; color:var(--gold); font-weight:600}
+.lnk{
+  color:var(--ink); border-bottom:1px solid var(--line-2); font-weight:600; font-size:13.5px;
+  padding:0; line-height:1.4;
+}
+.lnk:hover{border-bottom-color:var(--ink); color:var(--gold)}
+.lnk.done{color:var(--ok); border-bottom-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.lnk.done::before{content:"済 "; font-size:10px; font-family:var(--serif); opacity:.9}
+.lnk.todo::before{content:"未 "; font-size:10px; font-family:var(--serif); opacity:.55; color:var(--ink-3)}
+.itemname{font-size:13.5px; color:var(--ink-2); border-bottom:1px dotted var(--line-2)}
+
+/* ---------- cards (rings / legends / souls) ---------- */
+.cards{display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:14px}
+.card{
+  background:var(--panel); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow);
+  padding:14px 16px 13px; display:flex; flex-direction:column; gap:9px;
+}
+.card.done{border-color:var(--ok); box-shadow:0 0 0 1px color-mix(in srgb,var(--ok) 30%,transparent), var(--shadow)}
+.cardtop{display:flex; align-items:flex-start; gap:10px}
+.cardtitle{font-family:var(--serif); font-size:17px; font-weight:600; letter-spacing:.02em; line-height:1.35; margin:0; flex:1; text-wrap:balance}
+.frac{font-family:var(--mono); font-size:12px; color:var(--ink-3); white-space:nowrap; font-variant-numeric:tabular-nums; padding-top:4px}
+.frac.done{color:var(--ok); font-weight:700}
+.cardcomment{font-family:var(--serif); font-size:12.5px; color:var(--ink-3); line-height:1.7; margin:0}
+.reward{
+  display:flex; align-items:center; gap:8px; font-size:13px;
+  background:var(--gold-wash); border:1px solid var(--gold-line); border-radius:7px; padding:6px 10px;
+}
+.reward .k{font-size:10px; letter-spacing:.1em; color:var(--gold); font-weight:700; flex:none}
+.reward .v{font-weight:600; color:var(--ink)}
+.members{display:flex; flex-direction:column; gap:0}
+.mem{
+  display:grid; grid-template-columns:26px minmax(0,1fr) auto; align-items:center; gap:9px;
+  width:100%; text-align:left; padding:5px 2px; border-top:1px solid var(--line); font-size:13.5px;
+}
+.mem:first-child{border-top:none}
+.mem:hover{background:var(--panel-2)}
+.mem .st{
+  width:19px; height:19px; border-radius:99px; border:1.5px dashed var(--line-2);
+  display:grid; place-items:center; font-family:var(--serif); font-size:10px; color:transparent;
+}
+.mem.on .st{border:2px solid var(--stamp); border-style:solid; color:var(--stamp); background:var(--stamp-wash); transform:rotate(-9deg)}
+.mem .mn{font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.mem.on .mn{color:var(--ink-2)}
+.mem .how{font-size:11px; color:var(--ink-3); text-align:right; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:15em}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto; background:var(--panel); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; min-width:600px}
+th{
+  text-align:left; font-size:10.5px; letter-spacing:.13em; color:var(--ink-3); font-weight:700;
+  padding:9px 14px; border-bottom:1px solid var(--line-2); white-space:nowrap; background:var(--panel-2);
+  position:sticky; top:0;
+}
+td{padding:9px 14px; border-top:1px solid var(--line); font-size:13.5px; vertical-align:top}
+tr.got td{background:var(--stamp-wash)}
+td.stampcol{width:44px; padding:6px 0 6px 12px; border-right:1px solid var(--line)}
+td.center{text-align:center}
+
+.secthead{display:flex; align-items:baseline; gap:12px; margin:26px 0 11px; flex-wrap:wrap}
+.secthead:first-child{margin-top:6px}
+h2{font-family:var(--serif); font-size:19px; font-weight:600; letter-spacing:.04em; margin:0}
+.sectnote{font-size:12.5px; color:var(--ink-3)}
+.sectrule{flex:1; height:1px; background:var(--line); min-width:20px}
+
+.empty{padding:44px 20px; text-align:center; color:var(--ink-3); font-size:14px}
+
+/* ---------- souls ---------- */
+.relnote{display:block; font-size:11.5px; color:var(--ink-3); margin-top:4px; line-height:1.6}
+.relnote .rk{
+  font-size:9.5px; letter-spacing:.1em; font-weight:700; border:1px solid var(--line-2);
+  border-radius:4px; padding:0 4px; margin-right:5px; white-space:nowrap;
+}
+.relnote.up .rk{border-color:var(--gold-line); color:var(--gold); background:var(--gold-wash)}
+.relnote.same .rk{color:var(--ink-2)}
+.relnote.down .rk{border-style:dashed}
+.grouphead{
+  display:flex; align-items:baseline; gap:10px; margin:22px 0 8px; flex-wrap:wrap;
+}
+.grouphead h3{font-family:var(--serif); font-size:15.5px; font-weight:600; letter-spacing:.03em; margin:0}
+.grouphead .n{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
+.grouphead .rule{flex:1; height:1px; background:var(--line); min-width:16px}
+.soulnav{display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 4px}
+.soulnav a{
+  font-size:12px; border:1px solid var(--line-2); border-radius:99px; padding:3px 10px; color:var(--ink-2);
+  background:var(--panel);
+}
+.soulnav a:hover{border-color:var(--ink-3); color:var(--ink)}
+
+/* ---------- footer / modal ---------- */
+footer{
+  border-top:1px solid var(--line); margin-top:44px; padding:20px 0 44px;
+  font-size:12px; color:var(--ink-3); line-height:1.9;
+}
+footer a{color:var(--ink-2)}
+.fnote{max-width:64ch}
+.modal{
+  position:fixed; inset:0; z-index:60; background:rgba(10,12,18,.55); display:grid; place-items:center; padding:20px;
+}
+.modal[hidden]{display:none}
+.sheet{
+  background:var(--panel); border:1px solid var(--line-2); border-radius:12px; padding:18px;
+  width:min(560px,100%); display:flex; flex-direction:column; gap:11px; box-shadow:0 30px 80px -20px rgba(0,0,0,.5);
+}
+.sheet h3{font-family:var(--serif); font-size:17px; margin:0; font-weight:600}
+.sheet textarea{
+  width:100%; height:150px; resize:vertical; font-family:var(--mono); font-size:11.5px;
+  border:1px solid var(--line-2); border-radius:7px; padding:9px; background:var(--panel-2); color:var(--ink);
+}
+.sheet .acts{display:flex; gap:7px; justify-content:flex-end; flex-wrap:wrap}
+.primary{background:var(--ink); color:var(--panel); border-radius:7px; padding:7px 14px; font-size:13px; font-weight:600}
+.toast{
+  position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:70;
+  background:var(--ink); color:var(--panel); padding:8px 16px; border-radius:99px; font-size:13px;
+  box-shadow:0 10px 30px -10px rgba(0,0,0,.5); pointer-events:none; opacity:0; transition:opacity .2s;
+}
+.toast.on{opacity:1}
+
+.flash{animation:flash 1.6s ease}
+@keyframes flash{0%,100%{background:transparent} 15%,55%{background:var(--gold-wash)}}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important; transition-duration:.001ms !important}
+}
+@media (max-width:640px){
+  .wrap{padding:0 13px}
+  h1{font-size:21px}
+  h1 .sub{display:block; margin:2px 0 0}
+  .total .big{font-size:24px}
+  .rowhead{grid-template-columns:40px minmax(0,1fr); padding-right:11px; row-gap:0}
+  .no{grid-column:2; padding:8px 0 0; font-size:10.5px}
+  .namecell{grid-column:2; padding:0 0 3px}
+  .metacell{grid-column:2; justify-content:flex-start; padding:0 0 9px}
+  .chev{display:none}
+  .detail{padding-left:14px}
+  .mem .how{display:none}
+}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="masthead">
+      <div>
+        <p class="eyebrow">妖怪ウォッチバスターズ 赤猫団／白犬隊／月兎組</p>
+        <h1>妖怪大辞典 チェック表<span class="sub">全470体・ようかいの輪・レジェンド解放・進化・合成・魂</span></h1>
+      </div>
+      <div class="total">
+        <span class="big" id="totGot">0</span><span class="of">/ 470</span><span class="pct" id="totPct">0%</span>
+      </div>
+    </div>
+    <div class="meterbar"><i id="totBar" style="width:0%"></i></div>
+    <div class="summary" id="summary"></div>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+  </div>
+</header>
+
+<main class="wrap" id="main"></main>
+
+<footer>
+  <div class="wrap">
+    <p class="fnote">チェックはこの端末のブラウザに保存されます（同じ端末・同じブラウザで開けば続きから使えます）。別の端末へ移すときは「書き出し」から文字列をコピーし、移した先で「読み込み」に貼り付けてください。</p>
+    <p class="fnote">出典：妖怪ウォッチバスターズ 攻略「ゲームの匠」（妖怪・ようかいの輪・魂データ）／妖怪ウォッチバスターズ 攻略大百科・妖怪ウォッチバスターズ攻略（ようかいの輪の報酬と入手メモ）。ボス妖怪はランク・種族の表記がない個体があります。</p>
+  </div>
+</footer>
+
+<div class="modal" id="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h3 id="sheetTitle">チェックの書き出し</h3>
+    <p style="margin:0; font-size:12.5px; color:var(--ink-3)" id="sheetNote"></p>
+    <textarea id="sheetText" spellcheck="false"></textarea>
+    <div class="acts">
+      <button class="ghost" id="sheetCancel">閉じる</button>
+      <button class="primary" id="sheetOk">コピー</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script id="ywb-data" type="application/json">__DATA__</script>
+<script>
+(function(){
+"use strict";
+const DATA = JSON.parse(document.getElementById('ywb-data').textContent);
+const Y = DATA.youkai, RINGS = DATA.rings, SOULS = DATA.souls;
+const byId = new Map(Y.map(y => [y.id, y]));
+const KEY = 'ywb-getto-dex-v1';
+
+/* ---------- state ---------- */
+const S = {
+  got: new Set(),
+  tab: 'dex',
+  q: '',
+  sort: 'no',
+  hide: false,
+  f: { rank:new Set(), tribe:new Set(), role:new Set(), area:new Set(), tag:new Set() },
+};
+try {
+  const raw = JSON.parse(localStorage.getItem(KEY) || '{}');
+  if (Array.isArray(raw.got)) S.got = new Set(raw.got.filter(n => byId.has(n)));
+} catch(e){}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({v:1, got:[...S.got]})); } catch(e){} };
+
+/* ---------- text helpers ---------- */
+const kana = s => s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+for (const y of Y) {
+  y._s = kana([y.name, y.yomi, y.tribe, y.role, y.rank + 'ランク',
+    y.skill ? y.skill.name + y.skill.desc : '', y.soul ? y.soul.name + y.soul.desc : '',
+    y.moves.join(''), y.desc, y.getText].join(' ').toLowerCase());
+}
+const has = id => S.got.has(id);
+const nameLink = (id, name) => '<button class="lnk ' + (has(id) ? 'done' : 'todo') + '" data-goto="' + id + '">' + esc(name) + '</button>';
+const matRef = m => m.kind === 'youkai' && byId.has(m.id) ? nameLink(m.id, m.name) : '<span class="itemname">' + esc(m.name) + '</span>';
+
+/* ---------- derived ---------- */
+const RANKS = ['S','A','B','C','D','E'];
+const TRIBES = [...new Set(Y.map(y => y.tribe).filter(Boolean))];
+const ROLES = ['アタッカー','タンク','ヒーラー','レンジャー'];
+const AREAS = [...new Set(Y.flatMap(y => y.patrol))].sort();
+const TAGS = [
+  { k:'legend', n:'レジェンド', t:y => y.legend },
+  { k:'rare',   n:'レア',       t:y => y.rare },
+  { k:'boss',   n:'ボス',       t:y => y.boss },
+  { k:'koten',  n:'古典妖怪',   t:y => y.koten },
+  { k:'aka',    n:'赤猫団限定', t:y => y.only === '赤猫団' },
+  { k:'shiro',  n:'白犬隊限定', t:y => y.only === '白犬隊' },
+  { k:'tsuki',  n:'月兎組限定', t:y => y.only === '月兎組' },
+  { k:'evo',    n:'進化で入手', t:y => !!y.evolve },
+  { k:'fuse',   n:'合成で入手', t:y => !!y.fuse },
+  { k:'gasha',  n:'ガシャ',     t:y => y.gasha.length > 0 },
+];
+const TAGMAP = Object.fromEntries(TAGS.map(t => [t.k, t]));
+const ringDone = r => r.members.every(m => has(m.id));
+const legends = Y.filter(y => y.legend);
+const evoList = Y.filter(y => y.evolve);
+const fuseList = Y.filter(y => y.fuse);
+const soulOwners = new Map();
+for (const y of Y) if (y.soul) {
+  if (!soulOwners.has(y.soul.id)) soulOwners.set(y.soul.id, []);
+  soulOwners.get(y.soul.id).push(y);
+}
+const bossOfSoul = s => {
+  const n = s.name.replace(/のB魂$/, '');
+  return Y.find(y => y.name === n) || null;
+};
+
+// 逆引き: この妖怪が「何に必要か」。輪・レジェンド解放・進化・合成・合成魂を集める
+const USES = [
+  { k:'ring',  s:'輪', n:'ようかいの輪',   d:'ようかいの輪のメンバー' },
+  { k:'lgnd',  s:'解', n:'レジェンド解放', d:'レジェンド妖怪の封印解放に必要' },
+  { k:'evo',   s:'進', n:'進化のもと',     d:'ほかの妖怪の進化もと' },
+  { k:'fuse',  s:'合', n:'合成の素材',     d:'ほかの妖怪の合成素材' },
+  { k:'soul',  s:'魂', n:'合成魂の素材',   d:'合成魂の素材（魂へんげして使う）' },
+];
+const useOf = new Map(Y.map(y => [y.id, { ring:[], lgnd:[], evo:[], fuse:[], soul:[] }]));
+const mark = (id, k, ref) => { const u = useOf.get(id); if (u && !u[k].includes(ref)) u[k].push(ref); };
+for (const r of RINGS) for (const m of r.members) mark(m.id, 'ring', r);
+for (const v of Y) {
+  if (v.legendNeeds) for (const n of v.legendNeeds) mark(n.id, 'lgnd', v);
+  if (v.evolve) mark(v.evolve.fromId, 'evo', v);
+  if (v.fuse) for (const k of ['a','b']) if (v.fuse[k].kind === 'youkai') mark(v.fuse[k].id, 'fuse', v);
+}
+for (const s of SOULS) for (const f of s.from) mark(f.id, 'soul', s);
+const usesOf = y => USES.filter(u => useOf.get(y.id)[u.k].length);
+const USETAGS = USES.map(u => ({ k:'u_' + u.k, n:u.n, t:y => useOf.get(y.id)[u.k].length > 0 }));
+for (const t of USETAGS) TAGMAP[t.k] = t;
+
+/* ---------- tabs ---------- */
+const TABS = [
+  { k:'dex',    n:'妖怪大辞典', c:() => S.got.size + '/' + Y.length },
+  { k:'ring',   n:'ようかいの輪', c:() => RINGS.filter(ringDone).length + '/' + RINGS.length },
+  { k:'legend', n:'レジェンド解放', c:() => legends.filter(y => has(y.id)).length + '/' + legends.length },
+  { k:'recipe', n:'進化・合成', c:() => (evoList.length + fuseList.length) + '' },
+  { k:'soul',   n:'魂', c:() => SOULS.length + '' },
+];
+const elTabs = document.getElementById('tabs');
+const elMain = document.getElementById('main');
+
+function renderTabs(){
+  elTabs.innerHTML = TABS.map(t =>
+    '<button class="tab" role="tab" data-tab="' + t.k + '" aria-selected="' + (S.tab === t.k) + '">' +
+    t.n + '<span class="c">' + t.c() + '</span></button>').join('');
+}
+
+/* ---------- header summary ---------- */
+function renderSummary(){
+  const n = S.got.size, tot = Y.length, pct = Math.round(n / tot * 1000) / 10;
+  document.getElementById('totGot').textContent = n;
+  document.getElementById('totPct').textContent = (Number.isInteger(pct) ? pct : pct.toFixed(1)) + '%';
+  document.getElementById('totBar').style.width = (n / tot * 100) + '%';
+  const groups = RANKS.map(r => {
+    const list = Y.filter(y => y.rank === r);
+    return { n:r + 'ランク', got:list.filter(y => has(y.id)).length, all:list.length };
+  }).filter(g => g.all);
+  const extra = [
+    { n:'レジェンド', got:legends.filter(y => has(y.id)).length, all:legends.length },
+    { n:'レア', got:Y.filter(y => y.rare && has(y.id)).length, all:Y.filter(y => y.rare).length },
+    { n:'ボス', got:Y.filter(y => y.boss && has(y.id)).length, all:Y.filter(y => y.boss).length },
+    { n:'ようかいの輪', got:RINGS.filter(ringDone).length, all:RINGS.length },
+  ];
+  const cell = g => '<div class="stat"><span class="k">' + g.n + '</span>' +
+    '<div class="meterbar"><i style="width:' + (g.all ? g.got / g.all * 100 : 0) + '%"></i></div>' +
+    '<b>' + g.got + '</b><span class="k">/' + g.all + '</span></div>';
+  document.getElementById('summary').innerHTML =
+    groups.map(cell).join('') + '<div class="sep"></div>' + extra.map(cell).join('');
+}
+
+/* ---------- dex ---------- */
+function filtered(){
+  const q = kana(S.q.trim().toLowerCase());
+  const f = S.f;
+  let list = Y.filter(y => {
+    if (S.hide && has(y.id)) return false;
+    if (q && !y._s.includes(q)) return false;
+    if (f.rank.size && !f.rank.has(y.rank)) return false;
+    if (f.tribe.size && !f.tribe.has(y.tribe)) return false;
+    if (f.role.size && !f.role.has(y.role)) return false;
+    if (f.area.size && !y.patrol.some(a => f.area.has(a))) return false;
+    for (const k of f.tag) if (!TAGMAP[k].t(y)) return false;
+    return true;
+  });
+  const rk = y => RANKS.indexOf(y.rank) < 0 ? 9 : RANKS.indexOf(y.rank);
+  if (S.sort === 'rank') list.sort((a,b) => rk(a) - rk(b) || a.no - b.no);
+  else if (S.sort === 'tribe') list.sort((a,b) => TRIBES.indexOf(a.tribe) - TRIBES.indexOf(b.tribe) || a.no - b.no);
+  else if (S.sort === 'yomi') list.sort((a,b) => (a.yomi || a.name).localeCompare(b.yomi || b.name, 'ja'));
+  else list.sort((a,b) => a.no - b.no);
+  return list;
+}
+
+function chipBtn(group, val, label, count, cls, raw){
+  const on = S.f[group].has(val);
+  return '<button class="chip ' + (cls || '') + '" data-fg="' + group + '" data-fv="' + esc(val) + '" aria-pressed="' + on + '">' +
+    (raw ? label : esc(label)) + (count != null ? '<span class="n">' + count + '</span>' : '') + '</button>';
+}
+
+function usesHTML(y){
+  const u = usesOf(y);
+  return u.length ? '<span class="uses">' + u.map(x =>
+    '<span class="use" title="' + x.d + '">' + x.s + '</span>').join('') + '</span>' : '';
+}
+
+function rowHTML(y){
+  const tags = [];
+  if (y.legend) tags.push('<span class="tag lg">レジェンド</span>');
+  if (y.rare) tags.push('<span class="tag rare">レア</span>');
+  if (y.boss) tags.push('<span class="tag boss">ボス</span>');
+  if (y.koten) tags.push('<span class="tag koten">古典</span>');
+  if (y.only === '赤猫団') tags.push('<span class="tag aka">赤猫団</span>');
+  if (y.only === '白犬隊') tags.push('<span class="tag shiro">白犬隊</span>');
+  if (y.only === '月兎組') tags.push('<span class="tag tsuki">月兎組</span>');
+  return '<li class="row' + (has(y.id) ? ' got' : '') + '" id="y' + y.id + '" data-id="' + y.id + '">' +
+    '<div class="rowhead">' +
+      '<span class="stampcell"><button class="stamp" data-check="' + y.id + '" aria-pressed="' + has(y.id) + '" ' +
+        'aria-label="' + esc(y.name) + ' を入手済みにする">済</button></span>' +
+      '<span class="no">No.' + String(y.no).padStart(3, '0') + '</span>' +
+      '<button class="namecell" data-open="' + y.id + '" aria-expanded="false">' +
+        '<span class="nm">' + esc(y.name) + '</span>' +
+        (y.yomi ? '<span class="ym">' + esc(y.yomi) + '</span>' : '') +
+      '</button>' +
+      '<span class="metacell">' +
+        (y.rank ? '<span class="rank" data-r="' + y.rank + '">' + y.rank + '</span>' : '') +
+        (y.tribe ? '<span class="tag tribe">' + esc(y.tribe) + '</span>' : '') +
+        (y.role ? '<span class="tag role">' + esc(y.role) + '</span>' : '') +
+        tags.join('') + usesHTML(y) + '<span class="chev">▶</span>' +
+      '</span>' +
+    '</div></li>';
+}
+
+function detailHTML(y){
+  const b = [];
+  const blk = (h, body) => body ? '<div class="dblock"><p class="dh">' + h + '</p>' + body + '</div>' : '';
+  if (y.desc) b.push(blk('妖怪解説', '<div class="flavor">' + esc(y.desc) + '</div>'));
+
+  const basics = [];
+  if (y.good || y.bad) basics.push('<div class="kv"><span class="k">属性</span><span>' +
+    (y.good ? '得意 <span class="em">' + esc(y.good) + '</span>' : '') +
+    (y.bad ? '　苦手 <span class="em">' + esc(y.bad) + '</span>' : '') + '</span></div>');
+  if (y.skill) basics.push('<div class="kv"><span class="k">スキル</span><span><span class="em">' + esc(y.skill.name) +
+    '</span>　' + esc(y.skill.desc) + '</span></div>');
+  if (y.soul) basics.push('<div class="kv"><span class="k">魂へんげ</span><span><span class="em">' + esc(y.soul.name) +
+    '</span>　' + esc(y.soul.desc) + (y.soul.cost ? '　<span class="cost">' + esc(y.soul.cost) + '</span>' : '') + '</span></div>');
+  if (basics.length) b.push(blk('能力', '<div class="dbody">' + basics.join('') + '</div>'));
+
+  if (y.moves.length) b.push(blk('覚える技', '<div class="movelist">' +
+    y.moves.map(m => '<span class="move">' + esc(m) + '</span>').join('') + '</div>'));
+
+  const acq = [];
+  if (y.patrol.length) acq.push('<div class="kv"><span class="k">パトロール</span><span class="movelist">' +
+    y.patrol.map(a => '<span class="move">' + esc(a) + '</span>').join('') + '</span></div>');
+  if (y.gasha.length) acq.push('<div class="kv"><span class="k">妖怪ガシャ</span><span class="movelist">' +
+    y.gasha.map(g => '<span class="move">' + esc(g) + '</span>').join('') + '</span></div>');
+  if (y.evolve) acq.push('<div class="recipe"><span class="op">LV' + y.evolve.lv + '以上の</span>' +
+    (byId.has(y.evolve.fromId) ? nameLink(y.evolve.fromId, y.evolve.from) : '<span class="itemname">' + esc(y.evolve.from) + '</span>') +
+    '<span class="op">を</span><span class="cost">' + esc(y.evolve.cost) + '鬼玉</span><span class="op">で進化</span></div>');
+  if (y.fuse) acq.push('<div class="recipe">' + matRef(y.fuse.a) + '<span class="op">＋</span>' + matRef(y.fuse.b) +
+    '<span class="op">を</span><span class="cost">' + esc(y.fuse.cost) + '鬼玉</span><span class="op">で合成</span></div>');
+  const notes = y.getText.split('\n').map(s => s.trim()).filter(s =>
+    s && !/^[■├└]/.test(s) && !/鬼玉.*(進化|合成)/.test(s) && !/^妖怪大辞典のレジェンド妖怪です/.test(s));
+  if (notes.length) acq.push('<div class="dbody">' + esc(notes.join('\n')) + '</div>');
+  if (acq.length) b.push(blk('入手方法', '<div class="dbody">' + acq.join('') + '</div>'));
+
+  if (y.legendNeeds && y.legendNeeds.length) {
+    const done = y.legendNeeds.filter(n => has(n.id)).length;
+    b.push(blk('封印解放に必要な妖怪 <span class="num" style="float:right">' + done + '/' + y.legendNeeds.length + '</span>',
+      '<div class="dbody">' + y.legendNeeds.map(n => nameLink(n.id, n.name)).join('　') +
+      '</div><p class="dbody" style="color:var(--ink-3); font-size:12px; margin:6px 0 0">全員をなかまにすると、妖怪大辞典の光るページから入手できます。</p>'));
+  }
+  const rs = RINGS.filter(r => r.members.some(m => m.id === y.id));
+  if (rs.length) b.push(blk('ようかいの輪', '<div class="dbody">' + rs.map(r =>
+    '<div class="kv"><span class="k" style="min-width:0"><button class="lnk" data-ring="' + r.id + '">' + esc(r.name) + '</button></span>' +
+    '<span style="color:var(--ink-3); font-size:12.5px">報酬 ' + esc(r.reward || '—') + '　' +
+    r.members.filter(m => has(m.id)).length + '/' + r.members.length + '</span></div>').join('') + '</div>'));
+
+  const u = useOf.get(y.id);
+  if (u.lgnd.length) b.push(blk('レジェンド解放に必要', '<div class="dbody">' +
+    u.lgnd.map(v => nameLink(v.id, v.name)).join('　') +
+    '<p style="color:var(--ink-3); font-size:12px; margin:6px 0 0">この妖怪がいないと封印を解けません。</p></div>'));
+  if (u.evo.length || u.fuse.length) b.push(blk('この妖怪から作れる', '<div class="dbody">' +
+    (u.evo.length ? '<div class="kv"><span class="k">進化</span><span>' + u.evo.map(v => nameLink(v.id, v.name)).join('　') + '</span></div>' : '') +
+    (u.fuse.length ? '<div class="kv"><span class="k">合成</span><span>' + u.fuse.map(v => nameLink(v.id, v.name)).join('　') + '</span></div>' : '') +
+    '</div>'));
+  if (u.soul.length) b.push(blk('合成魂の素材', '<div class="dbody">' + u.soul.map(s =>
+    '<div class="kv"><span class="k" style="min-width:0"><span class="em">' + esc(s.name) + '</span></span>' +
+    '<span style="color:var(--ink-3); font-size:12.5px">' + esc(s.effect) + '</span></div>').join('') +
+    '<p style="color:var(--ink-3); font-size:12px; margin:6px 0 0">この妖怪を魂へんげさせた魂が素材になります。</p></div>'));
+
+  return '<div class="detail"><div class="dgrid">' + b.join('') + '</div></div>';
+}
+
+function renderDex(){
+  const cnt = (arr) => arr.length;
+  const html = [];
+  html.push('<div class="toolbar">');
+  html.push('<div class="searchrow">' +
+    '<label class="search"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">' +
+      '<circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>' +
+      '<input id="q" type="search" placeholder="名前・読み・種族・スキル・技・入手方法で検索" value="' + esc(S.q) + '"></label>' +
+    '<select class="sel" id="sort">' +
+      ['no:No.順','rank:ランク順','tribe:種族順','yomi:五十音順'].map(o => {
+        const [v,n] = o.split(':');
+        return '<option value="' + v + '"' + (S.sort === v ? ' selected' : '') + '>' + n + '</option>';
+      }).join('') + '</select>' +
+    '<button class="chip warm" id="hideGot" aria-pressed="' + S.hide + '">未入手だけ</button>' +
+    '</div>');
+  html.push('<div class="chips"><span class="chiplabel">ランク</span>' +
+    RANKS.map(r => chipBtn('rank', r, r, cnt(Y.filter(y => y.rank === r)))).join('') + '</div>');
+  html.push('<div class="chips"><span class="chiplabel">種族</span>' +
+    TRIBES.map(t => chipBtn('tribe', t, t, cnt(Y.filter(y => y.tribe === t)))).join('') + '</div>');
+  html.push('<div class="chips"><span class="chiplabel">やくわり</span>' +
+    ROLES.map(r => chipBtn('role', r, r, cnt(Y.filter(y => y.role === r)))).join('') +
+    '<span class="chiplabel" style="margin-left:8px">区分</span>' +
+    TAGS.map(t => chipBtn('tag', t.k, t.n, cnt(Y.filter(t.t)))).join('') + '</div>');
+  html.push('<div class="chips"><span class="chiplabel">必要</span>' +
+    USETAGS.map((t, i) => chipBtn('tag', t.k, '<b class="use">' + USES[i].s + '</b>' + t.n,
+      cnt(Y.filter(t.t)), '', true)).join('') +
+    '<span style="font-size:11.5px; color:var(--ink-3)">ほかの妖怪・輪・魂をそろえるのに要る妖怪</span></div>');
+  html.push('<div class="chips"><span class="chiplabel">パトロール</span>' +
+    AREAS.map(a => chipBtn('area', a, a, cnt(Y.filter(y => y.patrol.includes(a))))).join('') + '</div>');
+  html.push('<div class="resultline" id="resultline"></div>');
+  html.push('</div>');
+  html.push('<div id="listwrap"></div>');
+  elMain.innerHTML = html.join('');
+  renderList();
+}
+
+// 絞り込みのたびに検索欄まで作り直すと、日本語入力の変換中に入力欄が
+// 消えて変換が壊れる。件数表示と一覧だけを差し替える。
+function renderList(){
+  const list = filtered();
+  const anyF = S.q || S.hide || Object.values(S.f).some(s => s.size);
+  document.getElementById('resultline').innerHTML =
+    '<span><b class="num">' + list.length + '</b> 体を表示' +
+    '（うち入手済み <b class="num">' + list.filter(y => has(y.id)).length + '</b>）</span>' +
+    (anyF ? '<button class="ghost" id="clearF" style="padding:2px 9px">絞り込みを解除</button>' : '') +
+    '<span class="tools">' +
+      '<button class="ghost" id="exportBtn">書き出し</button>' +
+      '<button class="ghost" id="importBtn">読み込み</button>' +
+      '<button class="ghost" id="resetBtn">全チェック解除</button>' +
+    '</span>';
+  document.getElementById('listwrap').innerHTML = list.length
+    ? '<ul class="ledger" id="ledger" style="list-style:none; margin:0; padding:0">' + list.map(rowHTML).join('') + '</ul>'
+    : '<div class="ledger"><p class="empty">条件に合う妖怪がいません。検索語や絞り込みを見直してください。</p></div>';
+}
+
+/* ---------- rings ---------- */
+// 輪ページに入手ヒントが無いメンバーは、妖怪側のデータから補う
+function howFallback(id){
+  const y = byId.get(id);
+  if (!y) return '';
+  if (y.patrol.length) return y.patrol.join('・');
+  if (y.evolve) return y.evolve.from + 'をLV' + y.evolve.lv + 'で進化';
+  if (y.fuse) return y.fuse.a.name + '＋' + y.fuse.b.name + 'を合成';
+  if (y.gasha.length) return '妖怪ガシャ（' + y.gasha.join('・') + '）';
+  if (y.legend) return 'レジェンド妖怪';
+  const line = y.getText.split('\n').map(s => s.trim()).filter(s => s && !/^[■├└※]/.test(s))[0];
+  return line ? (line.length > 34 ? line.slice(0, 33) + '…' : line) : '';
+}
+function renderRings(){
+  const done = RINGS.filter(ringDone).length;
+  elMain.innerHTML =
+    '<div class="secthead"><h2>ようかいの輪</h2><span class="sectnote">メンバーを全員なかまにすると、エントランスで報酬がもらえます。' +
+    '<b class="num">' + done + '</b>/' + RINGS.length + ' 達成</span><span class="sectrule"></span></div>' +
+    '<div class="cards">' + RINGS.map(r => {
+      const got = r.members.filter(m => has(m.id)).length, all = r.members.length, ok = got === all;
+      return '<article class="card' + (ok ? ' done' : '') + '">' +
+        '<div class="cardtop"><h3 class="cardtitle">' + esc(r.name) + '</h3>' +
+          '<span class="frac' + (ok ? ' done' : '') + '">' + got + '/' + all + '</span></div>' +
+        (r.comment ? '<p class="cardcomment">' + esc(r.comment) + '</p>' : '') +
+        '<div class="reward"><span class="k">報酬</span><span class="v">' + esc(r.reward || '—') + '</span></div>' +
+        '<div class="members">' + r.members.map(m =>
+          '<button class="mem' + (has(m.id) ? ' on' : '') + '" data-check="' + m.id + '" aria-pressed="' + has(m.id) + '">' +
+          '<span class="st">済</span><span class="mn">' + esc(m.name) + '</span>' +
+          '<span class="how">' + esc(m.how || howFallback(m.id)) + '</span></button>').join('') + '</div>' +
+        '</article>';
+    }).join('') + '</div>';
+}
+
+/* ---------- legend ---------- */
+function renderLegend(){
+  const got = legends.filter(y => has(y.id)).length;
+  elMain.innerHTML =
+    '<div class="secthead"><h2>レジェンド妖怪の封印解放</h2><span class="sectnote">必要な8体をすべてなかまにすると、妖怪大辞典の光るページから入手できます。' +
+    '<b class="num">' + got + '</b>/' + legends.length + ' 解放</span><span class="sectrule"></span></div>' +
+    '<div class="cards">' + legends.map(l => {
+      const need = l.legendNeeds || [];
+      const d = need.filter(n => has(n.id)).length, ready = d === need.length && need.length > 0;
+      return '<article class="card' + (has(l.id) ? ' done' : '') + '">' +
+        '<div class="cardtop">' +
+          '<button class="stamp" data-check="' + l.id + '" aria-pressed="' + has(l.id) + '" style="flex:none; margin-top:2px"' +
+            ' aria-label="' + esc(l.name) + ' を入手済みにする">済</button>' +
+          '<h3 class="cardtitle">' + esc(l.name) +
+            '<span style="font-size:11px; color:var(--ink-3); font-family:var(--sans); margin-left:8px">No.' + l.no + '　' + esc(l.tribe) + '</span></h3>' +
+          '<span class="frac' + (ready ? ' done' : '') + '">' + d + '/' + need.length + '</span></div>' +
+        (l.skill ? '<p class="cardcomment">スキル「' + esc(l.skill.name) + '」' + esc(l.skill.desc) + '</p>' : '') +
+        '<div class="members">' + need.map(n =>
+          '<button class="mem' + (has(n.id) ? ' on' : '') + '" data-check="' + n.id + '" aria-pressed="' + has(n.id) + '">' +
+          '<span class="st">済</span><span class="mn">' + esc(n.name) + '</span>' +
+          '<span class="how">No.' + (byId.get(n.id) ? byId.get(n.id).no : '') + '</span></button>').join('') + '</div>' +
+        '</article>';
+    }).join('') + '</div>';
+}
+
+/* ---------- recipes ---------- */
+function renderRecipe(){
+  const stampCell = y => '<td class="stampcol"><button class="stamp" data-check="' + y.id + '" aria-pressed="' + has(y.id) +
+    '" aria-label="' + esc(y.name) + ' を入手済みにする">済</button></td>';
+  const evoRows = evoList.slice().sort((a,b) => a.no - b.no).map(y =>
+    '<tr class="' + (has(y.id) ? 'got' : '') + '">' + stampCell(y) +
+    '<td class="num" style="color:var(--ink-3)">No.' + String(y.no).padStart(3,'0') + '</td>' +
+    '<td>' + nameLink(y.id, y.name) + (y.rank ? ' <span class="rank" data-r="' + y.rank + '">' + y.rank + '</span>' : '') + '</td>' +
+    '<td>' + (byId.has(y.evolve.fromId) ? nameLink(y.evolve.fromId, y.evolve.from) : esc(y.evolve.from)) + '</td>' +
+    '<td class="center num">LV' + y.evolve.lv + '</td>' +
+    '<td class="num"><span class="cost">' + esc(y.evolve.cost) + '</span></td></tr>').join('');
+  const fuseRows = fuseList.slice().sort((a,b) => a.no - b.no).map(y =>
+    '<tr class="' + (has(y.id) ? 'got' : '') + '">' + stampCell(y) +
+    '<td class="num" style="color:var(--ink-3)">No.' + String(y.no).padStart(3,'0') + '</td>' +
+    '<td>' + nameLink(y.id, y.name) + (y.rank ? ' <span class="rank" data-r="' + y.rank + '">' + y.rank + '</span>' : '') + '</td>' +
+    '<td>' + matRef(y.fuse.a) + '</td><td>' + matRef(y.fuse.b) + '</td>' +
+    '<td class="num"><span class="cost">' + esc(y.fuse.cost) + '</span></td></tr>').join('');
+  elMain.innerHTML =
+    '<div class="secthead"><h2>レベル進化</h2><span class="sectnote">指定レベル以上の妖怪を、たまげ堂で鬼玉を払って進化させます。全' + evoList.length + '件</span><span class="sectrule"></span></div>' +
+    '<div class="tablewrap"><table><thead><tr><th></th><th>No.</th><th>進化後</th><th>素材の妖怪</th><th class="center">必要LV</th><th>鬼玉</th></tr></thead><tbody>' + evoRows + '</tbody></table></div>' +
+    '<div class="secthead"><h2>合成</h2><span class="sectnote">妖怪どうし、または妖怪＋道具を合わせて作ります。全' + fuseList.length + '件</span><span class="sectrule"></span></div>' +
+    '<div class="tablewrap"><table><thead><tr><th></th><th>No.</th><th>合成後</th><th>素材A</th><th>素材B</th><th>鬼玉</th></tr></thead><tbody>' + fuseRows + '</tbody></table></div>';
+}
+
+/* ---------- souls ---------- */
+const SOUL_CAT = {
+  normal: { n:'妖怪', cls:'',      note:'妖怪をたまげ堂で魂へんげさせて入手。同じ効果でも妖怪によって強さ（小・中・大）と料金が変わります。' },
+  fusion: { n:'合成', cls:'koten', note:'たまげ堂で魂どうしを合成して作ります。' },
+  b:      { n:'Ｂ',   cls:'rare',  note:'ビッグボスを倒すと手に入るボスの魂。' },
+};
+const CAT_ORDER = { normal:0, fusion:1, b:2 };
+const soulById = new Map(SOULS.map(s => [s.id, s]));
+const soulTag = s => '<span class="tag ' + SOUL_CAT[s.cat].cls + '">' + SOUL_CAT[s.cat].n + '</span>';
+
+function soulSrc(s){
+  if (s.cat === 'fusion') {
+    return s.from.length === 2
+      ? matRef({kind:'youkai', id:s.from[0].id, name:s.from[0].name}) + ' <span class="op">＋</span> ' +
+        matRef({kind:'youkai', id:s.from[1].id, name:s.from[1].name}) + ' <span style="color:var(--ink-3); font-size:12px">の魂</span>'
+      : esc(s.make);
+  }
+  if (s.cat === 'b') {
+    const bs = bossOfSoul(s);
+    return bs ? nameLink(bs.id, bs.name) : '<span style="color:var(--ink-3)">ビッグボス（図鑑外）</span>';
+  }
+  const own = soulOwners.get(s.id) || [];
+  const g = own.filter(y => has(y.id)).length;
+  return own.length
+    ? '<span class="num" style="color:' + (g === own.length ? 'var(--ok)' : 'var(--ink-3)') + '">' + g + '/' + own.length + '体</span> ' +
+      '<span style="font-size:12px; color:var(--ink-3)">' + own.slice(0,5).map(y => esc(y.name)).join('・') +
+      (own.length > 5 ? ' ほか' + (own.length - 5) + '体' : '') + '</span>'
+    : '<span style="color:var(--ink-3)">—</span>';
+}
+
+// 効果がかぶる魂を各行に添える
+const REL_LABEL = { same:'同効果', up:'上位', down:'下位' };
+function relNotes(s){
+  return (s.rel || []).map(r => {
+    const o = soulById.get(r.id);
+    return '<span class="relnote ' + r.t + '"><span class="rk">' + REL_LABEL[r.t] + '</span>' +
+      esc(o.name) + '<span style="color:var(--ink-3)">（' + SOUL_CAT[o.cat].n + '）</span></span>';
+  }).join('');
+}
+
+// 「持っているものより強い魂があるか」を先に見せる
+function soulSwap(){
+  const R = DATA.soulRel, DR = DATA.soulDropped, isB = id => soulById.get(id).cat === 'b';
+  const nm = id => { const s = soulById.get(id); return '<b style="font-weight:600">' + esc(s.name) + '</b> ' + soulTag(s); };
+  const ef = t => '<div style="margin-top:3px; color:var(--ink-2); font-size:12.5px">' + esc(t) + '</div>';
+  const dropRows = list => list.map(d =>
+    '<tr><td><b style="font-weight:600">' + esc(d.name) + '</b> ' + soulTag(d) + ef(d.effect) + '</td>' +
+    '<td style="color:var(--gold); text-align:center; width:2em">↑</td>' +
+    '<td>' + d.to.map(id => nm(id) + ef(soulById.get(id).effect)).join('<div style="height:8px"></div>') +
+    '</td></tr>').join('');
+  const sameRows = pairs => pairs.map(([a, b]) =>
+    '<tr><td>' + nm(a) + '</td><td style="color:var(--ink-3); text-align:center; width:2em">＝</td>' +
+    '<td>' + nm(b) + '</td><td><span style="color:var(--ink-2); font-size:12.5px">' +
+    esc(soulById.get(a).effect) + '</span></td></tr>').join('');
+  const wrap = (head, body) => '<div class="tablewrap"><table><thead><tr>' + head + '</tr></thead><tbody>' + body + '</tbody></table></div>';
+
+  const toB = DR.filter(d => d.to.every(isB)), toN = DR.filter(d => !d.to.every(isB));
+  const sameWithB = R.same.filter(p => isB(p[0]) || isB(p[1])), sameOther = R.same.filter(p => !isB(p[0]) && !isB(p[1]));
+
+  return '<div class="secthead"><h2>一覧から省いた魂</h2><span class="sectnote">' +
+      '完全に上位の魂があるので、下の一覧には載せていません。持っていたら乗りかえを。全' + DR.length + '種</span><span class="sectrule"></span></div>' +
+    '<div class="grouphead"><h3>代わりはＢ魂</h3><span class="n">' + toB.length + '種</span><span class="rule"></span></div>' +
+    '<p class="sectnote" style="margin:0 0 8px">Ｂ魂はビッグボス撃破の報酬です。手に入るまでは省いたほうの魂でしのげます。</p>' +
+    wrap('<th>省いた魂</th><th></th><th>代わりに使う魂</th>', dropRows(toB)) +
+    '<div class="grouphead"><h3>代わりはふつうの魂</h3><span class="n">' + toN.length + '種</span><span class="rule"></span></div>' +
+    '<p class="sectnote" style="margin:0 0 8px">属性耐性は、複数属性をまとめて守る魂が単体版を兼ねます。</p>' +
+    wrap('<th>省いた魂</th><th></th><th>代わりに使う魂</th>', dropRows(toN)) +
+    '<div class="secthead" style="margin-top:26px"><h2>効果が同じ魂</h2><span class="sectnote">' +
+      'どちらが上とも言えないので、両方とも一覧に載せています。</span><span class="sectrule"></span></div>' +
+    '<div class="grouphead"><h3>Ｂ魂 ＝ 同じ効果の魂がある</h3><span class="n">' + sameWithB.length + '組</span><span class="rule"></span></div>' +
+    '<p class="sectnote" style="margin:0 0 8px">Ｂ魂を取らなくても、こちらで代用できます（効果の文言が完全に同じもの）。</p>' +
+    wrap('<th>Ｂ魂</th><th></th><th>代わりになる魂</th><th>効果</th>', sameRows(sameWithB)) +
+    (sameOther.length ? '<div class="grouphead"><h3>Ｂ魂以外どうし</h3><span class="n">' + sameOther.length + '組</span><span class="rule"></span></div>' +
+      wrap('<th>魂</th><th></th><th>同じ効果の魂</th><th>効果</th>', sameRows(sameOther)) : '') +
+    '<p class="sectnote" style="margin:10px 0 0">Ｂ魂より上位の魂はありません。上下の判定は効果文の「少し」の有無と対象範囲（自分だけ／味方全員）によるもので、ゲーム内に数値表記はありません。</p>';
+}
+
+function renderSoul(){
+  const nav = '<div class="soulnav">' + DATA.soulGroups.map((g, i) =>
+    '<a href="#sg' + i + '">' + esc(g) + '</a>').join('') + '</div>';
+  const groups = DATA.soulGroups.map((g, i) => {
+    const list = SOULS.filter(s => s.group === g)
+      .sort((a, b) => CAT_ORDER[a.cat] - CAT_ORDER[b.cat] || a.id - b.id);
+    const rows = list.map(s =>
+      '<tr><td style="width:15em">' + soulTag(s) + ' <span style="font-weight:600">' + esc(s.name) + '</span></td>' +
+      '<td>' + esc(s.effect) + relNotes(s) + '</td>' +
+      '<td>' + soulSrc(s) + '</td></tr>').join('');
+    return '<div class="grouphead" id="sg' + i + '"><h3>' + esc(g) + '</h3>' +
+      '<span class="n">' + list.length + '種</span><span class="rule"></span></div>' +
+      '<div class="tablewrap"><table><thead><tr><th style="width:15em">魂</th><th>効果</th><th>入手</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table></div>';
+  }).join('');
+  elMain.innerHTML = soulSwap() +
+    '<div class="secthead"><h2>効果べつ 魂一覧</h2><span class="sectnote">' + SOULS.length + '種を効果の系統でまとめました（上位互換がある' + DATA.soulDropped.length + '種は上記のとおり省いています）。' +
+    '<span class="tag">妖怪</span>＝魂へんげ　<span class="tag koten">合成</span>＝魂の合成　<span class="tag rare">Ｂ</span>＝ビッグボス' +
+    '</span><span class="sectrule"></span></div>' + nav + groups;
+}
+
+/* ---------- render ---------- */
+function render(){
+  renderTabs(); renderSummary();
+  if (S.tab === 'dex') renderDex();
+  else if (S.tab === 'ring') renderRings();
+  else if (S.tab === 'legend') renderLegend();
+  else if (S.tab === 'recipe') renderRecipe();
+  else renderSoul();
+}
+
+/* ---------- interactions ---------- */
+function setGot(id, on){
+  if (on) S.got.add(id); else S.got.delete(id);
+  save();
+}
+function refreshRow(id){
+  const li = document.getElementById('y' + id);
+  if (!li) return;
+  li.classList.toggle('got', has(id));
+  const st = li.querySelector('.stamp');
+  if (st) st.setAttribute('aria-pressed', String(has(id)));
+  if (li.classList.contains('open')) {
+    const d = li.querySelector('.detail');
+    if (d) d.outerHTML = detailHTML(byId.get(id));
+  }
+}
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-tab],[data-check],[data-open],[data-goto],[data-ring],[data-fg],#hideGot,#clearF,#exportBtn,#importBtn,#resetBtn');
+  if (!t) return;
+
+  if (t.dataset.tab) { S.tab = t.dataset.tab; render(); window.scrollTo({top:0}); return; }
+
+  if (t.dataset.check) {
+    const id = +t.dataset.check;
+    setGot(id, !has(id));
+    if (S.tab === 'dex') {
+      refreshRow(id);
+      if (S.hide && has(id)) { const li = document.getElementById('y' + id); if (li) li.remove(); }
+      for (const a of document.querySelectorAll('[data-goto="' + id + '"]')) {
+        a.classList.toggle('done', has(id));
+        a.classList.toggle('todo', !has(id));
+      }
+      const bs = document.querySelectorAll('.resultline b');
+      if (bs[1]) bs[1].textContent = [...document.querySelectorAll('.row')].filter(r => has(+r.dataset.id)).length;
+      renderTabs(); renderSummary();
+    } else {
+      const y = window.scrollY; render(); window.scrollTo({top:y});
+    }
+    return;
+  }
+
+  if (t.dataset.open) {
+    const li = t.closest('.row'), id = +t.dataset.open;
+    const open = li.classList.toggle('open');
+    t.setAttribute('aria-expanded', String(open));
+    if (open) li.insertAdjacentHTML('beforeend', detailHTML(byId.get(id)));
+    else { const d = li.querySelector('.detail'); if (d) d.remove(); }
+    return;
+  }
+
+  if (t.dataset.goto) {
+    const id = +t.dataset.goto;
+    const jump = () => {
+      const li = document.getElementById('y' + id);
+      if (!li) return;
+      if (!li.classList.contains('open')) li.querySelector('[data-open]').click();
+      li.scrollIntoView({block:'center', behavior:'smooth'});
+      li.classList.remove('flash'); void li.offsetWidth; li.classList.add('flash');
+    };
+    if (S.tab !== 'dex' || S.q || S.hide || Object.values(S.f).some(s => s.size)) {
+      S.tab = 'dex'; S.q = ''; S.hide = false;
+      for (const k in S.f) S.f[k].clear();
+      render(); setTimeout(jump, 30);
+    } else jump();
+    return;
+  }
+
+  if (t.dataset.ring) { S.tab = 'ring'; render(); window.scrollTo({top:0}); return; }
+
+  if (t.dataset.fg) {
+    const g = S.f[t.dataset.fg], v = t.dataset.fv;
+    if (g.has(v)) g.delete(v); else g.add(v);
+    t.setAttribute('aria-pressed', String(g.has(v)));
+    renderList(); return;
+  }
+  if (t.id === 'hideGot') { S.hide = !S.hide; t.setAttribute('aria-pressed', String(S.hide)); renderList(); return; }
+  if (t.id === 'clearF') { S.q = ''; S.hide = false; for (const k in S.f) S.f[k].clear(); renderDex(); return; }
+  if (t.id === 'exportBtn') { openSheet('export'); return; }
+  if (t.id === 'importBtn') { openSheet('import'); return; }
+  if (t.id === 'resetBtn') {
+    if (confirm('チェックをすべて解除します。よろしいですか？')) { S.got.clear(); save(); render(); toast('すべて解除しました'); }
+    return;
+  }
+});
+
+let qTimer = null;
+function queueSearch(v){ S.q = v; clearTimeout(qTimer); qTimer = setTimeout(renderList, 130); }
+document.addEventListener('input', e => {
+  // 変換中（未確定）は検索しない。確定時に compositionend 側で走らせる
+  if (e.target.id === 'q' && !e.isComposing) queueSearch(e.target.value);
+});
+document.addEventListener('compositionend', e => {
+  if (e.target.id === 'q') queueSearch(e.target.value);
+});
+document.addEventListener('change', e => {
+  if (e.target.id === 'sort') { S.sort = e.target.value; renderList(); }
+});
+
+/* ---------- sheet / toast ---------- */
+const modal = document.getElementById('modal');
+const sheetText = document.getElementById('sheetText');
+const sheetTitle = document.getElementById('sheetTitle');
+const sheetNote = document.getElementById('sheetNote');
+const sheetOk = document.getElementById('sheetOk');
+let mode = 'export';
+function openSheet(m){
+  mode = m;
+  if (m === 'export') {
+    sheetTitle.textContent = 'チェックの書き出し';
+    sheetNote.textContent = '下の文字列をコピーして保存してください。別の端末で「読み込み」に貼り付けると復元できます。';
+    sheetText.value = JSON.stringify({v:1, got:[...S.got].sort((a,b)=>a-b)});
+    sheetOk.textContent = 'コピー';
+  } else {
+    sheetTitle.textContent = 'チェックの読み込み';
+    sheetNote.textContent = '書き出した文字列を貼り付けてください。いまのチェックは上書きされます。';
+    sheetText.value = '';
+    sheetOk.textContent = '読み込む';
+  }
+  modal.hidden = false;
+  sheetText.focus();
+}
+document.getElementById('sheetCancel').addEventListener('click', () => { modal.hidden = true; });
+modal.addEventListener('click', e => { if (e.target === modal) modal.hidden = true; });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) modal.hidden = true; });
+sheetOk.addEventListener('click', () => {
+  if (mode === 'export') {
+    sheetText.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e){}
+    if (navigator.clipboard) navigator.clipboard.writeText(sheetText.value).then(() => toast('コピーしました')).catch(() => toast(ok ? 'コピーしました' : '手動でコピーしてください'));
+    else toast(ok ? 'コピーしました' : '手動でコピーしてください');
+  } else {
+    try {
+      const o = JSON.parse(sheetText.value);
+      if (!Array.isArray(o.got)) throw 0;
+      S.got = new Set(o.got.filter(n => byId.has(n)));
+      save(); modal.hidden = true; render();
+      toast(S.got.size + '体を読み込みました');
+    } catch(e) { toast('読み込めませんでした。書き出した文字列をそのまま貼り付けてください'); }
+  }
+});
+const elToast = document.getElementById('toast');
+let tTimer = null;
+function toast(msg){
+  elToast.textContent = msg; elToast.classList.add('on');
+  clearTimeout(tTimer); tTimer = setTimeout(() => elToast.classList.remove('on'), 2200);
+}
+
+render();
+})();
+</script>
