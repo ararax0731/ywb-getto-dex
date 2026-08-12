@@ -146,6 +146,8 @@ nav.tabs{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:2px; w
 }
 .search svg{flex:none; opacity:.5}
 .searchscope{align-self:flex-start; min-height:34px}
+.searchalways{display:flex; flex-wrap:wrap; gap:7px; align-items:center}
+.searchalways .search{flex:1 1 220px}
 select.sel{
   background:var(--panel); border:1px solid var(--line-2); border-radius:7px;
   padding:7px 9px; font-size:13px; color:var(--ink); cursor:pointer;
@@ -742,19 +744,18 @@ function renderDex(){
   html.push('<div class="dexswitch" role="group" aria-label="大辞典の種類">' + DEX_KINDS.map(k =>
     '<button class="dexkind" data-dex-kind="' + k.k + '" aria-pressed="' + (S.dexKind === k.k) + '">' +
     k.n + '<span class="n">' + cnt(Y.filter(k.t)) + '</span></button>').join('') + '</div>');
-  const activeFilters = S.q || S.owned !== 'all' || Object.values(S.f).some(s => s.size);
-  html.push('<button class="filtertoggle" id="filterToggle" aria-expanded="' + S.filtersOpen + '">検索・絞り込み' +
+  html.push('<div class="searchalways">' +
+    '<label class="search"><input id="q" type="search" placeholder="妖怪名で検索" value="' + esc(S.q) + '"></label>' +
+    '<button class="chip searchscope" data-search-all="1" aria-pressed="' + S.searchAll + '">その他の項目も検索</button></div>');
+  const activeFilters = S.owned !== 'all' || Object.values(S.f).some(s => s.size);
+  html.push('<button class="filtertoggle" id="filterToggle" aria-expanded="' + S.filtersOpen + '">絞り込み' +
     (activeFilters ? '<span class="num" style="color:var(--stamp)">適用中</span>' : '') + '</button>');
   html.push('<div class="filterpanel" id="filterPanel"' + (S.filtersOpen ? '' : ' hidden') + '>');
-  html.push('<div class="searchrow">' +
-    '<label class="search"><input id="q" type="search" placeholder="妖怪名で検索" value="' + esc(S.q) + '"></label>' +
-    '<select class="sel" id="sort">' +
+  html.push('<div class="searchrow"><select class="sel" id="sort">' +
       ['no:No.順','rank:ランク順','tribe:種族順','yomi:五十音順'].map(o => {
         const [v,n] = o.split(':');
         return '<option value="' + v + '"' + (S.sort === v ? ' selected' : '') + '>' + n + '</option>';
       }).join('') + '</select></div>');
-  html.push('<button class="chip searchscope" data-search-all="1" aria-pressed="' + S.searchAll + '">' +
-    'その他の項目も検索</button>');
   html.push('<div class="ownedfilter" role="group" aria-label="入手状態">' +
     [['all','すべて'],['missing','未入手だけ'],['got','入手済みだけ']].map(o =>
       '<button class="chip' + (o[0] === 'missing' ? ' warm' : '') + '" data-owned="' + o[0] + '" aria-pressed="' + (S.owned === o[0]) + '">' + o[1] + '</button>').join('') + '</div>');

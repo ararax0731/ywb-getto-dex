@@ -21,6 +21,9 @@ if (!/nav\.tabs\{display:grid; grid-template-columns:repeat\(5,minmax\(0,1fr\)\)
 if (!/\.tab\[data-tab="legend"\]\{font-size:7\.5px\}/.test(html)) {
   throw new Error('モバイルのレジェンド解放タブが1行用の文字サイズではない');
 }
+if (!/class="searchalways"[\s\S]*id="q"[\s\S]*id="filterToggle"/.test(html)) {
+  throw new Error('妖怪名検索が折りたたみの外に常時表示されていない');
+}
 
 const dataJson = /<script id="ywb-data" type="application\/json">([\s\S]*?)<\/script>/.exec(html)[1];
 const code = /<script>\r?\n\(function\(\)\{([\s\S]*)\}\)\(\);\r?\n<\/script>/.exec(html);
