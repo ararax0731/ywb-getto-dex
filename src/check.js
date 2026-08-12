@@ -15,6 +15,9 @@ for (const [label, re] of [
   ['reset', /box-sizing:border-box/],
 ]) if (!re.test(html)) throw new Error('index.html に ' + label + ' が無い');
 if ((html.match(/<title>/g) || []).length !== 1) throw new Error('title が重複している');
+if (!/nav\.tabs\{display:grid; grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/.test(html)) {
+  throw new Error('5ページのナビが横スクロールなしの5列グリッドではない');
+}
 
 const dataJson = /<script id="ywb-data" type="application\/json">([\s\S]*?)<\/script>/.exec(html)[1];
 const code = /<script>\r?\n\(function\(\)\{([\s\S]*)\}\)\(\);\r?\n<\/script>/.exec(html);
@@ -175,34 +178,62 @@ console.log('フィルタ往復', F.length, '種 OK');
 for (const id of [1, 131, 383, 250]) { fire({ check: String(id) }); }
 console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').got);
 
-// 魂タブ: 分類がすべて出ていて残った魂が漏れていないか、省いた魂が一覧に混ざっていないか
+// 入手状態フィルタ（すべて・未入手だけ・入手済みだけ）
+{
+  fire({ tab: 'dex' });
+  fire({ owned: 'got' });
+  const m = /<b class="num">(\d+)<\/b> 体/.exec(getEl('resultline').innerHTML);
+  if (!m || +m[1] !== 4) problems.push('入手済みだけ: 表示 ' + (m ? m[1] : '取得不能') + ' / 期待 4');
+  fire({ owned: 'missing' });
+  const mm = /<b class="num">(\d+)<\/b> 体/.exec(getEl('resultline').innerHTML);
+  const expectedMissing = D_.youkai.filter(y => !y.boss).length - 4;
+  if (!mm || +mm[1] !== expectedMissing) problems.push('未入手だけ: 表示 ' + (mm ? mm[1] : '取得不能') + ' / 期待 ' + expectedMissing);
+  fire({ owned: 'all' });
+  console.log('入手状態フィルタ OK');
+}
+
+// 輪・レジェンドは縦のプルダウン。完成した輪には「済」を表示
+{
+  const saved = new Set(JSON.parse(store['ywb-getto-dex-v1'] || '{}').got || []);
+  for (const m of D_.rings[0].members) if (!saved.has(m.id)) fire({ check: String(m.id) });
+  fire({ tab: 'ring' });
+  const ringHtml = getEl('main').innerHTML;
+  if ((ringHtml.match(/class="accitem/g) || []).length !== D_.rings.length) problems.push('ようかいの輪のプルダウン数が不一致');
+  if (!/class="accside done"[^>]*>済<\/button>/.test(ringHtml)) problems.push('完成したようかいの輪に済ボタンがない');
+  fire({ tab: 'legend' });
+  const legendHtml = getEl('main').innerHTML;
+  if ((legendHtml.match(/class="accitem/g) || []).length !== D_.youkai.filter(y => y.legend).length) problems.push('レジェンドのプルダウン数が不一致');
+  console.log('輪・レジェンド縦プルダウン OK');
+}
+
+// 進化・合成は縦一覧。No.・ランク・鬼玉・tableを出さない
+{
+  fire({ tab: 'recipe' });
+  const recipeHtml = getEl('main').innerHTML;
+  if (/<table[\s>]/.test(recipeHtml)) problems.push('進化・合成にtableが残っている');
+  if (/No\.|鬼玉|class="rank"/.test(recipeHtml)) problems.push('進化・合成に削除対象（No.・ランク・鬼玉）が残っている');
+  if ((recipeHtml.match(/class="vitem/g) || []).length !== D_.youkai.filter(y => y.evolve || y.fuse).length) problems.push('進化・合成の縦一覧件数が不一致');
+  console.log('進化・合成 縦一覧 OK');
+}
+
+// 魂タブ: 分類がすべて出ていて残った魂が漏れていないか。
+// 「一覧から省いた魂」「代わりはB魂／ふつうの魂」は表示しない。
 {
   fire({ tab: 'soul' });
   const sh = getEl('main').innerHTML;
   const cut = sh.indexOf('効果べつ 魂一覧');
   if (cut < 0) throw new Error('魂一覧の見出しが出ていない');
-  const head = sh.slice(0, cut), list = sh.slice(cut);   // head=省いた魂の対応表 / list=効果べつ一覧
+  const list = sh.slice(cut);
   for (const g of D_.soulGroups) if (!list.includes('>' + g + '</h3>')) problems.push('魂の分類が出ていない: ' + g);
   const miss = D_.souls.filter(s => !list.includes('>' + s.name + '</span>'));
   if (miss.length) problems.push('魂が一覧にない: ' + miss.map(s => s.name).join(', '));
   const sum = [...list.matchAll(/<span class="n">(\d+)種<\/span>/g)].reduce((a, m) => a + +m[1], 0);
   if (sum !== D_.souls.length) problems.push('分類の合計が ' + sum + '（' + D_.souls.length + 'のはず）');
-
-  // 省いた魂は一覧に出ず対応表にだけ出る。代わりの魂は必ず一覧に残っているもの
-  const ids = new Set(D_.souls.map(s => s.id));
-  const shown = new Set([...list.matchAll(/<span style="font-weight:600">([^<]+)<\/span>/g)].map(m => m[1]));
-  for (const d of D_.soulDropped) {
-    if (shown.has(d.name)) problems.push('省いたはずの魂が一覧にある: ' + d.name);
-    if (!head.includes(d.name)) problems.push('省いた魂が対応表にない: ' + d.name);
-    for (const t of d.to) if (!ids.has(t)) problems.push('代わりの魂が一覧にない: ' + d.name + ' → ' + t);
+  for (const text of ['一覧から省いた魂','代わりはＢ魂','代わりはふつうの魂']) {
+    if (sh.includes(text)) problems.push('削除対象の記載が残っている: ' + text);
   }
-  // 残った魂の rel が、消えた魂を指していないか
-  for (const s of D_.souls) for (const r of s.rel || []) if (!ids.has(r.id)) problems.push('魂 ' + s.name + ' の関連が一覧外を指す: ' + r.id);
-  const drop = [...head.matchAll(/<span class="n">(\d+)種<\/span>/g)].reduce((a, m) => a + +m[1], 0);
-  const pairs = [...head.matchAll(/<span class="n">(\d+)組<\/span>/g)].reduce((a, m) => a + +m[1], 0);
-  if (drop !== D_.soulDropped.length) problems.push('省いた魂 ' + drop + '種 / 期待 ' + D_.soulDropped.length);
-  if (pairs !== D_.soulRel.same.length) problems.push('同じ効果 ' + pairs + '組 / 期待 ' + D_.soulRel.same.length);
-  console.log('魂タブ 分類' + D_.soulGroups.length + ' 一覧' + sum + '種 / 省いた' + drop + '種 / 同効果' + pairs + '組 OK');
+  if (/<table[\s>]/.test(sh)) problems.push('魂タブに横スクロールの原因となるtableが残っている');
+  console.log('魂タブ 分類' + D_.soulGroups.length + ' 一覧' + sum + '種 / 省いた魂の記載なし OK');
 }
 
 console.log(problems.length ? '\n--- 問題 ' + problems.length + ' 件 ---\n' + [...new Set(problems)].slice(0, 40).join('\n') : '\n問題なし');
