@@ -107,6 +107,13 @@ nav.tabs::-webkit-scrollbar{display:none}
 
 /* ---------- toolbar ---------- */
 .toolbar{padding:14px 0 10px; display:flex; flex-direction:column; gap:9px}
+.dexswitch{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-self:flex-start;
+  width:min(100%,360px); padding:3px; border:1px solid var(--line-2); border-radius:9px; background:var(--panel-3);
+}
+.dexkind{min-height:44px; padding:6px 16px; border-radius:6px; color:var(--ink-3); font-size:13.5px; font-weight:600; white-space:nowrap}
+.dexkind[aria-pressed="true"]{background:var(--panel); color:var(--ink); box-shadow:var(--shadow)}
+.dexkind .n{font-family:var(--mono); font-size:11px; margin-left:7px; opacity:.65; font-variant-numeric:tabular-nums}
 .searchrow{display:flex; gap:9px; flex-wrap:wrap; align-items:center}
 .search{
   flex:1 1 260px; min-width:0; display:flex; align-items:center; gap:8px;
@@ -408,6 +415,7 @@ const KEY = 'ywb-getto-dex-v1';
 const S = {
   got: new Set(),
   tab: 'dex',
+  dexKind: 'youkai',
   q: '',
   sort: 'no',
   hide: false,
@@ -439,7 +447,6 @@ const AREAS = [...new Set(Y.flatMap(y => y.patrol))].sort();
 const TAGS = [
   { k:'legend', n:'レジェンド', t:y => y.legend },
   { k:'rare',   n:'レア',       t:y => y.rare },
-  { k:'boss',   n:'ボス',       t:y => y.boss },
   { k:'koten',  n:'古典妖怪',   t:y => y.koten },
   { k:'aka',    n:'赤猫団限定', t:y => y.only === '赤猫団' },
   { k:'shiro',  n:'白犬隊限定', t:y => y.only === '白犬隊' },
@@ -447,6 +454,10 @@ const TAGS = [
   { k:'evo',    n:'進化で入手', t:y => !!y.evolve },
   { k:'fuse',   n:'合成で入手', t:y => !!y.fuse },
   { k:'gasha',  n:'ガシャ',     t:y => y.gasha.length > 0 },
+];
+const DEX_KINDS = [
+  { k:'youkai', n:'妖怪', t:y => !y.boss },
+  { k:'boss', n:'ボス', t:y => y.boss },
 ];
 const TAGMAP = Object.fromEntries(TAGS.map(t => [t.k, t]));
 const ringDone = r => r.members.every(m => has(m.id));
@@ -529,6 +540,7 @@ function filtered(){
   const q = kana(S.q.trim().toLowerCase());
   const f = S.f;
   let list = Y.filter(y => {
+    if (S.dexKind === 'boss' ? !y.boss : y.boss) return false;
     if (S.hide && has(y.id)) return false;
     if (q && !y._s.includes(q)) return false;
     if (f.rank.size && !f.rank.has(y.rank)) return false;
@@ -648,8 +660,18 @@ function detailHTML(y){
 
 function renderDex(){
   const cnt = (arr) => arr.length;
+  const base = Y.filter(DEX_KINDS.find(k => k.k === S.dexKind).t);
+  const ranks = RANKS.filter(r => base.some(y => y.rank === r));
+  const tribes = TRIBES.filter(t => base.some(y => y.tribe === t));
+  const roles = ROLES.filter(r => base.some(y => y.role === r));
+  const tags = TAGS.filter(t => base.some(t.t));
+  const useTags = USETAGS.filter(t => base.some(t.t));
+  const areas = AREAS.filter(a => base.some(y => y.patrol.includes(a)));
   const html = [];
   html.push('<div class="toolbar">');
+  html.push('<div class="dexswitch" role="group" aria-label="大辞典の種類">' + DEX_KINDS.map(k =>
+    '<button class="dexkind" data-dex-kind="' + k.k + '" aria-pressed="' + (S.dexKind === k.k) + '">' +
+    k.n + '<span class="n">' + cnt(Y.filter(k.t)) + '</span></button>').join('') + '</div>');
   html.push('<div class="searchrow">' +
     '<label class="search"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6">' +
       '<circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>' +
@@ -661,20 +683,19 @@ function renderDex(){
       }).join('') + '</select>' +
     '<button class="chip warm" id="hideGot" aria-pressed="' + S.hide + '">未入手だけ</button>' +
     '</div>');
-  html.push('<div class="chips"><span class="chiplabel">ランク</span>' +
-    RANKS.map(r => chipBtn('rank', r, r, cnt(Y.filter(y => y.rank === r)))).join('') + '</div>');
-  html.push('<div class="chips"><span class="chiplabel">種族</span>' +
-    TRIBES.map(t => chipBtn('tribe', t, t, cnt(Y.filter(y => y.tribe === t)))).join('') + '</div>');
-  html.push('<div class="chips"><span class="chiplabel">やくわり</span>' +
-    ROLES.map(r => chipBtn('role', r, r, cnt(Y.filter(y => y.role === r)))).join('') +
-    '<span class="chiplabel" style="margin-left:8px">区分</span>' +
-    TAGS.map(t => chipBtn('tag', t.k, t.n, cnt(Y.filter(t.t)))).join('') + '</div>');
-  html.push('<div class="chips"><span class="chiplabel">必要</span>' +
-    USETAGS.map((t, i) => chipBtn('tag', t.k, '<b class="use">' + USES[i].s + '</b>' + t.n,
-      cnt(Y.filter(t.t)), '', true)).join('') +
+  if (ranks.length) html.push('<div class="chips"><span class="chiplabel">ランク</span>' +
+    ranks.map(r => chipBtn('rank', r, r, cnt(base.filter(y => y.rank === r)))).join('') + '</div>');
+  if (tribes.length) html.push('<div class="chips"><span class="chiplabel">種族</span>' +
+    tribes.map(t => chipBtn('tribe', t, t, cnt(base.filter(y => y.tribe === t)))).join('') + '</div>');
+  if (roles.length || tags.length) html.push('<div class="chips">' +
+    (roles.length ? '<span class="chiplabel">やくわり</span>' + roles.map(r => chipBtn('role', r, r, cnt(base.filter(y => y.role === r)))).join('') : '') +
+    (tags.length ? '<span class="chiplabel" style="margin-left:8px">区分</span>' + tags.map(t => chipBtn('tag', t.k, t.n, cnt(base.filter(t.t)))).join('') : '') + '</div>');
+  if (useTags.length) html.push('<div class="chips"><span class="chiplabel">必要</span>' +
+    useTags.map(t => { const i = USETAGS.indexOf(t); return chipBtn('tag', t.k, '<b class="use">' + USES[i].s + '</b>' + t.n,
+      cnt(base.filter(t.t)), '', true); }).join('') +
     '<span style="font-size:11.5px; color:var(--ink-3)">ほかの妖怪・輪・魂をそろえるのに要る妖怪</span></div>');
-  html.push('<div class="chips"><span class="chiplabel">パトロール</span>' +
-    AREAS.map(a => chipBtn('area', a, a, cnt(Y.filter(y => y.patrol.includes(a))))).join('') + '</div>');
+  if (areas.length) html.push('<div class="chips"><span class="chiplabel">パトロール</span>' +
+    areas.map(a => chipBtn('area', a, a, cnt(base.filter(y => y.patrol.includes(a))))).join('') + '</div>');
   html.push('<div class="resultline" id="resultline"></div>');
   html.push('</div>');
   html.push('<div id="listwrap"></div>');
@@ -909,10 +930,17 @@ function refreshRow(id){
 }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tab],[data-check],[data-open],[data-goto],[data-ring],[data-fg],#hideGot,#clearF,#exportBtn,#importBtn,#resetBtn');
+  const t = e.target.closest('[data-tab],[data-dex-kind],[data-check],[data-open],[data-goto],[data-ring],[data-fg],#hideGot,#clearF,#exportBtn,#importBtn,#resetBtn');
   if (!t) return;
 
   if (t.dataset.tab) { S.tab = t.dataset.tab; render(); window.scrollTo({top:0}); return; }
+
+  if (t.dataset.dexKind) {
+    S.dexKind = t.dataset.dexKind;
+    S.q = ''; S.hide = false;
+    for (const k in S.f) S.f[k].clear();
+    renderDex(); return;
+  }
 
   if (t.dataset.check) {
     const id = +t.dataset.check;
@@ -944,6 +972,7 @@ document.addEventListener('click', e => {
 
   if (t.dataset.goto) {
     const id = +t.dataset.goto;
+    const target = byId.get(id);
     const jump = () => {
       const li = document.getElementById('y' + id);
       if (!li) return;
@@ -951,7 +980,8 @@ document.addEventListener('click', e => {
       li.scrollIntoView({block:'center', behavior:'smooth'});
       li.classList.remove('flash'); void li.offsetWidth; li.classList.add('flash');
     };
-    if (S.tab !== 'dex' || S.q || S.hide || Object.values(S.f).some(s => s.size)) {
+    if (target) S.dexKind = target.boss ? 'boss' : 'youkai';
+    if (S.tab !== 'dex' || S.q || S.hide || Object.values(S.f).some(s => s.size) || !document.getElementById('y' + id)) {
       S.tab = 'dex'; S.q = ''; S.hide = false;
       for (const k in S.f) S.f[k].clear();
       render(); setTimeout(jump, 30);

@@ -17,7 +17,7 @@ for (const [label, re] of [
 if ((html.match(/<title>/g) || []).length !== 1) throw new Error('title が重複している');
 
 const dataJson = /<script id="ywb-data" type="application\/json">([\s\S]*?)<\/script>/.exec(html)[1];
-const code = /<script>\n\(function\(\)\{([\s\S]*)\}\)\(\);\n<\/script>/.exec(html);
+const code = /<script>\r?\n\(function\(\)\{([\s\S]*)\}\)\(\);\r?\n<\/script>/.exec(html);
 if (!code) throw new Error('main script not found');
 const src = '(function(){' + code[1] + '})();';
 
@@ -118,13 +118,29 @@ const F = [
   ...['S','A','B','C','D','E'].map(v => ({ fg:'rank', fv:v })),
   ...[...new Set(D_.youkai.map(y=>y.tribe).filter(Boolean))].map(v => ({ fg:'tribe', fv:v })),
   ...['アタッカー','タンク','ヒーラー','レンジャー'].map(v => ({ fg:'role', fv:v })),
-  ...['legend','rare','boss','koten','aka','shiro','tsuki','evo','fuse','gasha',
+  ...['legend','rare','koten','aka','shiro','tsuki','evo','fuse','gasha',
       'u_ring','u_lgnd','u_evo','u_fuse','u_soul'].map(v => ({ fg:'tag', fv:v })),
   ...[...new Set(D_.youkai.flatMap(y=>y.patrol))].map(v => ({ fg:'area', fv:v })),
 ];
 for (const f of F) { fire(f); fire(f); }   // on → off
 fire({}); // no-op
 console.log('フィルタ往復', F.length, '種 OK');
+
+// 大辞典の妖怪・ボス切り替え
+{
+  fire({ tab: 'dex' });
+  const expectedYoukai = D_.youkai.filter(y => !y.boss).length;
+  const expectedBoss = D_.youkai.filter(y => y.boss).length;
+  const shown = () => {
+    const m = /<b class="num">(\d+)<\/b> 体/.exec(getEl('resultline').innerHTML);
+    return m ? +m[1] : -1;
+  };
+  if (shown() !== expectedYoukai) problems.push('妖怪表示 ' + shown() + ' / 期待 ' + expectedYoukai);
+  fire({ dexKind: 'boss' });
+  if (shown() !== expectedBoss) problems.push('ボス表示 ' + shown() + ' / 期待 ' + expectedBoss);
+  fire({ dexKind: 'youkai' });
+  console.log('大辞典切替 妖怪' + expectedYoukai + '体 / ボス' + expectedBoss + '体 OK');
+}
 
 // 逆引き（何に必要か）を、データから独立に数え直して突き合わせる
 {
