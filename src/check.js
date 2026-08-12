@@ -110,6 +110,45 @@ const D_ = JSON.parse(dataJson);
 for (const tab of ['ring', 'legend', 'recipe', 'soul', 'dex']) fire({ tab });
 console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
 
+// B魂の入手元リンクは、同名の通常妖怪ではなく必ずビッグボスを指す
+{
+  fire({ tab: 'soul' });
+  const soulHtml = getEl('main').innerHTML;
+  if (/\d+\/\d+体/.test(soulHtml)) problems.push('魂一覧に入手済み数／対象数の表記が残っている');
+  for (const removed of [
+    'つやつや魂', 'ブシ王のB魂', 'わるいとりつき継続ターンアップ', 'わざゲージ減少率ダウン',
+    '回復時まもりアップ', 'ピンチ時HP自然回復', '敵に見つかっていない間HP自然回復',
+    '土俵際', 'ガード時HP自然回復', 'ガード時妖気ゲージアップ', 'わざゲージ回復速度アップ',
+  ]) {
+    if (soulHtml.includes(removed)) problems.push('削除指定の魂が残っている: ' + removed);
+  }
+  const sourceExpect = new Map([
+    ['クリティカル威力アップ', ['あつガルル', 'デビビラン', '豪怪']],
+    ['クリティカル率アップ', ['しょうブシ', 'フユニャン']],
+    ['すばやさアップ', ['妖怪ガッツK', 'ばくそく']],
+    ['孤独時全ステータスアップ', ['モノマネキン', 'あまのじゃく', 'のらりくらり']],
+  ]);
+  for (const [soulName, names] of sourceExpect) {
+    const s = D_.souls.find(v => v.name === soulName);
+    const ids = new Set((s && s.sourceOwnerIds) || []);
+    const gotNames = D_.youkai.filter(y => ids.has(y.id)).map(y => y.name);
+    if (gotNames.join('|') !== names.join('|')) {
+      problems.push('通常魂の表示妖怪が不一致: ' + soulName + ' → ' + gotNames.join('、'));
+    }
+  }
+  const byId = new Map(D_.youkai.map(y => [y.id, y]));
+  for (const s of D_.souls.filter(s => s.cat === 'b')) {
+    const boss = byId.get(s.bossId);
+    if (!boss || !boss.boss) problems.push('B魂の入手元がビッグボスではない: ' + s.id + ' ' + s.name);
+    else if (!soulHtml.includes('data-goto="' + boss.id + '"')) {
+      problems.push('B魂のビッグボスリンクが描画されていない: ' + s.name + ' → ' + boss.name);
+    }
+  }
+  const mitsu = D_.souls.find(s => s.id === 103);
+  if (!mitsu || mitsu.bossId !== 421) problems.push('ミツマタノヅチのB魂がビッグボス421を指していない');
+  console.log('B魂の入手元リンク', D_.souls.filter(s => s.cat === 'b').length, '種 OK');
+}
+
 // 全妖怪の詳細を生成（data-open）
 let opened = 0;
 for (const y of D_.youkai) {

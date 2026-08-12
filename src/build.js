@@ -3,6 +3,68 @@ const D = __dirname;
 const tpl = fs.readFileSync(path.join(D, 'template.html'), 'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(D, 'data.json'), 'utf8'));
 
+// B魂は同名の通常妖怪ではなく、入手元のビッグボスへ明示的にリンクする。
+// 名前が省略されるB魂（Pブレイカー等）や形態違いがあるため、名前による推測はしない。
+const B_SOUL_BOSS_IDS = new Map([
+  [91,423], [92,424], [93,425], [94,416], [95,417], [96,418], [97,414], [98,415],
+  [99,426], [100,419], [101,420], [102,427], [103,421], [104,422], [105,431],
+  [106,430], [107,428], [108,432], [109,436], [110,434], [111,433], [112,439],
+  [113,438], [114,440], [115,441], [116,429], [117,442], [118,443], [119,459],
+  [120,461], [121,464], [122,467], [123,466], [124,468], [125,469],
+]);
+{
+  const byId = new Map(data.youkai.map(y => [y.id, y]));
+  const bSouls = data.souls.filter(s => s.cat === 'b');
+  for (const s of bSouls) {
+    const bossId = B_SOUL_BOSS_IDS.get(s.id), boss = byId.get(bossId);
+    if (!bossId || !boss || !boss.boss) {
+      throw new Error('B魂のビッグボス対応が不正: ' + s.id + ' ' + s.name + ' → ' + bossId);
+    }
+    s.bossId = bossId;
+  }
+  if (B_SOUL_BOSS_IDS.size !== bSouls.length) {
+    throw new Error('B魂対応数が不一致: 対応表' + B_SOUL_BOSS_IDS.size + ' / データ' + bSouls.length);
+  }
+  const eighth = data.souls.find(s => s.id === 101);
+  if (!eighth) throw new Error('第八三途丸のB魂が見つからない');
+  eighth.name = '第八三途丸のB魂';
+}
+
+// 通常魂は、実用候補としてユーザーが指定した妖怪だけを入手元欄に表示する。
+// 魂変化そのもののデータは変更せず、一覧上の候補表示だけを絞る。
+const SOUL_SOURCE_NAMES = new Map([
+  [4,  ['あつガルル', 'デビビラン', '豪怪']],
+  [8,  ['しょうブシ', 'フユニャン']],
+  [14, ['アライ魔将']],
+  [17, ['妖怪ガッツK', 'ばくそく']],
+  [20, ['こえんら', 'サンタク老師', 'ふくろじじい']],
+  [30, ['さとりちゃん', 'アゲアゲハ', '心オバア']],
+  [39, ['えんらえんら', '虫歯伯爵', 'イザナミ']],
+  [40, ['わすれんぼう', 'U.S.O.', 'ゴルニャン', 'ナガバナ']], // 後段で図鑑名「わすれん帽」に補正
+  [46, ['モノマネキン', 'あまのじゃく', 'のらりくらり']],
+  [48, ['ジンギスギスカン']],
+  [49, ['百鬼姫', 'ネガティブーン', 'ガブニャン']],
+  [53, ['ひつま武士']],
+  [54, ['ヒョウヘンヌ', 'ヒョウヘンナ', 'ドンヨリーヌ']],
+  [60, ['麒麟', 'イッカク']],
+  [63, ['コマさん', 'ししコマ']],
+  [64, ['キュン太郎', 'ズキュキュン太', '不怪']],
+]);
+{
+  const soulById = new Map(data.souls.map(s => [s.id, s]));
+  for (const [soulId, names] of SOUL_SOURCE_NAMES) {
+    const soul = soulById.get(soulId);
+    if (!soul || soul.cat !== 'normal') throw new Error('通常魂の候補指定が不正: ' + soulId);
+    soul.sourceOwnerIds = names.map(name => {
+      const matches = data.youkai.filter(y => y.name === name && y.soul && y.soul.id === soulId);
+      if (matches.length !== 1) {
+        throw new Error('通常魂の表示妖怪を特定できない: ' + soul.name + ' / ' + name + ' (' + matches.length + '件)');
+      }
+      return matches[0].id;
+    });
+  }
+}
+
 // 表示に使わないフィールドを落として出力サイズを抑える
 for (const y of data.youkai) delete y.icons;
 
@@ -132,7 +194,7 @@ const SOUL_GROUPS = [
   data.souls = data.souls.filter(s => !dropIds.has(s.id));
   // 利用者が実用性の観点から一覧から外すと指定した魂。
   const userDropIds = new Set([
-    1,5,6,9,10,12,18,23,26,28,31,32,35,38,41,42,45,47,50,51,52,58,70,78,80,81,83,84,85,86,89,90,95,98,102,108,124,
+    1,2,5,6,9,10,12,18,23,24,25,26,27,28,29,31,32,35,38,41,42,44,45,47,50,51,52,55,58,66,67,70,78,79,80,81,83,84,85,86,89,90,95,98,102,108,124,125,
   ]);
   const unknownUserDrops = [...userDropIds].filter(id => !soulById.has(id));
   if (unknownUserDrops.length) throw new Error('指定削除の魂IDが存在しない: ' + unknownUserDrops.join(', '));

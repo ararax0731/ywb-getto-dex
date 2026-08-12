@@ -528,8 +528,9 @@ for (const y of Y) if (y.soul) {
   soulOwners.get(y.soul.id).push(y);
 }
 const bossOfSoul = s => {
-  const n = s.name.replace(/のB魂$/, '');
-  return Y.find(y => y.name === n) || null;
+  if (!s.bossId) return null;
+  const boss = Y.find(y => y.id === s.bossId);
+  return boss && boss.boss ? boss : null;
 };
 
 // 逆引き: この妖怪が「何に必要か」。輪・レジェンド解放・進化・合成・合成魂を集める
@@ -887,11 +888,12 @@ function soulSrc(s){
     const bs = bossOfSoul(s);
     return bs ? nameLink(bs.id, bs.name) : '<span style="color:var(--ink-3)">ビッグボス（図鑑外）</span>';
   }
-  const own = soulOwners.get(s.id) || [];
-  const g = own.filter(y => has(y.id)).length;
+  const allOwn = soulOwners.get(s.id) || [];
+  const own = s.sourceOwnerIds
+    ? s.sourceOwnerIds.map(id => Y.find(y => y.id === id)).filter(Boolean)
+    : allOwn;
   return own.length
-    ? '<span class="num" style="color:' + (g === own.length ? 'var(--ok)' : 'var(--ink-3)') + '">' + g + '/' + own.length + '体</span> ' +
-      '<span style="font-size:12px; color:var(--ink-3)">' + own.slice(0,5).map(y => esc(y.name)).join('・') +
+    ? '<span style="font-size:12px; color:var(--ink-3)">' + own.slice(0,5).map(y => esc(y.name)).join('・') +
       (own.length > 5 ? ' ほか' + (own.length - 5) + '体' : '') + '</span>'
     : '<span style="color:var(--ink-3)">—</span>';
 }
