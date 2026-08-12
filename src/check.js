@@ -132,6 +132,28 @@ for (const f of F) { fire(f); fire(f); }   // on → off
 fire({}); // no-op
 console.log('フィルタ往復', F.length, '種 OK');
 
+// 検索は初期状態で妖怪名・読みに限定し、指定時だけその他項目も対象にする
+{
+  fire({ tab: 'dex' });
+  const search = value => {
+    for (const h of handlers.input) h({ target:{ id:'q', value }, isComposing:false });
+  };
+  const shown = () => {
+    const m = /<b class="num">(\d+)<\/b> 体/.exec(getEl('resultline').innerHTML);
+    return m ? +m[1] : -1;
+  };
+  search('アタッカー');
+  if (shown() !== 0) problems.push('通常検索で妖怪名以外の役割がヒットしている: ' + shown());
+  fire({ searchAll:'1' });
+  if (shown() <= 0) problems.push('その他の項目を指定しても役割がヒットしない');
+  fire({ searchAll:'1' });
+  if (shown() !== 0) problems.push('その他の項目を解除しても役割がヒットしている: ' + shown());
+  search('ぶようじん');
+  if (shown() <= 0) problems.push('通常検索で妖怪名・読みがヒットしない');
+  search('');
+  console.log('検索対象 妖怪名のみ／その他項目を指定 OK');
+}
+
 // 大辞典の妖怪・ボス切り替え
 {
   fire({ tab: 'dex' });

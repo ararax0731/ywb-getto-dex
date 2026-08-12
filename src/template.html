@@ -133,6 +133,7 @@ nav.tabs{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:2px; w
   flex:1; min-width:0; border:none; background:none; font:inherit; font-size:14px; color:var(--ink); outline:none;
 }
 .search svg{flex:none; opacity:.5}
+.searchscope{align-self:flex-start; min-height:34px}
 select.sel{
   background:var(--panel); border:1px solid var(--line-2); border-radius:7px;
   padding:7px 9px; font-size:13px; color:var(--ink); cursor:pointer;
@@ -470,6 +471,7 @@ const S = {
   dexKind: 'youkai',
   filtersOpen: false,
   q: '',
+  searchAll: false,
   sort: 'no',
   owned: 'all',
   f: { rank:new Set(), tribe:new Set(), role:new Set(), area:new Set(), tag:new Set() },
@@ -484,6 +486,7 @@ const save = () => { try { localStorage.setItem(KEY, JSON.stringify({v:1, got:[.
 const kana = s => s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 for (const y of Y) {
+  y._name = kana([y.name, y.yomi].join(' ').toLowerCase());
   y._s = kana([y.name, y.yomi, y.tribe, y.role, y.rank + 'ランク',
     y.skill ? y.skill.name + y.skill.desc : '', y.soul ? y.soul.name + y.soul.desc : '',
     y.moves.join(''), y.desc, y.getText].join(' ').toLowerCase());
@@ -596,7 +599,7 @@ function filtered(){
     if (S.dexKind === 'boss' ? !y.boss : y.boss) return false;
     if (S.owned === 'missing' && has(y.id)) return false;
     if (S.owned === 'got' && !has(y.id)) return false;
-    if (q && !y._s.includes(q)) return false;
+    if (q && !(S.searchAll ? y._s : y._name).includes(q)) return false;
     if (f.rank.size && !f.rank.has(y.rank)) return false;
     if (f.tribe.size && !f.tribe.has(y.tribe)) return false;
     if (f.role.size && !f.role.has(y.role)) return false;
@@ -732,12 +735,14 @@ function renderDex(){
     (activeFilters ? '<span class="num" style="color:var(--stamp)">適用中</span>' : '') + '</button>');
   html.push('<div class="filterpanel" id="filterPanel"' + (S.filtersOpen ? '' : ' hidden') + '>');
   html.push('<div class="searchrow">' +
-    '<label class="search"><input id="q" type="search" placeholder="名前・読み・種族・スキル・技・入手方法で検索" value="' + esc(S.q) + '"></label>' +
+    '<label class="search"><input id="q" type="search" placeholder="妖怪名で検索" value="' + esc(S.q) + '"></label>' +
     '<select class="sel" id="sort">' +
       ['no:No.順','rank:ランク順','tribe:種族順','yomi:五十音順'].map(o => {
         const [v,n] = o.split(':');
         return '<option value="' + v + '"' + (S.sort === v ? ' selected' : '') + '>' + n + '</option>';
       }).join('') + '</select></div>');
+  html.push('<button class="chip searchscope" data-search-all="1" aria-pressed="' + S.searchAll + '">' +
+    'その他の項目も検索</button>');
   html.push('<div class="ownedfilter" role="group" aria-label="入手状態">' +
     [['all','すべて'],['missing','未入手だけ'],['got','入手済みだけ']].map(o =>
       '<button class="chip' + (o[0] === 'missing' ? ' warm' : '') + '" data-owned="' + o[0] + '" aria-pressed="' + (S.owned === o[0]) + '">' + o[1] + '</button>').join('') + '</div>');
@@ -984,14 +989,14 @@ function refreshRow(id){
 }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tab],[data-dex-kind],[data-owned],[data-acc],[data-check],[data-open],[data-goto],[data-ring],[data-fg],#filterToggle,#clearF,#exportBtn,#importBtn,#resetBtn');
+  const t = e.target.closest('[data-tab],[data-dex-kind],[data-owned],[data-search-all],[data-acc],[data-check],[data-open],[data-goto],[data-ring],[data-fg],#filterToggle,#clearF,#exportBtn,#importBtn,#resetBtn');
   if (!t) return;
 
   if (t.dataset.tab) { S.tab = t.dataset.tab; render(); window.scrollTo({top:0}); return; }
 
   if (t.dataset.dexKind) {
     S.dexKind = t.dataset.dexKind;
-    S.q = ''; S.owned = 'all';
+    S.q = ''; S.searchAll = false; S.owned = 'all';
     for (const k in S.f) S.f[k].clear();
     renderDex(); return;
   }
@@ -1061,7 +1066,7 @@ document.addEventListener('click', e => {
     };
     if (target) S.dexKind = target.boss ? 'boss' : 'youkai';
     if (S.tab !== 'dex' || S.q || S.owned !== 'all' || Object.values(S.f).some(s => s.size) || !document.getElementById('y' + id)) {
-      S.tab = 'dex'; S.q = ''; S.owned = 'all';
+      S.tab = 'dex'; S.q = ''; S.searchAll = false; S.owned = 'all';
       for (const k in S.f) S.f[k].clear();
       render(); setTimeout(jump, 30);
     } else jump();
@@ -1076,7 +1081,8 @@ document.addEventListener('click', e => {
     t.setAttribute('aria-pressed', String(g.has(v)));
     renderList(); return;
   }
-  if (t.id === 'clearF') { S.q = ''; S.owned = 'all'; for (const k in S.f) S.f[k].clear(); renderDex(); return; }
+  if ('searchAll' in t.dataset) { S.searchAll = !S.searchAll; renderDex(); return; }
+  if (t.id === 'clearF') { S.q = ''; S.searchAll = false; S.owned = 'all'; for (const k in S.f) S.f[k].clear(); renderDex(); return; }
   if (t.id === 'exportBtn') { openSheet('export'); return; }
   if (t.id === 'importBtn') { openSheet('import'); return; }
   if (t.id === 'resetBtn') {
