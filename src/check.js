@@ -18,6 +18,9 @@ if ((html.match(/<title>/g) || []).length !== 1) throw new Error('title が重�
 if (!/nav\.tabs\{display:grid; grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/.test(html)) {
   throw new Error('5ページのナビが横スクロールなしの5列グリッドではない');
 }
+if (!/\.tab\[data-tab="legend"\]\{font-size:7\.5px\}/.test(html)) {
+  throw new Error('モバイルのレジェンド解放タブが1行用の文字サイズではない');
+}
 
 const dataJson = /<script id="ywb-data" type="application\/json">([\s\S]*?)<\/script>/.exec(html)[1];
 const code = /<script>\r?\n\(function\(\)\{([\s\S]*)\}\)\(\);\r?\n<\/script>/.exec(html);
@@ -181,6 +184,11 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
 // 入手状態フィルタ（すべて・未入手だけ・入手済みだけ）
 {
   fire({ tab: 'dex' });
+  const dexHtml = getEl('listwrap').innerHTML;
+  if (!/class="rowbody"[\s\S]*class="namecell"[\s\S]*class="metacell"/.test(dexHtml)) {
+    problems.push('妖怪行が名前→No.・ランク等の2段構成ではない');
+  }
+  if (/class="tag tribe"/.test(dexHtml)) problems.push('妖怪行に族表記が残っている');
   fire({ owned: 'got' });
   const m = /<b class="num">(\d+)<\/b> 体/.exec(getEl('resultline').innerHTML);
   if (!m || +m[1] !== 4) problems.push('入手済みだけ: 表示 ' + (m ? m[1] : '取得不能') + ' / 期待 4');

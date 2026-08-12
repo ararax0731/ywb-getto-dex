@@ -110,7 +110,7 @@ h1 .sub{font-size:13px; color:var(--ink-3); letter-spacing:.08em; font-family:va
 nav.tabs{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:2px; width:100%}
 .tab{
   min-width:0; padding:9px 6px 8px; font-size:13px; font-weight:600; color:var(--ink-3);
-  border-bottom:2px solid transparent; white-space:normal; overflow-wrap:anywhere; letter-spacing:.01em; line-height:1.35;
+  border-bottom:2px solid transparent; white-space:nowrap; letter-spacing:.01em; line-height:1.35;
 }
 .tab:hover{color:var(--ink-2)}
 .tab[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--stamp)}
@@ -174,8 +174,8 @@ main{padding-bottom:80px}
 .row{border-top:1px solid var(--line)}
 .row:first-child{border-top:none}
 .rowhead{
-  display:grid; grid-template-columns:46px 52px minmax(0,1fr) auto; align-items:center;
-  gap:0 12px; width:100%; text-align:left; padding:0 14px 0 0;
+  display:grid; grid-template-columns:46px minmax(0,1fr); align-items:stretch;
+  gap:0 10px; width:100%; text-align:left; padding:0 12px 0 0;
 }
 .rowhead:hover{background:var(--panel-2)}
 .row.got .rowhead{background:linear-gradient(90deg,var(--stamp-wash),transparent 320px)}
@@ -191,12 +191,13 @@ main{padding-bottom:80px}
   border:2px solid var(--stamp); color:var(--stamp);
   background:var(--stamp-wash); transform:rotate(-9deg);
 }
-.no{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); font-variant-numeric:tabular-nums; letter-spacing:-.02em; padding:9px 0}
-.namecell{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; padding:9px 0; min-width:0}
+.rowbody{min-width:0; padding:6px 0 7px}
+.no{font-family:var(--mono); font-size:10.5px; color:var(--ink-3); font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.namecell{display:flex; align-items:baseline; gap:8px; width:100%; min-width:0; padding:0; text-align:left}
 .nm{font-size:15px; font-weight:600; letter-spacing:.01em}
 .row.got .nm{color:var(--ink-2)}
 .ym{font-size:11px; color:var(--ink-3); font-family:var(--sans)}
-.metacell{display:flex; align-items:center; gap:7px; flex-wrap:wrap; justify-content:flex-end; padding:9px 0}
+.metacell{display:flex; align-items:center; gap:5px; flex-wrap:wrap; justify-content:flex-start; padding:3px 0 0}
 .rank{
   font-family:var(--mono); font-weight:700; font-size:11.5px; width:20px; height:20px;
   display:grid; place-items:center; border-radius:4px; border:1px solid var(--line-2); color:var(--ink-2);
@@ -411,12 +412,15 @@ footer a{color:var(--ink-2)}
   .total{flex:none; gap:5px}
   .total .big{font-size:24px}
   .summary{display:none}
-  .tab{padding:8px 2px 7px; font-size:10.5px; letter-spacing:0}
-  .tab .c{display:block; margin:1px 0 0; font-size:9px}
-  .rowhead{grid-template-columns:40px minmax(0,1fr); padding-right:11px; row-gap:0}
-  .no{grid-column:2; padding:8px 0 0; font-size:10.5px}
-  .namecell{grid-column:2; padding:0 0 3px}
-  .metacell{grid-column:2; justify-content:flex-start; padding:0 0 9px}
+  .tab{padding:8px 1px 7px; font-size:8.5px; letter-spacing:-.04em}
+  .tab[data-tab="legend"]{font-size:7.5px}
+  .tab .c{display:block; margin:1px 0 0; font-size:8.5px; letter-spacing:0}
+  .rowhead{grid-template-columns:40px minmax(0,1fr); padding-right:9px; column-gap:8px}
+  .rowbody{padding:5px 0 6px}
+  .nm{font-size:14px}
+  .ym{font-size:10px}
+  .metacell{gap:4px; padding-top:2px}
+  .tag{font-size:10px; padding:0 6px}
   .chev{display:none}
   .detail{padding-left:14px}
   .mem .how{display:none}
@@ -645,17 +649,18 @@ function rowHTML(y){
     '<div class="rowhead">' +
       '<span class="stampcell"><button class="stamp" data-check="' + y.id + '" aria-pressed="' + has(y.id) + '" ' +
         'aria-label="' + esc(y.name) + ' を入手済みにする">済</button></span>' +
-      '<span class="no">No.' + String(y.no).padStart(3, '0') + '</span>' +
-      '<button class="namecell" data-open="' + y.id + '" aria-expanded="false">' +
-        '<span class="nm">' + esc(y.name) + '</span>' +
-        (y.yomi ? '<span class="ym">' + esc(y.yomi) + '</span>' : '') +
-      '</button>' +
-      '<span class="metacell">' +
-        (y.rank ? '<span class="rank" data-r="' + y.rank + '">' + y.rank + '</span>' : '') +
-        (y.tribe ? '<span class="tag tribe">' + esc(y.tribe) + '</span>' : '') +
-        (y.role ? '<span class="tag role">' + esc(y.role) + '</span>' : '') +
-        tags.join('') + usesHTML(y) + '<span class="chev">▶</span>' +
-      '</span>' +
+      '<div class="rowbody">' +
+        '<button class="namecell" data-open="' + y.id + '" aria-expanded="false">' +
+          '<span class="nm">' + esc(y.name) + '</span>' +
+          (y.yomi ? '<span class="ym">' + esc(y.yomi) + '</span>' : '') +
+        '</button>' +
+        '<span class="metacell">' +
+          '<span class="no">No.' + String(y.no).padStart(3, '0') + '</span>' +
+          (y.rank ? '<span class="rank" data-r="' + y.rank + '">' + y.rank + '</span>' : '') +
+          (y.role ? '<span class="tag role">' + esc(y.role) + '</span>' : '') +
+          tags.join('') + usesHTML(y) + '<span class="chev">▶</span>' +
+        '</span>' +
+      '</div>' +
     '</div></li>';
 }
 
