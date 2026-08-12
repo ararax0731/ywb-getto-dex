@@ -110,6 +110,9 @@ const SOUL_GROUPS = [
   const upOf = new Map();
   for (const [lo, hi] of UP) { if (!upOf.has(lo)) upOf.set(lo, []); upOf.get(lo).push(hi); }
   const dropIds = new Set(upOf.keys());
+  // 実用魂リストの方針: 妖怪ガッツKなどが作る「すばやさアップ」は、
+  // つられたろう丸のB魂の下位でも用途があるため一覧へ残す。
+  dropIds.delete(17);
   // 上位そのものが省かれる場合（HP回復の 3→33/62→107 など）はさらに上へたどって、残る魂を代わりにする
   const resolve = (id, seen) => {
     const out = [];
@@ -127,10 +130,18 @@ const SOUL_GROUPS = [
     return { id, name: s.name, cat: s.cat, group: s.group, effect: s.effect, to };
   });
   data.souls = data.souls.filter(s => !dropIds.has(s.id));
-  for (const s of data.souls) s.rel = s.rel.filter(r => !dropIds.has(r.id));
+  // 利用者が実用性の観点から一覧から外すと指定した魂。
+  const userDropIds = new Set([
+    1,5,6,9,10,12,18,23,26,28,31,32,35,38,41,42,45,47,50,51,52,58,70,78,80,81,83,84,85,86,89,90,95,98,102,108,124,
+  ]);
+  const unknownUserDrops = [...userDropIds].filter(id => !soulById.has(id));
+  if (unknownUserDrops.length) throw new Error('指定削除の魂IDが存在しない: ' + unknownUserDrops.join(', '));
+  data.souls = data.souls.filter(s => !userDropIds.has(s.id));
+  const allDropIds = new Set([...dropIds, ...userDropIds]);
+  for (const s of data.souls) s.rel = s.rel.filter(r => !allDropIds.has(r.id));
   // 一覧に残るペアだけ（33=62 は両方 107 の下位なので、そろって消える）
-  data.soulRel = { same: SAME.filter(([a, b]) => !dropIds.has(a) && !dropIds.has(b)) };
-  console.log('上位互換があるため省いた魂', dropIds.size, '種 / 残り', data.souls.length, '種');
+  data.soulRel = { same: SAME.filter(([a, b]) => !allDropIds.has(a) && !allDropIds.has(b)) };
+  console.log('上位互換で省略', dropIds.size, '種 / 指定削除', userDropIds.size, '種 / 残り', data.souls.length, '種');
 }
 
 // 自己参照が他に残っていないか確認

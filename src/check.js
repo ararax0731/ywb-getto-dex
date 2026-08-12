@@ -265,6 +265,20 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   for (const text of ['一覧から省いた魂','代わりはＢ魂','代わりはふつうの魂']) {
     if (sh.includes(text)) problems.push('削除対象の記載が残っている: ' + text);
   }
+  const requiredSoul = D_.souls.find(s => s.id === 17);
+  if (!requiredSoul || requiredSoul.effect !== 'すばやさがアップ。') problems.push('妖怪ガッツKの魂（すばやさアップ）が一覧にない');
+  const removedSoulNames = [
+    'わざ溜め時すばやさアップ','HP満タン時すばやさアップ','回復時すばやさアップ','気絶回復時HP回復','気絶回復時全ステータスアップ',
+    'よびよせ魂','PブレイカーのB魂','職人魂','覚醒日ノ神のB魂','ガシャどくろGのB魂','おのぼり黒トンのB魂',
+    'おすそわけ魂','いのちとりのB魂','味方全員の昇天ゲージ減少速度ダウン','気絶回復速度アップ','しっかり魂','スパイク魂',
+    'はがねの魂','ガード効果アップ','攻撃カウンター','ウィルス魂','ピンチ相手へのダメージアップ','ボス以外へのダメージアップ',
+    'アイテム・鬼玉入手時ちからアップ','回復時ちからアップ','回復時ようりょくアップ','ピンチ時まもりアップ','わざ溜め時まもりアップ',
+    'HP満タン時まもりアップ','敵撃破時ちからアップ','ピンチ時すばやさアップ','のろわれ魂','アイテム・鬼玉入手時HP回復',
+    '敵撃破時HP回復','ドレイン吸収率アップ','自分のHP回復率アップ','かげろう魂',
+  ];
+  const stillPresent = removedSoulNames.filter(name => D_.souls.some(s => s.name === name));
+  if (stillPresent.length) problems.push('指定削除の魂が残っている: ' + stillPresent.join(', '));
+  if (!D_.souls.some(s => s.name === '孤独時全ステータスアップ')) problems.push('残す指定の孤独時全ステータスアップが一覧にない');
   if (/<table[\s>]/.test(sh)) problems.push('魂タブに横スクロールの原因となるtableが残っている');
   console.log('魂タブ 分類' + D_.soulGroups.length + ' 一覧' + sum + '種 / 省いた魂の記載なし OK');
 }
