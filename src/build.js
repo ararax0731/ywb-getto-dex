@@ -28,6 +28,12 @@ const B_SOUL_BOSS_IDS = new Map([
   const eighth = data.souls.find(s => s.id === 101);
   if (!eighth) throw new Error('第八三途丸のB魂が見つからない');
   eighth.name = '第八三途丸のB魂';
+
+  // 同じ効果の赤魔寝鬼・白古魔は、入手元を両方残した1項目として表示する。
+  const red = data.souls.find(s => s.id === 117), white = data.souls.find(s => s.id === 118);
+  if (!red || !white || red.effect !== white.effect) throw new Error('赤魔寝鬼・白古魔のB魂を統合できない');
+  red.name = '赤魔寝鬼／白古魔のB魂';
+  red.bossIds = [red.bossId, white.bossId];
 }
 
 // 通常魂は、実用候補としてユーザーが指定した妖怪だけを入手元欄に表示する。
@@ -196,6 +202,7 @@ const SOUL_GROUPS = [
   const userDropIds = new Set([
     1,2,5,6,9,10,12,18,23,24,25,26,27,28,29,31,32,35,38,41,42,44,45,47,50,51,52,55,58,66,67,70,78,79,80,81,83,84,85,86,89,90,95,98,102,108,124,125,
     11,13,17,20,39,46,48,53,54,57,63,92,93,94,103,109,111,112,114,116,
+    30,87,113,118,120,
   ]);
   const unknownUserDrops = [...userDropIds].filter(id => !soulById.has(id));
   if (unknownUserDrops.length) throw new Error('指定削除の魂IDが存在しない: ' + unknownUserDrops.join(', '));

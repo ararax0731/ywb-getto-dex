@@ -136,12 +136,16 @@ console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
   }
   const byId = new Map(D_.youkai.map(y => [y.id, y]));
   for (const s of D_.souls.filter(s => s.cat === 'b')) {
-    const boss = byId.get(s.bossId);
-    if (!boss || !boss.boss) problems.push('B魂の入手元がビッグボスではない: ' + s.id + ' ' + s.name);
-    else if (!soulHtml.includes('data-goto="' + boss.id + '"')) {
-      problems.push('B魂のビッグボスリンクが描画されていない: ' + s.name + ' → ' + boss.name);
+    for (const bossId of s.bossIds || [s.bossId]) {
+      const boss = byId.get(bossId);
+      if (!boss || !boss.boss) problems.push('B魂の入手元がビッグボスではない: ' + s.id + ' ' + s.name);
+      else if (!soulHtml.includes('data-goto="' + boss.id + '"')) {
+        problems.push('B魂のビッグボスリンクが描画されていない: ' + s.name + ' → ' + boss.name);
+      }
     }
   }
+  const merged = D_.souls.filter(s => s.name === '赤魔寝鬼／白古魔のB魂');
+  if (merged.length !== 1 || (merged[0].bossIds || []).join(',') !== '442,443') problems.push('赤魔寝鬼・白古魔のB魂が正しく統合されていない');
   console.log('B魂の入手元リンク', D_.souls.filter(s => s.cat === 'b').length, '種 OK');
 }
 
@@ -218,7 +222,13 @@ console.log('フィルタ往復', F.length, '種 OK');
     if (v.evolve && byId.has(v.evolve.fromId)) exp.evo.add(v.evolve.fromId);
     if (v.fuse) for (const k of ['a','b']) if (v.fuse[k].kind === 'youkai' && byId.has(v.fuse[k].id)) exp.fuse.add(v.fuse[k].id);
   }
-  for (const s of D_.souls) for (const f of s.from) if (byId.has(f.id)) exp.soul.add(f.id);
+  for (const s of D_.souls) {
+    if (s.cat === 'fusion') for (const f of s.from) if (byId.has(f.id)) exp.soul.add(f.id);
+    if (s.cat === 'normal') {
+      const ids = s.sourceOwnerIds || D_.youkai.filter(y => y.soul && y.soul.id === s.id).map(y => y.id);
+      for (const id of ids) if (byId.has(id)) exp.soul.add(id);
+    }
+  }
   fire({ tab: 'dex' });
   const got = {};
   for (const [k, set] of Object.entries(exp)) {
@@ -313,9 +323,12 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     'ピンチ時全ステータスアップ','孤独時全ステータスアップ','ガシャどくろのB魂','わざをためる速度アップ',
     'ロボニャン28号のB魂','レッドJのB魂','妖気ゲージ上昇率アップ','ウィスマロのB魂','あやとりさまのB魂',
     '鬼系へのダメージアップ','氷ぞくせいのダメージアップ',
+    'R3000のB魂','カブキロイドのB魂','忍の魂','自分にかかったよいとりつき継続ターンアップ',
+    '赤魔寝鬼のB魂','白古魔のB魂',
   ];
   const stillPresent = removedSoulNames.filter(name => D_.souls.some(s => s.name === name));
   if (stillPresent.length) problems.push('指定削除の魂が残っている: ' + stillPresent.join(', '));
+  if (D_.souls.filter(s => s.name === '赤魔寝鬼／白古魔のB魂').length !== 1) problems.push('統合したB魂が魂一覧に1件だけ出ていない');
   for (const group of ['まもり','昇天・復活','トラップ']) {
     if (D_.soulGroups.includes(group) || list.includes('>' + group + '</h3>')) problems.push('0種の魂分類が残っている: ' + group);
   }

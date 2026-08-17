@@ -527,19 +527,16 @@ for (const y of Y) if (y.soul) {
   if (!soulOwners.has(y.soul.id)) soulOwners.set(y.soul.id, []);
   soulOwners.get(y.soul.id).push(y);
 }
-const bossOfSoul = s => {
-  if (!s.bossId) return null;
-  const boss = Y.find(y => y.id === s.bossId);
-  return boss && boss.boss ? boss : null;
-};
+const bossesOfSoul = s => (s.bossIds || (s.bossId ? [s.bossId] : []))
+  .map(id => Y.find(y => y.id === id)).filter(y => y && y.boss);
 
-// 逆引き: この妖怪が「何に必要か」。輪・レジェンド解放・進化・合成・合成魂を集める
+// 逆引き: この妖怪が「何に必要か」。輪・レジェンド解放・進化・合成・魂を集める
 const USES = [
   { k:'ring',  s:'輪', n:'ようかいの輪',   d:'ようかいの輪のメンバー' },
   { k:'lgnd',  s:'解', n:'レジェンド解放', d:'レジェンド妖怪の封印解放に必要' },
   { k:'evo',   s:'進', n:'進化のもと',     d:'ほかの妖怪の進化もと' },
   { k:'fuse',  s:'合', n:'合成の素材',     d:'ほかの妖怪の合成素材' },
-  { k:'soul',  s:'魂', n:'合成魂の素材',   d:'合成魂の素材（魂へんげして使う）' },
+  { k:'soul',  s:'魂', n:'魂の入手元',     d:'魂へんげできる／合成魂の素材になる' },
 ];
 const useOf = new Map(Y.map(y => [y.id, { ring:[], lgnd:[], evo:[], fuse:[], soul:[] }]));
 const mark = (id, k, ref) => { const u = useOf.get(id); if (u && !u[k].includes(ref)) u[k].push(ref); };
@@ -549,7 +546,13 @@ for (const v of Y) {
   if (v.evolve) mark(v.evolve.fromId, 'evo', v);
   if (v.fuse) for (const k of ['a','b']) if (v.fuse[k].kind === 'youkai') mark(v.fuse[k].id, 'fuse', v);
 }
-for (const s of SOULS) for (const f of s.from) mark(f.id, 'soul', s);
+for (const s of SOULS) {
+  if (s.cat === 'fusion') for (const f of s.from) mark(f.id, 'soul', s);
+  if (s.cat === 'normal') {
+    const owners = s.sourceOwnerIds || (soulOwners.get(s.id) || []).map(y => y.id);
+    for (const id of owners) mark(id, 'soul', s);
+  }
+}
 const usesOf = y => USES.filter(u => useOf.get(y.id)[u.k].length);
 const USETAGS = USES.map(u => ({ k:'u_' + u.k, n:u.n, t:y => useOf.get(y.id)[u.k].length > 0 }));
 for (const t of USETAGS) TAGMAP[t.k] = t;
@@ -711,10 +714,10 @@ function detailHTML(y){
     (u.evo.length ? '<div class="kv"><span class="k">進化</span><span>' + u.evo.map(v => nameLink(v.id, v.name)).join('　') + '</span></div>' : '') +
     (u.fuse.length ? '<div class="kv"><span class="k">合成</span><span>' + u.fuse.map(v => nameLink(v.id, v.name)).join('　') + '</span></div>' : '') +
     '</div>'));
-  if (u.soul.length) b.push(blk('合成魂の素材', '<div class="dbody">' + u.soul.map(s =>
+  if (u.soul.length) b.push(blk('魂', '<div class="dbody">' + u.soul.map(s =>
     '<div class="kv"><span class="k" style="min-width:0"><span class="em">' + esc(s.name) + '</span></span>' +
     '<span style="color:var(--ink-3); font-size:12.5px">' + esc(s.effect) + '</span></div>').join('') +
-    '<p style="color:var(--ink-3); font-size:12px; margin:6px 0 0">この妖怪を魂へんげさせた魂が素材になります。</p></div>'));
+    '<p style="color:var(--ink-3); font-size:12px; margin:6px 0 0">この妖怪を魂へんげすると作れる魂、または合成魂の素材として使われる魂です。</p></div>'));
 
   return '<div class="detail"><div class="dgrid">' + b.join('') + '</div></div>';
 }
@@ -885,8 +888,8 @@ function soulSrc(s){
       : esc(s.make);
   }
   if (s.cat === 'b') {
-    const bs = bossOfSoul(s);
-    return bs ? nameLink(bs.id, bs.name) : '<span style="color:var(--ink-3)">ビッグボス（図鑑外）</span>';
+    const bosses = bossesOfSoul(s);
+    return bosses.length ? bosses.map(bs => nameLink(bs.id, bs.name)).join('・') : '<span style="color:var(--ink-3)">ビッグボス（図鑑外）</span>';
   }
   const allOwn = soulOwners.get(s.id) || [];
   const own = s.sourceOwnerIds
