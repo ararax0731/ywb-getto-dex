@@ -279,14 +279,19 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   const ringHtml = getEl('main').innerHTML;
   if ((ringHtml.match(/class="accitem/g) || []).length !== D_.rings.length) problems.push('ようかいの輪のプルダウン数が不一致');
   if (!/class="accside done"[^>]*>済<\/button>/.test(ringHtml)) problems.push('完成したようかいの輪に済ボタンがない');
+  const ringDoneOrder = [...ringHtml.matchAll(/class="accitem( done)?" data-ring-id=/g)].map(m => Boolean(m[1]));
+  if (ringDoneOrder.some((done, i) => done && ringDoneOrder.slice(i + 1).includes(false))) problems.push('完成したようかいの輪より下に未完成の輪がある');
   fire({ tab: 'legend' });
   const legendHtml = getEl('main').innerHTML;
   if ((legendHtml.match(/class="accitem/g) || []).length !== D_.youkai.filter(y => y.legend).length) problems.push('レジェンドのプルダウン数が不一致');
-  console.log('輪・レジェンド縦プルダウン OK');
+  const legendDoneOrder = [...legendHtml.matchAll(/class="accitem( done)?" data-legend-id=/g)].map(m => Boolean(m[1]));
+  if (legendDoneOrder.some((done, i) => done && legendDoneOrder.slice(i + 1).includes(false))) problems.push('入手済みレジェンドより下に未入手レジェンドがある');
+  console.log('輪・レジェンド 済を末尾へ移動 OK');
 }
 
 // 進化・合成は縦一覧。No.・ランク・鬼玉・tableを出さない
 {
+  if (!JSON.parse(store['ywb-getto-dex-v1'] || '{}').got.includes(2)) fire({ check: '2' });
   fire({ tab: 'recipe' });
   const recipeHtml = getEl('main').innerHTML;
   if (/<table[\s>]/.test(recipeHtml)) problems.push('進化・合成にtableが残っている');
@@ -296,7 +301,12 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   if (/class="vtitle"|class="vformula"|→/.test(recipeHtml)) problems.push('進化・合成に旧2行構成が残っている');
   if (!/えんらえんら[\s\S]*?←[\s\S]*?こえんら[\s\S]*?（LV32）/.test(recipeHtml)) problems.push('進化の1行表記が指定形式ではない');
   if (!/デビビラン[\s\S]*?←[\s\S]*?デビビル[\s\S]*?＋[\s\S]*?邪神のかたまり/.test(recipeHtml)) problems.push('合成の1行表記が指定形式ではない');
-  console.log('進化・合成 1行一覧 OK');
+  const recipeParts = recipeHtml.split('<div class="secthead"><h2>合成</h2>');
+  for (const [label, part] of [['進化', recipeParts[0]], ['合成', recipeParts[1] || '']]) {
+    const gotOrder = [...part.matchAll(/class="vitem( got)?" data-recipe-id=/g)].map(m => Boolean(m[1]));
+    if (gotOrder.some((got, i) => got && gotOrder.slice(i + 1).includes(false))) problems.push('入手済みの' + label + '妖怪より下に未入手妖怪がある');
+  }
+  console.log('進化・合成 1行一覧・済を末尾へ移動 OK');
 }
 
 // 魂タブ: 分類がすべて出ていて残った魂が漏れていないか。

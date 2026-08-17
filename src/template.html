@@ -809,12 +809,15 @@ function howFallback(id){
 }
 function renderRings(){
   const done = RINGS.filter(ringDone).length;
+  const orderedRings = RINGS.map((ring, index) => ({ring, index}))
+    .sort((a, b) => Number(ringDone(a.ring)) - Number(ringDone(b.ring)) || a.index - b.index)
+    .map(v => v.ring);
   elMain.innerHTML =
     '<div class="secthead"><h2>ようかいの輪</h2><span class="sectnote">メンバーを全員なかまにすると、エントランスで報酬がもらえます。' +
     '<b class="num">' + done + '</b>/' + RINGS.length + ' 達成</span><span class="sectrule"></span></div>' +
-    '<div class="accordion">' + RINGS.map(r => {
+    '<div class="accordion">' + orderedRings.map(r => {
       const got = r.members.filter(m => has(m.id)).length, all = r.members.length, ok = got === all;
-      return '<article class="accitem' + (ok ? ' done' : '') + '">' +
+      return '<article class="accitem' + (ok ? ' done' : '') + '" data-ring-id="' + r.id + '">' +
         '<div class="acchead"><button class="acctoggle" data-acc="ring-' + r.id + '" aria-expanded="false">' +
           '<span class="acctitle">' + esc(r.name) + '</span>' +
           '<span class="accmeta">' + got + '/' + all + '体　報酬 ' + esc(r.reward || '—') + '</span></button>' +
@@ -832,13 +835,14 @@ function renderRings(){
 /* ---------- legend ---------- */
 function renderLegend(){
   const got = legends.filter(y => has(y.id)).length;
+  const orderedLegends = legends.slice().sort((a, b) => Number(has(a.id)) - Number(has(b.id)) || a.no - b.no);
   elMain.innerHTML =
     '<div class="secthead"><h2>レジェンド妖怪の封印解放</h2><span class="sectnote">必要な8体をすべてなかまにすると、妖怪大辞典の光るページから入手できます。' +
     '<b class="num">' + got + '</b>/' + legends.length + ' 解放</span><span class="sectrule"></span></div>' +
-    '<div class="accordion">' + legends.map(l => {
+    '<div class="accordion">' + orderedLegends.map(l => {
       const need = l.legendNeeds || [];
       const d = need.filter(n => has(n.id)).length, ready = d === need.length && need.length > 0;
-      return '<article class="accitem' + (has(l.id) ? ' done' : '') + '">' +
+      return '<article class="accitem' + (has(l.id) ? ' done' : '') + '" data-legend-id="' + l.id + '">' +
         '<div class="acchead"><button class="acctoggle" data-acc="legend-' + l.id + '" aria-expanded="false">' +
           '<span class="acctitle">' + esc(l.name) + '</span>' +
           '<span class="accmeta">必要な妖怪 ' + need.length + '体・' + d + '体入手済み</span></button>' +
@@ -857,13 +861,14 @@ function renderLegend(){
 function renderRecipe(){
   const stamp = y => '<div class="vstamp"><button class="stamp" data-check="' + y.id + '" aria-pressed="' + has(y.id) +
     '" aria-label="' + esc(y.name) + ' を入手済みにする">済</button></div>';
-  const evoRows = evoList.slice().sort((a,b) => a.no - b.no).map(y =>
-    '<article class="vitem' + (has(y.id) ? ' got' : '') + '">' + stamp(y) + '<div class="vbody">' +
+  const gotLast = (a, b) => Number(has(a.id)) - Number(has(b.id)) || a.no - b.no;
+  const evoRows = evoList.slice().sort(gotLast).map(y =>
+    '<article class="vitem' + (has(y.id) ? ' got' : '') + '" data-recipe-id="' + y.id + '">' + stamp(y) + '<div class="vbody">' +
     '<div class="vline">' + nameLink(y.id, y.name) + '<span class="varrow">←</span>' +
     (byId.has(y.evolve.fromId) ? nameLink(y.evolve.fromId, y.evolve.from) : esc(y.evolve.from)) +
     '<span class="op">（LV' + y.evolve.lv + '）</span></div></div></article>').join('');
-  const fuseRows = fuseList.slice().sort((a,b) => a.no - b.no).map(y =>
-    '<article class="vitem' + (has(y.id) ? ' got' : '') + '">' + stamp(y) + '<div class="vbody">' +
+  const fuseRows = fuseList.slice().sort(gotLast).map(y =>
+    '<article class="vitem' + (has(y.id) ? ' got' : '') + '" data-recipe-id="' + y.id + '">' + stamp(y) + '<div class="vbody">' +
     '<div class="vline">' + nameLink(y.id, y.name) + '<span class="varrow">←</span>' +
     matRef(y.fuse.a) + ' <span class="op">＋</span> ' + matRef(y.fuse.b) + '</div></div></article>').join('');
   elMain.innerHTML =
