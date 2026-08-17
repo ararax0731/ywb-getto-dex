@@ -125,8 +125,6 @@ console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
   const sourceExpect = new Map([
     ['クリティカル威力アップ', ['あつガルル', 'デビビラン', '豪怪']],
     ['クリティカル率アップ', ['しょうブシ', 'フユニャン']],
-    ['すばやさアップ', ['妖怪ガッツK', 'ばくそく']],
-    ['孤独時全ステータスアップ', ['モノマネキン', 'あまのじゃく', 'のらりくらり']],
   ]);
   for (const [soulName, names] of sourceExpect) {
     const s = D_.souls.find(v => v.name === soulName);
@@ -144,8 +142,6 @@ console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
       problems.push('B魂のビッグボスリンクが描画されていない: ' + s.name + ' → ' + boss.name);
     }
   }
-  const mitsu = D_.souls.find(s => s.id === 103);
-  if (!mitsu || mitsu.bossId !== 421) problems.push('ミツマタノヅチのB魂がビッグボス421を指していない');
   console.log('B魂の入手元リンク', D_.souls.filter(s => s.cat === 'b').length, '種 OK');
 }
 
@@ -304,8 +300,6 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   for (const text of ['一覧から省いた魂','代わりはＢ魂','代わりはふつうの魂']) {
     if (sh.includes(text)) problems.push('削除対象の記載が残っている: ' + text);
   }
-  const requiredSoul = D_.souls.find(s => s.id === 17);
-  if (!requiredSoul || requiredSoul.effect !== 'すばやさがアップ。') problems.push('妖怪ガッツKの魂（すばやさアップ）が一覧にない');
   const removedSoulNames = [
     'わざ溜め時すばやさアップ','HP満タン時すばやさアップ','回復時すばやさアップ','気絶回復時HP回復','気絶回復時全ステータスアップ',
     'よびよせ魂','PブレイカーのB魂','職人魂','覚醒日ノ神のB魂','ガシャどくろGのB魂','おのぼり黒トンのB魂',
@@ -314,10 +308,17 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     'アイテム・鬼玉入手時ちからアップ','回復時ちからアップ','回復時ようりょくアップ','ピンチ時まもりアップ','わざ溜め時まもりアップ',
     'HP満タン時まもりアップ','敵撃破時ちからアップ','ピンチ時すばやさアップ','のろわれ魂','アイテム・鬼玉入手時HP回復',
     '敵撃破時HP回復','ドレイン吸収率アップ','自分のHP回復率アップ','かげろう魂',
+    'ピンチ時ちからアップ','HP満タン時ちからアップ','青鬼のB魂','ミツマタノヅチのB魂','黒鬼のB魂',
+    'すばやさアップ','イカカモネ議長のB魂','妖気ゲージ満タン時全ステータスアップ','HP満タン時全ステータスアップ',
+    'ピンチ時全ステータスアップ','孤独時全ステータスアップ','ガシャどくろのB魂','わざをためる速度アップ',
+    'ロボニャン28号のB魂','レッドJのB魂','妖気ゲージ上昇率アップ','ウィスマロのB魂','あやとりさまのB魂',
+    '鬼系へのダメージアップ','氷ぞくせいのダメージアップ',
   ];
   const stillPresent = removedSoulNames.filter(name => D_.souls.some(s => s.name === name));
   if (stillPresent.length) problems.push('指定削除の魂が残っている: ' + stillPresent.join(', '));
-  if (!D_.souls.some(s => s.name === '孤独時全ステータスアップ')) problems.push('残す指定の孤独時全ステータスアップが一覧にない');
+  for (const group of ['まもり','昇天・復活','トラップ']) {
+    if (D_.soulGroups.includes(group) || list.includes('>' + group + '</h3>')) problems.push('0種の魂分類が残っている: ' + group);
+  }
   if (/<table[\s>]/.test(sh)) problems.push('魂タブに横スクロールの原因となるtableが残っている');
   console.log('魂タブ 分類' + D_.soulGroups.length + ' 一覧' + sum + '種 / 省いた魂の記載なし OK');
 }

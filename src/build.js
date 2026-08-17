@@ -195,10 +195,13 @@ const SOUL_GROUPS = [
   // 利用者が実用性の観点から一覧から外すと指定した魂。
   const userDropIds = new Set([
     1,2,5,6,9,10,12,18,23,24,25,26,27,28,29,31,32,35,38,41,42,44,45,47,50,51,52,55,58,66,67,70,78,79,80,81,83,84,85,86,89,90,95,98,102,108,124,125,
+    11,13,17,20,39,46,48,53,54,57,63,92,93,94,103,109,111,112,114,116,
   ]);
   const unknownUserDrops = [...userDropIds].filter(id => !soulById.has(id));
   if (unknownUserDrops.length) throw new Error('指定削除の魂IDが存在しない: ' + unknownUserDrops.join(', '));
   data.souls = data.souls.filter(s => !userDropIds.has(s.id));
+  // 魂が残っていない分類は「0種」の見出しごと一覧から外す。
+  data.soulGroups = data.soulGroups.filter(group => data.souls.some(s => s.group === group));
   const allDropIds = new Set([...dropIds, ...userDropIds]);
   for (const s of data.souls) s.rel = s.rel.filter(r => !allDropIds.has(r.id));
   // 一覧に残るペアだけ（33=62 は両方 107 の下位なので、そろって消える）
