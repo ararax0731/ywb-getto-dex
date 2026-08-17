@@ -123,8 +123,9 @@ console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
     if (soulHtml.includes(removed)) problems.push('削除指定の魂が残っている: ' + removed);
   }
   const sourceExpect = new Map([
-    ['クリティカル威力アップ', ['あつガルル', 'デビビラン', '豪怪']],
+    ['クリティカル威力アップ', ['あつガルル', 'デビビラン']],
     ['クリティカル率アップ', ['しょうブシ', 'フユニャン']],
+    ['HP吸収', ['百鬼姫', 'ガブニャン']],
   ]);
   for (const [soulName, names] of sourceExpect) {
     const s = D_.souls.find(v => v.name === soulName);
@@ -291,7 +292,11 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   if (/<table[\s>]/.test(recipeHtml)) problems.push('進化・合成にtableが残っている');
   if (/No\.|鬼玉|class="rank"/.test(recipeHtml)) problems.push('進化・合成に削除対象（No.・ランク・鬼玉）が残っている');
   if ((recipeHtml.match(/class="vitem/g) || []).length !== D_.youkai.filter(y => y.evolve || y.fuse).length) problems.push('進化・合成の縦一覧件数が不一致');
-  console.log('進化・合成 縦一覧 OK');
+  if ((recipeHtml.match(/class="vline"/g) || []).length !== D_.youkai.filter(y => y.evolve || y.fuse).length) problems.push('進化・合成が1行構成になっていない');
+  if (/class="vtitle"|class="vformula"|→/.test(recipeHtml)) problems.push('進化・合成に旧2行構成が残っている');
+  if (!/えんらえんら[\s\S]*?←[\s\S]*?こえんら[\s\S]*?（LV32）/.test(recipeHtml)) problems.push('進化の1行表記が指定形式ではない');
+  if (!/デビビラン[\s\S]*?←[\s\S]*?デビビル[\s\S]*?＋[\s\S]*?邪神のかたまり/.test(recipeHtml)) problems.push('合成の1行表記が指定形式ではない');
+  console.log('進化・合成 1行一覧 OK');
 }
 
 // 魂タブ: 分類がすべて出ていて残った魂が漏れていないか。
@@ -325,10 +330,12 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     '鬼系へのダメージアップ','氷ぞくせいのダメージアップ',
     'R3000のB魂','カブキロイドのB魂','忍の魂','自分にかかったよいとりつき継続ターンアップ',
     '赤魔寝鬼のB魂','白古魔のB魂',
+    '日ノ神のB魂','どんどろのB魂',
   ];
   const stillPresent = removedSoulNames.filter(name => D_.souls.some(s => s.name === name));
   if (stillPresent.length) problems.push('指定削除の魂が残っている: ' + stillPresent.join(', '));
   if (D_.souls.filter(s => s.name === '赤魔寝鬼／白古魔のB魂').length !== 1) problems.push('統合したB魂が魂一覧に1件だけ出ていない');
+  if (!list.includes('class="soulbottom"')) problems.push('魂一覧が2行構成になっていない');
   for (const group of ['まもり','昇天・復活','トラップ']) {
     if (D_.soulGroups.includes(group) || list.includes('>' + group + '</h3>')) problems.push('0種の魂分類が残っている: ' + group);
   }

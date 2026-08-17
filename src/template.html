@@ -305,16 +305,19 @@ main{padding-bottom:80px}
 .vitem:first-child{border-top:none}
 .vitem.got{background:var(--stamp-wash)}
 .vstamp{display:grid; place-items:center; border-right:1px solid var(--line); padding:7px 0}
-.vbody{min-width:0; padding:9px 11px}
+.vbody{min-width:0; padding:7px 10px}
 .vtitle{font-size:14px; font-weight:600; line-height:1.45}
 .vformula{margin-top:3px; color:var(--ink-2); font-size:12.5px; line-height:1.6; overflow-wrap:anywhere}
+.vline{font-size:13px; line-height:1.55; overflow-wrap:anywhere}
 .varrow{color:var(--gold); padding:0 4px}
-.soulitem{padding:10px 12px; border-top:1px solid var(--line)}
+.soulitem{padding:6px 10px; border-top:1px solid var(--line)}
 .soulitem:first-child{border-top:none}
-.soultop{display:flex; align-items:center; gap:7px; flex-wrap:wrap}
+.soultop{display:flex; align-items:center; gap:7px; min-width:0}
 .soulname{font-size:13.5px; font-weight:600}
-.souleffect{margin-top:3px; color:var(--ink-2); font-size:12.5px; line-height:1.55}
-.soulsrc{margin-top:4px; color:var(--ink-3); font-size:11.5px; line-height:1.5}
+.soulbottom{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; align-items:start; margin-top:2px}
+.souleffect{color:var(--ink-2); font-size:12px; line-height:1.45}
+.soulsrc{color:var(--ink-3); font-size:11.5px; line-height:1.45; text-align:right}
+@media(max-width:620px){.soulbottom{grid-template-columns:minmax(0,1fr) minmax(96px,40%); gap:4px 8px}.soulitem{padding:6px 8px}}
 
 /* ---------- tables ---------- */
 .tablewrap{overflow-x:auto; background:var(--panel); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow)}
@@ -856,13 +859,13 @@ function renderRecipe(){
     '" aria-label="' + esc(y.name) + ' を入手済みにする">済</button></div>';
   const evoRows = evoList.slice().sort((a,b) => a.no - b.no).map(y =>
     '<article class="vitem' + (has(y.id) ? ' got' : '') + '">' + stamp(y) + '<div class="vbody">' +
-    '<div class="vtitle">' + nameLink(y.id, y.name) + '</div><div class="vformula">' +
+    '<div class="vline">' + nameLink(y.id, y.name) + '<span class="varrow">←</span>' +
     (byId.has(y.evolve.fromId) ? nameLink(y.evolve.fromId, y.evolve.from) : esc(y.evolve.from)) +
-    '<span class="varrow">→</span>LV' + y.evolve.lv + '以上で進化</div></div></article>').join('');
+    '<span class="op">（LV' + y.evolve.lv + '）</span></div></div></article>').join('');
   const fuseRows = fuseList.slice().sort((a,b) => a.no - b.no).map(y =>
     '<article class="vitem' + (has(y.id) ? ' got' : '') + '">' + stamp(y) + '<div class="vbody">' +
-    '<div class="vtitle">' + nameLink(y.id, y.name) + '</div><div class="vformula">' +
-    matRef(y.fuse.a) + ' <span class="op">＋</span> ' + matRef(y.fuse.b) + '<span class="varrow">→</span>合成</div></div></article>').join('');
+    '<div class="vline">' + nameLink(y.id, y.name) + '<span class="varrow">←</span>' +
+    matRef(y.fuse.a) + ' <span class="op">＋</span> ' + matRef(y.fuse.b) + '</div></div></article>').join('');
   elMain.innerHTML =
     '<div class="secthead"><h2>レベル進化</h2><span class="sectnote">指定レベル以上で進化。全' + evoList.length + '件</span><span class="sectrule"></span></div>' +
     '<div class="vlist">' + evoRows + '</div>' +
@@ -956,7 +959,7 @@ function renderSoul(){
       .sort((a, b) => CAT_ORDER[a.cat] - CAT_ORDER[b.cat] || a.id - b.id);
     const rows = list.map(s =>
       '<article class="soulitem"><div class="soultop">' + soulTag(s) + '<span class="soulname">' + esc(s.name) + '</span></div>' +
-      '<div class="souleffect">' + esc(s.effect) + '</div><div class="soulsrc">' + soulSrc(s) + '</div></article>').join('');
+      '<div class="soulbottom"><div class="souleffect">' + esc(s.effect) + '</div><div class="soulsrc">' + soulSrc(s) + '</div></div></article>').join('');
     return '<div class="grouphead" id="sg' + i + '"><h3>' + esc(g) + '</h3>' +
       '<span class="n">' + list.length + '種</span><span class="rule"></span></div>' +
       '<div class="vlist">' + rows + '</div>';
