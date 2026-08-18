@@ -317,6 +317,7 @@ const SOUL_GROUPS = [
     30,87,113,118,120,
     96,105,115,117,
     43,61,68,69,72,73,74,75,76,77,104,
+    121,122,
   ]);
   const unknownUserDrops = [...userDropIds].filter(id => !soulById.has(id));
   if (unknownUserDrops.length) throw new Error('指定削除の魂IDが存在しない: ' + unknownUserDrops.join(', '));
