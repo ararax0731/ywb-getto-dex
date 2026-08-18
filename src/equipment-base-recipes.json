@@ -368,37 +368,6 @@
     ],
     "source": "https://youkai.gamepedia.jp/busters/equipments/16395"
   },
-  "マイティーなこぶくろ": {
-    "method": "強化レシピ",
-    "requirements": [
-      {
-        "kind": "equipment",
-        "name": "ピンクのこぶくろ",
-        "count": 1
-      },
-      {
-        "kind": "material",
-        "name": "マイティーの超爆弾",
-        "count": 3
-      },
-      {
-        "kind": "material",
-        "name": "マイティーの上がま口",
-        "count": 2
-      },
-      {
-        "kind": "material",
-        "name": "マイティーの爆弾",
-        "count": 4
-      },
-      {
-        "kind": "material",
-        "name": "ブキミーの宝玉",
-        "count": 4
-      }
-    ],
-    "source": "https://youkai.gamepedia.jp/busters/equipments/4258"
-  },
   "肉球の鈴": {
     "method": "新規レシピ",
     "requirements": [
