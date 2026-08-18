@@ -9,6 +9,13 @@ const { normalizeAcquisition } = require('./equipment-utils');
 if (normalizeAcquisition('黒鬼・極・中当たり でドロップ ') !== '黒鬼・極モード・中当たり') {
   throw new Error('素材入手方法の正規化後に末尾空白が残る');
 }
+// 出典に当たり枠が書かれていないものは「当たり枠不明」と出し、他の枠と粒度を揃える。
+if (normalizeAcquisition('ビッグボスがドロップ：白古魔（赤猫団限定）・極・ドロップ でドロップ') !== '白古魔（赤猫団限定）・極モード・枠不明') {
+  throw new Error('当たり枠のない入手方法が「枠不明」にならない');
+}
+if (/・ドロップ$/.test(normalizeAcquisition('黒鬼・ノーマル・ドロップ'))) {
+  throw new Error('当たり枠として「ドロップ」がそのまま残っている');
+}
 
 for (const [name, acquisition] of Object.entries(rawBaseMaterials)) {
   if (!acquisition?.location?.trim() || !acquisition?.source?.trim()) {
@@ -309,6 +316,42 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     if (eh.includes(name)) problems.push('削除対象の装備が残っている: ' + name);
   }
   for (const name of ['月光一文字','月影丸']) if (!eh.includes(name) || !eh.includes('現在入手困難')) problems.push('入手困難装備の表示がない: ' + name);
+  // 版限定素材は「正規手段が消滅した入手困難」とは別の理由なので、並びは変えず弱いマークだけで示す。
+  // 期待値はレシピ全体の文字列から取る。build.js の detectOtherVersion（method / location のみ）より
+  // 広い範囲を見ているので、あちらの走査漏れがこちら側との不一致として出る。同じ走査を再実装すると
+  // 同じ見落としを共有して相互検証にならない。
+  // 逆に入手方法以外のフィールド（素材名など）も含むので、build.js が正しくてもここが落ちることはある。
+  // 落ちたときは、まず recipe のどこに版限定表記が入ったかを見ること。
+  const otherVersionExpected = D_.equipment
+    .filter(e => /（赤猫団限定）|（白犬隊限定）/.test(JSON.stringify(e.recipe)))
+    .map(e => e.name).sort();
+  // 対象装備の名前は固定しない。一覧の入れ替えでこの検証が落ちても直し方が「期待値の書き換え」しかなく、
+  // それを繰り返すうちに実物に追従するだけの空の検証になるため。
+  // 現在は該当0件（太古の魔犬根付・妖魔の鬼猫根付・ニャンダフルな鈴が装備一覧から外れたので、
+  // レシピ側には残っているが表示対象ではない）。該当が戻れば下のマーク検証がそのまま働く。
+  for (const e of D_.equipment) {
+    if (((e.otherVersion || []).length > 0) !== otherVersionExpected.includes(e.name)) {
+      problems.push('版限定素材のマークが素材と一致しない: ' + e.name);
+    }
+    if ((e.otherVersion || []).length && e.unavailable) problems.push('版限定素材のマークが入手困難と混ざっている: ' + e.name);
+  }
+  const markCount = (eh.match(/限定の素材が必要<\/span>/g) || []).length;
+  const markExpected = D_.equipment.reduce((n, e) => n + (e.otherVersion || []).length, 0);
+  if (markCount !== markExpected) problems.push('版限定素材のマークの描画数が合わない: ' + markCount + ' / ' + markExpected);
+  for (const tag of [{ key:'aka', label:'赤猫団' }, { key:'shiro', label:'白犬隊' }]) {
+    const text = '<span class="tag ' + tag.key + '">' + tag.label + '限定の素材が必要</span>';
+    const need = D_.equipment.some(e => (e.otherVersion || []).some(v => v.key === tag.key));
+    if (need !== eh.includes(text)) problems.push('版限定素材のマークの色分けが合わない: ' + text);
+  }
+  // 出典に当たり枠が書かれていない素材の「枠不明」表示。件数だけ見ると別の素材と入れ替わっても
+  // 通ってしまうので、埋め込みデータ側の文字列そのものと突き合わせる。
+  // タグ直後（`>`）から拾うのは、埋め込み JSON にも同じ文字列があり、全文に当てると丸ごと飲み込むため。
+  const unknownSlotExpected = [...new Set((JSON.stringify(D_.equipment).match(/[^"]*・枠不明/g) || []))].sort();
+  const unknownSlots = [...new Set([...eh.matchAll(/>([^<>]*・枠不明)</g)].map(m => m[1]))].sort();
+  if (unknownSlots.join('|') !== unknownSlotExpected.join('|')) {
+    problems.push('当たり枠不明の表示がデータと合わない: 描画 ' + unknownSlots.join('|') + ' / データ ' + unknownSlotExpected.join('|'));
+  }
+  if (/・ドロップ</.test(eh)) problems.push('当たり枠が「ドロップ」のまま描画されている');
   for (const text of ['推奨度','採用理由：','注意：','能力・効果の出典','現在入手困難：月光一文字','Excelで選定した全']) {
     if (eh.includes(text)) problems.push('装備一覧に削除対象の文言が残っている: ' + text);
   }
