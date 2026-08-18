@@ -147,8 +147,6 @@ console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
       }
     }
   }
-  const merged = D_.souls.filter(s => s.name === '赤魔寝鬼／白古魔のB魂');
-  if (merged.length !== 1 || (merged[0].bossIds || []).join(',') !== '442,443') problems.push('赤魔寝鬼・白古魔のB魂が正しく統合されていない');
   console.log('B魂の入手元リンク', D_.souls.filter(s => s.cat === 'b').length, '種 OK');
 }
 
@@ -401,12 +399,11 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     'ロボニャン28号のB魂','レッドJのB魂','妖気ゲージ上昇率アップ','ウィスマロのB魂','あやとりさまのB魂',
     '鬼系へのダメージアップ','氷ぞくせいのダメージアップ',
     'R3000のB魂','カブキロイドのB魂','忍の魂','自分にかかったよいとりつき継続ターンアップ',
-    '赤魔寝鬼のB魂','白古魔のB魂',
+    '赤魔寝鬼のB魂','白古魔のB魂','赤魔寝鬼／白古魔のB魂','ギヤマンどくろのB魂',
     '日ノ神のB魂','どんどろのB魂',
   ];
   const stillPresent = removedSoulNames.filter(name => D_.souls.some(s => s.name === name));
   if (stillPresent.length) problems.push('指定削除の魂が残っている: ' + stillPresent.join(', '));
-  if (D_.souls.filter(s => s.name === '赤魔寝鬼／白古魔のB魂').length !== 1) problems.push('統合したB魂が魂一覧に1件だけ出ていない');
   if (!list.includes('class="soulbottom"')) problems.push('魂一覧が2行構成になっていない');
   for (const group of ['まもり','昇天・復活','トラップ']) {
     if (D_.soulGroups.includes(group) || list.includes('>' + group + '</h3>')) problems.push('0種の魂分類が残っている: ' + group);
