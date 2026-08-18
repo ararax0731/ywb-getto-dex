@@ -9,6 +9,13 @@ const { normalizeAcquisition } = require('./equipment-utils');
 if (normalizeAcquisition('黒鬼・極・中当たり でドロップ ') !== '黒鬼・極モード・中当たり') {
   throw new Error('素材入手方法の正規化後に末尾空白が残る');
 }
+// 出典に当たり枠が書かれていないものは「当たり枠不明」と出し、他の枠と粒度を揃える。
+if (normalizeAcquisition('ビッグボスがドロップ：白古魔（赤猫団限定）・極・ドロップ でドロップ') !== '白古魔（赤猫団限定）・極モード・当たり枠不明') {
+  throw new Error('当たり枠のない入手方法が「当たり枠不明」にならない');
+}
+if (/・ドロップ$/.test(normalizeAcquisition('黒鬼・ノーマル・ドロップ'))) {
+  throw new Error('当たり枠として「ドロップ」がそのまま残っている');
+}
 
 for (const [name, acquisition] of Object.entries(rawBaseMaterials)) {
   if (!acquisition?.location?.trim() || !acquisition?.source?.trim()) {
@@ -309,6 +316,27 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     if (eh.includes(name)) problems.push('削除対象の装備が残っている: ' + name);
   }
   for (const name of ['月光一文字','月影丸']) if (!eh.includes(name) || !eh.includes('現在入手困難')) problems.push('入手困難装備の表示がない: ' + name);
+  // 版限定素材は「正規手段が消滅した入手困難」とは別の理由なので、並びは変えず弱いマークだけで示す。
+  const otherVersionExpected = D_.equipment.filter(e => {
+    const texts = e.recipe.requirements.flatMap(r => [r.method || '',
+      ...(r.baseRecipe ? r.baseRecipe.requirements.map(b => b.location || '') : [])]);
+    return /（赤猫団限定）|（白犬隊限定）/.test(texts.join('\n'));
+  }).map(e => e.name).sort();
+  if (otherVersionExpected.join('|') !== ['太古の魔犬根付','妖魔の鬼猫根付','ニャンダフルな鈴'].sort().join('|')) {
+    problems.push('版限定素材を使う装備が想定と違う: ' + otherVersionExpected.join('|'));
+  }
+  for (const e of D_.equipment) {
+    if (((e.otherVersion || []).length > 0) !== otherVersionExpected.includes(e.name)) {
+      problems.push('版限定素材のマークが素材と一致しない: ' + e.name);
+    }
+    if ((e.otherVersion || []).length && e.unavailable) problems.push('版限定素材のマークが入手困難と混ざっている: ' + e.name);
+  }
+  if ((eh.match(/限定の素材が必要<\/span>/g) || []).length !== 3) problems.push('版限定素材のマークが3件描画されていない');
+  for (const text of ['<span class="tag aka">赤猫団限定の素材が必要</span>','<span class="tag shiro">白犬隊限定の素材が必要</span>']) {
+    if (!eh.includes(text)) problems.push('版限定素材のマークの色分けがない: ' + text);
+  }
+  if (!eh.includes('当たり枠不明')) problems.push('当たり枠不明の表示がない');
+  if (/・ドロップ</.test(eh)) problems.push('当たり枠が「ドロップ」のまま描画されている');
   for (const text of ['推奨度','採用理由：','注意：','能力・効果の出典','現在入手困難：月光一文字','Excelで選定した全']) {
     if (eh.includes(text)) problems.push('装備一覧に削除対象の文言が残っている: ' + text);
   }

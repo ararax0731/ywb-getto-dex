@@ -75,6 +75,18 @@ function equipmentUse(name, type, effect, power, magic) {
   if (['杖','ゆびわ'].includes(type) || /ようりょく/.test(effect)) return '妖術アタッカー';
   return '物理アタッカー';
 }
+// 赤猫団・白犬隊だけで手に入る素材が要る装備は、月兎組しか遊んでいない人には作れない。
+// これは「正規手段が消滅した」入手困難とは別の理由なので、並び替えはせず弱いマークだけ付ける。
+const OTHER_VERSION_TAGS = [{ key:'aka', label:'赤猫団' }, { key:'shiro', label:'白犬隊' }];
+function detectOtherVersion(recipe) {
+  const texts = [];
+  for (const requirement of recipe.requirements) {
+    texts.push(requirement.method || '');
+    if (requirement.baseRecipe) for (const base of requirement.baseRecipe.requirements) texts.push(base.location || '');
+  }
+  const joined = texts.join('\n');
+  return OTHER_VERSION_TAGS.filter(tag => joined.includes('（' + tag.label + '限定）'));
+}
 data.equipment = equipmentLines.map((line, index) => {
   const p = line.split('|');
   if (p.length !== 9) throw new Error('装備TSVの列数が不正: ' + (index + 1));
@@ -111,6 +123,7 @@ data.equipment = equipmentLines.map((line, index) => {
   if (!e.recipe.requirements.length && (!e.recipe.acquisition.method || !e.recipe.acquisition.url)) {
     throw new Error('装備の入手方法が不足: ' + name);
   }
+  e.otherVersion = detectOtherVersion(e.recipe);
   if (availability.equipment[String(e.id)]) e.unavailable = availability.equipment[String(e.id)];
   return e;
 });
