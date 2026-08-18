@@ -14,6 +14,7 @@
 | `src/data.json` | 元データ（4つの攻略サイトを突き合わせたもの） |
 | `src/equipment.tsv` | 選定した実用装備40種の能力・効果・出典 |
 | `src/equipment-recipes.json` | 各装備の必要素材と、素材の入手方法・出典 |
+| `src/equipment-base-recipes.json` | 強化元となる装備22種の作成方法・出典 |
 | `src/availability.json` | 現在入手困難な妖怪・装備と判定日・根拠 |
 | `src/build.js` | data.json を補正して template.html に流し込み、上の2ファイルを書き出す |
 | `src/template.html` | 画面のHTML・CSS・スクリプト本体。`__DATA__` がデータの差し込み口 |

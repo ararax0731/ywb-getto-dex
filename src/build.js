@@ -4,6 +4,7 @@ const tpl = fs.readFileSync(path.join(D, 'template.html'), 'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(D, 'data.json'), 'utf8'));
 const availability = JSON.parse(fs.readFileSync(path.join(D, 'availability.json'), 'utf8'));
 const equipmentRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-recipes.json'), 'utf8'));
+const equipmentBaseRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-base-recipes.json'), 'utf8'));
 
 // 選定済みの実用装備40種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
 const equipmentLines = fs.readFileSync(path.join(D, 'equipment.tsv'), 'utf8').trim().split(/\r?\n/);
@@ -79,6 +80,13 @@ data.equipment = equipmentLines.map((line, index) => {
   for (const requirement of e.recipe.requirements) {
     if (!requirement.name || !requirement.count || !requirement.url || !requirement.method) {
       throw new Error('装備素材の項目が不足: ' + name);
+    }
+    if (requirement.kind === 'equipment') {
+      const base = equipmentBaseRecipes[requirement.name];
+      if (!base || !base.method || !base.requirements.length || base.requirements.some(r => !r.name || !r.count)) {
+        throw new Error('強化元装備の作り方が不足: ' + name + ' → ' + requirement.name);
+      }
+      requirement.baseRecipe = { method:base.method, requirements:base.requirements };
     }
   }
   if (!e.recipe.requirements.length && (!e.recipe.acquisition.method || !e.recipe.acquisition.url)) {

@@ -1,0 +1,614 @@
+{
+  "真鬼砕き・黒": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "黒鬼のツノ",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "黒鬼金棒のトゲ",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "イサマシの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "イサマシのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4074"
+  },
+  "武王の大太刀": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "ブシ王の月飾り",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "ブシ王の小手",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "イサマシの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "イサマシのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/16368"
+  },
+  "裁きの杖": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "日ノ神の企画書",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "日ノ神のしもべ",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "トンマンの縄",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "フシギのカタマリ",
+        "count": 6
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4150"
+  },
+  "青白き犬の根付": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "白古魔の凶ツメ",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "白古魔の凶玉",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "ポカポカの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "ポカポカのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/12273"
+  },
+  "赤黒き猫の根付": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "赤魔寝鬼の厄ツメ",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "赤魔寝鬼の銅小判",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "ポカポカの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "ポカポカのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/12274"
+  },
+  "ダークメタルシールド": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "モーターＲ３０００",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "バッテリーＲ３０００",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "イサマシの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "イサマシのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/16387"
+  },
+  "大傘「三つ巴」": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "カブキロイドの小判",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "カブキロイドの提灯",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "ゴーケツの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "ゴーケツのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4222"
+  },
+  "厄災のフタ": {
+    "method": "強化レシピ",
+    "requirements": [
+      {
+        "kind": "equipment",
+        "name": "巨大釜のフタ",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "どんどろの漆黒羽釜",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "どんどろの祝い泥",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "どんどろの羽釜",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "どんどろの泥",
+        "count": 1
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4221"
+  },
+  "アミダのおまもり": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "あやとりさまの操り糸",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "あやとりさまの玉",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "ブキミーの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "ブキミーのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://wikisp.com/busters/equipment1"
+  },
+  "ハイテクアーム": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "28号のモーター",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "28号のバッテリー",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "ニョロロンの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "ニョロロンのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4112"
+  },
+  "真鬼砕き・赤": {
+    "method": "強化レシピ",
+    "requirements": [
+      {
+        "kind": "equipment",
+        "name": "鬼砕き・赤",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "赤鬼金棒の重厚なトゲ",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "赤鬼のとがったツノ",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "赤鬼金棒のトゲ",
+        "count": 4
+      },
+      {
+        "kind": "material",
+        "name": "イサマシの宝玉",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4076"
+  },
+  "キャプテンランチャー": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "Cヘルメット",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "Cロケット",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "プリチーの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "プリチーのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/16367"
+  },
+  "地獄目玉の杖": {
+    "method": "強化レシピ",
+    "requirements": [
+      {
+        "kind": "equipment",
+        "name": "ギョロっとした杖",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "地獄大山椒の上タン",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "地獄大山椒の大目玉",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "地獄大山椒のタン",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "地獄大山椒の目ん玉",
+        "count": 1
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4149"
+  },
+  "紅玉のぬらリング": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "ぬらねいらのツメ",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "ぬらねいらのツノ",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "ウスラカゲの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "ウスラカゲのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/16384"
+  },
+  "金の白古魔おまもり": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "白古魔Gの１８Ｋキバ",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "白古魔Gの福福玉",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "プリチーの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "プリチーのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/16392"
+  },
+  "金の赤魔寝鬼まわし": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "赤魔寝鬼Gの太縄",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "赤魔寝鬼Gの福吉小判",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "イサマシの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "イサマシのカタマリ",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/16395"
+  },
+  "マイティーなこぶくろ": {
+    "method": "強化レシピ",
+    "requirements": [
+      {
+        "kind": "equipment",
+        "name": "ピンクのこぶくろ",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "マイティーの超爆弾",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "マイティーの上がま口",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "マイティーの爆弾",
+        "count": 4
+      },
+      {
+        "kind": "material",
+        "name": "ブキミーの宝玉",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4258"
+  },
+  "肉球の鈴": {
+    "method": "新規レシピ",
+    "requirements": [
+      {
+        "kind": "material",
+        "name": "レッドJのキバ",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "レッドJの首輪玉",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "プリチーのカタマリ",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "プリチーのカケラ",
+        "count": 5
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4324"
+  },
+  "池の主の根付": {
+    "method": "強化レシピ",
+    "requirements": [
+      {
+        "kind": "equipment",
+        "name": "大なまずの根付",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "たろう丸の怪賊船",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "たろう丸の大釣り針",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "たろう丸の釣り船",
+        "count": 4
+      },
+      {
+        "kind": "material",
+        "name": "ポカポカの宝玉",
+        "count": 4
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/12271"
+  },
+  "沼の主の根付": {
+    "method": "強化レシピ",
+    "requirements": [
+      {
+        "kind": "equipment",
+        "name": "金色なまずの根付",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "三途丸の大釣り針",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "三途丸の怪賊船",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "三途丸の釣り針",
+        "count": 2
+      },
+      {
+        "kind": "material",
+        "name": "三途丸の釣り船",
+        "count": 1
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/12272"
+  },
+  "夜空の魔よけ": {
+    "method": "強化レシピ",
+    "requirements": [
+      {
+        "kind": "equipment",
+        "name": "いわくつきの魔よけ",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "ポカポカの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "イサマシの宝玉",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "ポカポカのカタマリ",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "ポカポカエキス",
+        "count": 5
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4326"
+  },
+  "聖騎士の盾": {
+    "method": "強化レシピ",
+    "requirements": [
+      {
+        "kind": "equipment",
+        "name": "銀の盾",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "ゴーケツの宝玉",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "プリチーの宝玉",
+        "count": 1
+      },
+      {
+        "kind": "material",
+        "name": "ゴーケツのカタマリ",
+        "count": 3
+      },
+      {
+        "kind": "material",
+        "name": "ゴーケツエキス",
+        "count": 5
+      }
+    ],
+    "source": "https://youkai.gamepedia.jp/busters/equipments/4216"
+  }
+}

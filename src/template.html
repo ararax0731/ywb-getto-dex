@@ -385,11 +385,10 @@ h2{font-family:var(--serif); font-size:19px; font-weight:600; letter-spacing:.04
 .reciperows{display:flex; flex-direction:column; gap:5px}
 .reciperow{display:grid; grid-template-columns:minmax(125px,.85fr) minmax(170px,1.4fr); gap:8px; font-size:11.5px; line-height:1.45}
 .reciperow + .reciperow{border-top:1px solid var(--line); padding-top:4px}
-.recipesource{margin-top:6px; font-size:10.5px; color:var(--ink-3)}
-.recipesource a{color:inherit; text-decoration:underline; text-underline-offset:2px}
 .recipename{font-weight:600; color:var(--ink)}
 .recipehow{color:var(--ink-3)}
-.reciperow a,.directmethod a{color:var(--ink-2); text-decoration:underline; text-decoration-color:var(--line-2); text-underline-offset:2px}
+.basemethod{color:var(--ink-2); font-weight:600}
+.directmethod a{color:var(--ink-2); text-decoration:underline; text-decoration-color:var(--line-2); text-underline-offset:2px}
 .directmethod{font-size:12px; color:var(--ink-2)}
 /* ---------- footer / modal ---------- */
 footer{
@@ -1016,12 +1015,18 @@ function equipDetail(e){
     return '<div class="equipdetail" id="equip-detail-' + e.id + '" hidden><div class="recipehead">入手方法</div>' +
       '<div class="directmethod"><a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(acq.method) + '</a></div></div>';
   }
-  const rows = recipe.requirements.map(r => '<div class="reciperow"><div class="recipename"><a href="' + esc(r.url) +
-    '" target="_blank" rel="noopener">' + esc(r.name) + '</a> ×' + r.count + '</div><div class="recipehow">' + esc(r.method) + '</div></div>').join('');
-  const source = recipe.acquisition && recipe.acquisition.url ? '<div class="recipesource">レシピ補完：<a href="' +
-    esc(recipe.acquisition.url) + '" target="_blank" rel="noopener">別攻略Wikiの装備強化表</a></div>' : '';
+  const rows = recipe.requirements.map(r => {
+    if (r.kind === 'equipment' && r.baseRecipe) {
+      const parts = r.baseRecipe.requirements.map(p => esc(p.name) + ' ×' + p.count).join(' ／ ');
+      return '<div class="reciperow base"><div class="recipename">強化元：' + esc(r.name) + ' ×' + r.count +
+        '</div><div class="recipehow"><span class="basemethod">作り方（' + esc(r.baseRecipe.method.replace('レシピ','')) +
+        '）</span>：' + parts + '</div></div>';
+    }
+    return '<div class="reciperow"><div class="recipename">' + esc(r.name) + ' ×' + r.count +
+      '</div><div class="recipehow">' + esc(r.method) + '</div></div>';
+  }).join('');
   return '<div class="equipdetail" id="equip-detail-' + e.id + '" hidden><div class="recipehead">必要素材' +
-    '<span class="note">素材名から出典を開けます</span></div><div class="reciperows">' + rows + '</div>' + source + '</div>';
+    '<span class="note">強化元の作り方も表示</span></div><div class="reciperows">' + rows + '</div></div>';
 }
 function renderEquipment(){
   const useOrder = ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め'];
