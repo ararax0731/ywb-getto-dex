@@ -414,12 +414,14 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     '鬼系へのダメージアップ','氷ぞくせいのダメージアップ',
     'R3000のB魂','カブキロイドのB魂','忍の魂','自分にかかったよいとりつき継続ターンアップ',
     '赤魔寝鬼のB魂','白古魔のB魂','赤魔寝鬼／白古魔のB魂','ギヤマンどくろのB魂',
-    '日ノ神のB魂','どんどろのB魂',
+    '日ノ神のB魂','どんどろのB魂','地獄大山椒のB魂',
+    '火の魂','水の魂','雷の魂','氷の魂','土の魂','風の魂',
+    '火・氷耐性アップ','土・風耐性アップ','雷・水耐性アップ','水・氷・風耐性アップ',
   ];
   const stillPresent = removedSoulNames.filter(name => D_.souls.some(s => s.name === name));
   if (stillPresent.length) problems.push('指定削除の魂が残っている: ' + stillPresent.join(', '));
   if (!list.includes('class="soulbottom"')) problems.push('魂一覧が2行構成になっていない');
-  for (const group of ['まもり','昇天・復活','トラップ']) {
+  for (const group of ['まもり','全ステータス','属性を与える','属性に耐える','昇天・復活','トラップ']) {
     if (D_.soulGroups.includes(group) || list.includes('>' + group + '</h3>')) problems.push('0種の魂分類が残っている: ' + group);
   }
   if (/<table[\s>]/.test(sh)) problems.push('魂タブに横スクロールの原因となるtableが残っている');
