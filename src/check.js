@@ -282,6 +282,9 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   }
   if ((eh.match(/data-equip-open=/g) || []).length !== 40 || (eh.match(/class="equipdetail"/g) || []).length !== 40) problems.push('装備素材の開閉UIが40件ない');
   for (const text of ['必要素材','素材名から出典を開けます','専用：B-USAピョン','専用：USAピョン','専用：エンマ大王']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
+  for (const use of ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め']) {
+    if (eh.includes('<span class="tag">' + use + '</span>')) problems.push('装備行に用途タグが残っている: ' + use);
+  }
   if (/data-echeck=|class="vstamp"|入手済み/.test(eh)) problems.push('装備一覧にチェックUIまたは入手済み表記が残っている');
   if (/実用性の高い装備|能力・効果とともに一覧|入手済み\s*\d+\/\d+/.test(eh)) problems.push('装備一覧に不要な説明文が残っている');
   const unavailable = D_.youkai.filter(y => y.unavailable);
