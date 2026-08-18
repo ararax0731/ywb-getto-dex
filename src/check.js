@@ -293,7 +293,7 @@ console.log('フィルタ往復', F.length, '種 OK');
 for (const id of [1, 131, 383, 250]) { fire({ check: String(id) }); }
 console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').got);
 
-// 魂・装備タブ: 選定した11種、用途順、素材、専用先、チェックなし、入手困難表示の整合
+// 魂・装備タブ: 選定した11種、やくわり順、素材、チェックなし、入手困難表示の整合
 {
   if (D_.equipment.length !== 11 || new Set(D_.equipment.map(e => e.name)).size !== 11) problems.push('装備が重複なし11種ではない');
   for (const [name,id] of [['鬼砕き・天',1],['月読みの杖',5],['常闇のフタ',15],['碧玉のぬらリング',31]]) {
@@ -315,7 +315,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   const equipItems = [...eh.matchAll(/<article class="equipitem[^>]*>[\s\S]*?<span class="equipname">([^<]+)<\/span>/g)].map(m => m[1]);
   if (equipItems.slice(-2).join('|') !== '月光一文字|月影丸') problems.push('現在入手困難な装備が一覧末尾にない');
   for (const id of ['exportBtn','importBtn','eqResetBtn']) if (eh.includes('id="' + id + '"')) problems.push('装備一覧に不要な操作ボタンが残っている: ' + id);
-  const useOrder = ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','現在入手困難'];
+  const useOrder = ['アタッカー','タンク','ヒーラー','周回用','現在入手困難'];
   let lastUse = -1;
   for (const use of useOrder) {
     const pos = eh.indexOf('<h3>' + use + '</h3>');
@@ -359,7 +359,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   }
   if (/class="recipename"><a\s/.test(eh)) problems.push('装備素材に外部リンクが残っている');
   if (/素材名から出典を開けます|レシピ補完：/.test(eh)) problems.push('装備素材に外部遷移を促す文言が残っている');
-  for (const use of ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め']) {
+  for (const use of ['アタッカー','タンク','ヒーラー','周回用']) {
     if (eh.includes('<span class="tag">' + use + '</span>')) problems.push('装備行に用途タグが残っている: ' + use);
   }
   if (/data-echeck=|class="vstamp"|入手済み/.test(eh)) problems.push('装備一覧にチェックUIまたは入手済み表記が残っている');
@@ -370,7 +370,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   fire({ tab:'dex' });
   const dh = getEl('listwrap').innerHTML;
   for (const y of unavailable) if (!dh.includes('id="y' + y.id + '"') || !dh.includes('現在入手困難')) problems.push('入手困難妖怪のグレー表示がない: ' + y.name);
-  console.log('魂・装備タブ／装備11種・用途順・素材・専用先・チェックなし・入手困難 妖怪9体／装備2種 OK');
+  console.log('魂・装備タブ／装備11種・やくわり順・素材・チェックなし・入手困難 妖怪9体／装備2種 OK');
 }
 
 // 入手状態フィルタ（すべて・未入手だけ・入手済みだけ）

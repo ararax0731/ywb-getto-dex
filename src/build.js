@@ -58,22 +58,13 @@ for (const recipe of Object.values(equipmentRecipes)) for (const requirement of 
   requirement.method = canonical.method;
 }
 
-const EQUIPMENT_DEDICATED = {
-  '勇ましき王のうでわ':'エンマ大王',
-  '優しき王のうでわ':'エンマ大王',
-  '賢き王のうでわ':'エンマ大王',
-};
-function equipmentUse(name, type, effect, power, magic) {
-  if (EQUIPMENT_DEDICATED[name]) return '専用ビルド';
-  if (name === 'ニャンダフルな鈴') return '仲間集め';
-  if (/ぞくせいのダメージを軽減|ドレイン系/.test(effect)) return '属性・技対策';
-  if (['月光の杖','天界の杖','聖人のゆびわ','白犬魔王のおまもり','赤猫魔王のまわし'].includes(name)) return 'ヒーラー・支援';
-  if (['盾','おまもり'].includes(type) || /ねらわれやすく|まもりがアップ|クリティカルを受けない|よろけなく|スタン状態/.test(effect)) return 'タンク・耐久';
-  if (magic > power) return '妖術アタッカー';
-  if (type === 'チャーム' || type === 'ベルト') return '汎用・耐久';
-  if (/回復/.test(effect)) return 'ヒーラー・支援';
-  if (['杖','ゆびわ'].includes(type) || /ようりょく/.test(effect)) return '妖術アタッカー';
-  return '物理アタッカー';
+// 周回用はやくわりではなく稼ぎ効率の装備なので、やくわり3種と分けて最後に並べる。
+const EQUIPMENT_FARMING = new Set(['碧玉のぬらリング']);
+function equipmentUse(name, type, effect) {
+  if (EQUIPMENT_FARMING.has(name)) return '周回用';
+  if (/回復/.test(effect)) return 'ヒーラー';
+  if (['盾','おまもり'].includes(type) || /ねらわれやすく|まもりがアップ|クリティカルを受けない|よろけなく|スタン状態/.test(effect)) return 'タンク';
+  return 'アタッカー';
 }
 data.equipment = equipmentLines.map((line, index) => {
   const p = line.split('|');
@@ -82,8 +73,7 @@ data.equipment = equipmentLines.map((line, index) => {
   const id = EQUIPMENT_IDS.get(name);
   if (!id) throw new Error('装備の固定IDがありません: ' + name);
   const e = { id, name, type, rank:+rank, hp:+hp, power:+power, magic:+magic, defense:+defense, effect, source };
-  e.use = equipmentUse(name, type, effect, e.power, e.magic);
-  e.dedicated = EQUIPMENT_DEDICATED[name] || '';
+  e.use = equipmentUse(name, type, effect);
   e.recipe = equipmentRecipes[name];
   if (!e.recipe || (!e.recipe.requirements.length && !e.recipe.acquisition)) throw new Error('装備素材がありません: ' + name);
   for (const requirement of e.recipe.requirements) {
