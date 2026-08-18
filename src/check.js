@@ -165,9 +165,8 @@ console.log('詳細生成', opened, '/', D_.youkai.length);
 // フィルタ・検索・ソートを一通り
 const F = [
   ...['S','A','B','C','D','E'].map(v => ({ fg:'rank', fv:v })),
-  ...[...new Set(D_.youkai.map(y=>y.tribe).filter(Boolean))].map(v => ({ fg:'tribe', fv:v })),
   ...['アタッカー','タンク','ヒーラー','レンジャー'].map(v => ({ fg:'role', fv:v })),
-  ...['legend','rare','unavailable','koten','aka','shiro','tsuki','evo','fuse','gasha',
+  ...['unavailable','aka','shiro','tsuki','evo','fuse','gasha',
       'u_ring','u_lgnd','u_evo','u_fuse','u_soul'].map(v => ({ fg:'tag', fv:v })),
   ...[...new Set(D_.youkai.flatMap(y=>y.patrol))].map(v => ({ fg:'area', fv:v })),
 ];
@@ -260,6 +259,9 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   if ((eh.match(/class="equipitem/g) || []).length !== 61) problems.push('装備一覧の描画件数が61ではない');
   for (const name of ['鬼砕き・天','月光一文字','Bラビットランチャー','伝説の盾']) if (!eh.includes(name)) problems.push('装備一覧にない: ' + name);
   for (const name of ['月光一文字','月影丸']) if (!eh.includes(name) || !eh.includes('現在入手困難')) problems.push('入手困難装備の表示がない: ' + name);
+  for (const text of ['推奨度','採用理由：','注意：','能力・効果の出典','現在入手困難：月光一文字','Excelで選定した全']) {
+    if (eh.includes(text)) problems.push('装備一覧に削除対象の文言が残っている: ' + text);
+  }
   fire({ echeck:'1' });
   if (!(JSON.parse(store['ywb-getto-dex-v1'] || '{}').eqGot || []).includes(1)) problems.push('装備チェックが保存されない');
   eh = getEl('main').innerHTML;
@@ -276,6 +278,13 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
 // 入手状態フィルタ（すべて・未入手だけ・入手済みだけ）
 {
   fire({ tab: 'dex' });
+  const dexMain = getEl('main').innerHTML;
+  if (/data-fg="tribe"/.test(dexMain)) problems.push('種族の絞り込みが残っている');
+  for (const tag of ['legend','rare','koten']) if (dexMain.includes('data-fv="' + tag + '"')) problems.push('削除対象の区分が残っている: ' + tag);
+  if (!/<span class="chiplabel">やくわり<\/span>[\s\S]*?<\/div><div class="chips"><span class="chiplabel">区分<\/span>/.test(dexMain)) {
+    problems.push('やくわりと区分が別の行になっていない');
+  }
+  if (dexMain.includes('ほかの妖怪・輪・魂をそろえるのに要る妖怪')) problems.push('用途フィルタの削除対象文言が残っている');
   const dexHtml = getEl('listwrap').innerHTML;
   if (!/class="rowbody"[\s\S]*class="namecell"[\s\S]*class="metacell"/.test(dexHtml)) {
     problems.push('妖怪行が名前→No.・ランク等の2段構成ではない');
@@ -335,7 +344,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
 {
   fire({ tab: 'soul' });
   const sh = getEl('main').innerHTML;
-  const cut = sh.indexOf('効果べつ 魂一覧');
+  const cut = sh.indexOf('魂一覧');
   if (cut < 0) throw new Error('魂一覧の見出しが出ていない');
   const list = sh.slice(cut);
   for (const g of D_.soulGroups) if (!list.includes('>' + g + '</h3>')) problems.push('魂の分類が出ていない: ' + g);
