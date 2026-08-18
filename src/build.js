@@ -3,16 +3,28 @@ const D = __dirname;
 const tpl = fs.readFileSync(path.join(D, 'template.html'), 'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(D, 'data.json'), 'utf8'));
 const availability = JSON.parse(fs.readFileSync(path.join(D, 'availability.json'), 'utf8'));
+const equipmentRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-recipes.json'), 'utf8'));
 
-// Excelで確定した実用装備61種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
+// 選定済みの実用装備45種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
 const equipmentLines = fs.readFileSync(path.join(D, 'equipment.tsv'), 'utf8').trim().split(/\r?\n/);
-const S_TIER = new Set([
+// localStorage の既存チェックを別の装備へずらさないため、削除前61種で使っていたIDを維持する。
+const EQUIPMENT_ID_ORDER = [
   '鬼砕き・天','月光一文字','月影丸','ギヤマンリング','月読みの杖','月光の杖','創造主の杖',
-  '月下の黒犬根付','月下の赤猫根付','太古の魔犬根付','妖魔の鬼猫根付','ルナゴールドシールド',
-  'ルナホワイトシールド','大傘「桜吹雪」','常闇のフタ','導きのおまもり','光明のおまもり',
+  '月下の黒犬根付','月下の赤猫根付','太古の魔犬根付','妖魔の鬼猫根付','ルナゴールドシールド','ルナホワイトシールド',
+  '大傘「桜吹雪」','常闇のフタ','導きのおまもり','光明のおまもり','太陽神のうでわ','積乱雲のうでわ','魔王のうでわ',
+  '剛力アーム','桃源郷のうでわ','鬼砕き・絶','オーガブレイカー','幻水龍刀','アルティメットビーム','グレネードサンダー',
+  '天界の杖','殺意のまなざし','大妖魔ぬらリング','碧玉のぬらリング','聖人のゆびわ','天狗のうちわ','極合金シールド',
+  '天下泰平おまもり','白犬魔王のおまもり','赤猫魔王のまわし','除霊のこぶくろ','冥土の根付','レジェンドチャーム',
+  '赤き禍の根付','白き災いの根付','森羅万象まわし','高潔の帯','四葉のおまもり','吸魂花の根付','Bラビットランチャー',
+  'ベイダーチップ','勇ましき王のうでわ','優しき王のうでわ','賢き王のうでわ','ニャンダフルな鈴','白古魔の根付',
+  '赤魔寝鬼の根付','絶縁のフタ','大漁祈願の根付','氷河の根付','山神の魔よけ','黄泉の根付','破魔のこぶくろ','伝説の盾',
+];
+const EQUIPMENT_IDS = new Map(EQUIPMENT_ID_ORDER.map((name, index) => [name, index + 1]));
+const S_TIER = new Set([
+  '鬼砕き・天','月光一文字','月影丸','月読みの杖','創造主の杖','太古の魔犬根付',
+  '妖魔の鬼猫根付','ルナゴールドシールド','大傘「桜吹雪」','常闇のフタ','導きのおまもり','光明のおまもり',
 ]);
 const B_TIER = new Set([
-  '桃源郷のうでわ','グレネードサンダー','聖人のゆびわ','天狗のうちわ','高潔の帯','四葉のおまもり',
   '吸魂花の根付','ニャンダフルな鈴','白古魔の根付','赤魔寝鬼の根付','絶縁のフタ','大漁祈願の根付',
   '氷河の根付','山神の魔よけ','黄泉の根付','破魔のこぶくろ','伝説の盾',
 ]);
@@ -20,23 +32,28 @@ const EQUIPMENT_LIMITS = {
   '鬼砕き・天':'HP-85。回避に不慣れな操作では気絶リスクが高い。',
   '月光一文字':'赤猫団限定。攻撃を止めると強化が切れる。',
   '月影丸':'白犬隊限定。攻撃を止めると弱体効果が切れる。',
-  '月下の黒犬根付':'赤猫団限定。', '月下の赤猫根付':'白犬隊限定。',
   'Bラビットランチャー':'B-USAピョン専用。QRコード入手。',
   'ベイダーチップ':'USAピョン専用。QRコード入手。',
   '勇ましき王のうでわ':'エンマ大王専用。攻略資料によってランク表記に差があります。',
   '優しき王のうでわ':'エンマ大王専用。攻略資料によってランク表記に差があります。',
   '賢き王のうでわ':'エンマ大王専用。攻略資料によってランク表記に差があります。',
-  '天狗のうちわ':'天狗系専用。特殊効果はない。',
   'ニャンダフルな鈴':'ネコ妖怪向けの仲間集め専用。',
   '創造主の杖':'まもり-50。', '天界の杖':'まもり-50。',
-  'ギヤマンリング':'ちから-40。物理型には不向き。',
 };
-function equipmentUse(name, type, effect) {
-  if (['Bラビットランチャー','ベイダーチップ','勇ましき王のうでわ','優しき王のうでわ','賢き王のうでわ','天狗のうちわ'].includes(name)) return '専用ビルド';
+const EQUIPMENT_DEDICATED = {
+  'Bラビットランチャー':'B-USAピョン',
+  'ベイダーチップ':'USAピョン',
+  '勇ましき王のうでわ':'エンマ大王',
+  '優しき王のうでわ':'エンマ大王',
+  '賢き王のうでわ':'エンマ大王',
+};
+function equipmentUse(name, type, effect, power, magic) {
+  if (EQUIPMENT_DEDICATED[name]) return '専用ビルド';
   if (name === 'ニャンダフルな鈴') return '仲間集め';
   if (/ぞくせいのダメージを軽減|ドレイン系/.test(effect)) return '属性・技対策';
   if (['月光の杖','天界の杖','聖人のゆびわ','白犬魔王のおまもり','赤猫魔王のまわし'].includes(name)) return 'ヒーラー・支援';
   if (['盾','おまもり'].includes(type) || /ねらわれやすく|まもりがアップ|クリティカルを受けない|よろけなく|スタン状態/.test(effect)) return 'タンク・耐久';
+  if (magic > power) return '妖術アタッカー';
   if (type === 'チャーム' || type === 'ベルト') return '汎用・耐久';
   if (/回復/.test(effect)) return 'ヒーラー・支援';
   if (['杖','ゆびわ'].includes(type) || /ようりょく/.test(effect)) return '妖術アタッカー';
@@ -47,9 +64,7 @@ function equipmentReason(e, use) {
     '鬼砕き・天':'全装備中トップ級のちから400。会心型の自操作アタッカーで定番。',
     '月光一文字':'長時間攻撃を継続できる相手への物理火力が非常に高い。',
     '月影丸':'継続攻撃で敵の守りを下げ、味方全体の物理火力にも貢献。',
-    'ギヤマンリング':'高い妖力と耐久を両立し、属性相性による減衰を無視できる。',
     '月読みの杖':'妖力400に加えて味方全員を強化できる。',
-    '月光の杖':'高妖力と瀕死回復の強化を両立するヒーラー向け最終候補。',
   };
   if (fixed[e.name]) return fixed[e.name];
   if (/月下の|太古の魔犬|妖魔の鬼猫/.test(e.name)) return '全能力を大きく伸ばす高耐久の万能装備。';
@@ -67,16 +82,21 @@ data.equipment = equipmentLines.map((line, index) => {
   const p = line.split('|');
   if (p.length !== 9) throw new Error('装備TSVの列数が不正: ' + (index + 1));
   const [name,type,rank,hp,power,magic,defense,effect,source] = p;
-  const e = { id:index + 1, name, type, rank:+rank, hp:+hp, power:+power, magic:+magic, defense:+defense, effect, source };
+  const id = EQUIPMENT_IDS.get(name);
+  if (!id) throw new Error('装備の固定IDがありません: ' + name);
+  const e = { id, name, type, rank:+rank, hp:+hp, power:+power, magic:+magic, defense:+defense, effect, source };
   e.tier = S_TIER.has(name) ? 'S' : B_TIER.has(name) ? 'B' : 'A';
-  e.use = equipmentUse(name, type, effect);
+  e.use = equipmentUse(name, type, effect, e.power, e.magic);
+  e.dedicated = EQUIPMENT_DEDICATED[name] || '';
   e.limit = EQUIPMENT_LIMITS[name] || '';
   e.reason = equipmentReason(e, e.use);
+  e.recipe = equipmentRecipes[name];
+  if (!e.recipe || (!e.recipe.requirements.length && !e.recipe.acquisition)) throw new Error('装備素材がありません: ' + name);
   if (availability.equipment[String(e.id)]) e.unavailable = availability.equipment[String(e.id)];
   return e;
 });
-if (data.equipment.length !== 61 || new Set(data.equipment.map(e => e.name)).size !== 61) {
-  throw new Error('装備は重複なし61種である必要があります');
+if (data.equipment.length !== 45 || new Set(data.equipment.map(e => e.name)).size !== 45) {
+  throw new Error('装備は重複なし45種である必要があります');
 }
 data.availability = { asOf:availability.asOf, criteria:availability.criteria };
 for (const y of data.youkai) if (availability.youkai[String(y.id)]) y.unavailable = availability.youkai[String(y.id)];

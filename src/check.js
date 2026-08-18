@@ -255,20 +255,36 @@ console.log('フィルタ往復', F.length, '種 OK');
 for (const id of [1, 131, 383, 250]) { fire({ check: String(id) }); }
 console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').got);
 
-// 装備タブ: Excelの61種のみ、チェック保存、入手困難表示の整合
+// 装備タブ: 選定した45種、用途順、素材、専用先、チェック保存、入手困難表示の整合
 {
-  if (D_.equipment.length !== 61 || new Set(D_.equipment.map(e => e.name)).size !== 61) problems.push('装備が重複なし61種ではない');
+  if (D_.equipment.length !== 45 || new Set(D_.equipment.map(e => e.name)).size !== 45) problems.push('装備が重複なし45種ではない');
+  for (const [name,id] of [['鬼砕き・天',1],['月読みの杖',5],['Bラビットランチャー',47],['伝説の盾',61]]) {
+    if (D_.equipment.find(e => e.name === name)?.id !== id) problems.push('既存チェック用の装備IDが変わった: ' + name);
+  }
+  if (D_.equipment.some(e => !e.recipe || (!e.recipe.requirements.length && !e.recipe.acquisition))) problems.push('素材・入手方法のない装備がある');
   fire({ tab:'equipment' });
   let eh = getEl('main').innerHTML;
-  if ((eh.match(/class="equipitem/g) || []).length !== 61) problems.push('装備一覧の描画件数が61ではない');
+  if ((eh.match(/class="equipitem/g) || []).length !== 45) problems.push('装備一覧の描画件数が45ではない');
   for (const name of ['鬼砕き・天','月光一文字','Bラビットランチャー','伝説の盾']) if (!eh.includes(name)) problems.push('装備一覧にない: ' + name);
+  for (const name of ['四葉のおまもり','天狗のうちわ','高潔の帯','桃源郷のうでわ','グレネードサンダー','白き災いの根付','赤き禍の根付','レジェンドチャーム','冥土の根付','天下泰平おまもり','聖人のゆびわ','ルナホワイトシールド','月下の赤猫根付','月下の黒犬根付','月光の杖','ギヤマンリング']) {
+    if (eh.includes(name)) problems.push('削除対象の装備が残っている: ' + name);
+  }
   for (const name of ['月光一文字','月影丸']) if (!eh.includes(name) || !eh.includes('現在入手困難')) problems.push('入手困難装備の表示がない: ' + name);
   for (const text of ['推奨度','採用理由：','注意：','能力・効果の出典','現在入手困難：月光一文字','Excelで選定した全']) {
     if (eh.includes(text)) problems.push('装備一覧に削除対象の文言が残っている: ' + text);
   }
   const equipItems = [...eh.matchAll(/<article class="equipitem[^>]*>[\s\S]*?<span class="equipname">([^<]+)<\/span>/g)].map(m => m[1]);
   if (equipItems.slice(-2).join('|') !== '月光一文字|月影丸') problems.push('現在入手困難な装備が一覧末尾にない');
-  if (!/<div class="secthead">[\s\S]*?<span class="tools">[\s\S]*?id="eqResetBtn"[\s\S]*?<\/div><div class="equiplist">/.test(eh)) problems.push('装備の操作ボタンが見出し行にない');
+  if (!/<div class="secthead">[\s\S]*?<span class="tools">[\s\S]*?id="eqResetBtn"[\s\S]*?<\/div><div class="grouphead">/.test(eh)) problems.push('装備の操作ボタンが見出し行にない');
+  const useOrder = ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め','現在入手困難'];
+  let lastUse = -1;
+  for (const use of useOrder) {
+    const pos = eh.indexOf('<h3>' + use + '</h3>');
+    if (pos < 0 || pos <= lastUse) problems.push('装備の用途順が不正: ' + use);
+    lastUse = pos;
+  }
+  if ((eh.match(/data-equip-open=/g) || []).length !== 45 || (eh.match(/class="equipdetail"/g) || []).length !== 45) problems.push('装備素材の開閉UIが45件ない');
+  for (const text of ['必要素材','素材名から出典を開けます','専用：B-USAピョン','専用：USAピョン','専用：エンマ大王']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
   fire({ echeck:'1' });
   if (!(JSON.parse(store['ywb-getto-dex-v1'] || '{}').eqGot || []).includes(1)) problems.push('装備チェックが保存されない');
   eh = getEl('main').innerHTML;
@@ -279,7 +295,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   fire({ tab:'dex' });
   const dh = getEl('listwrap').innerHTML;
   for (const y of unavailable) if (!dh.includes('id="y' + y.id + '"') || !dh.includes('現在入手困難')) problems.push('入手困難妖怪のグレー表示がない: ' + y.name);
-  console.log('装備61種・入手困難 妖怪9体／装備2種・装備チェック保存 OK');
+  console.log('装備45種・用途順・素材・専用先・入手困難 妖怪9体／装備2種・装備チェック保存 OK');
 }
 
 // 入手状態フィルタ（すべて・未入手だけ・入手済みだけ）

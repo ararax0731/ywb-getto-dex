@@ -377,13 +377,28 @@ h2{font-family:var(--serif); font-size:19px; font-weight:600; letter-spacing:.04
 .equipitem:first-child{border-top:none}
 .equipitem.got{background:var(--stamp-wash)}
 .equipitem.unavailable{background:var(--panel-3); border-top-style:dashed; color:var(--ink-3)}
-.equipbody{min-width:0; padding:5px 10px 6px}
+.equipbody{min-width:0}
+.equiptoggle{display:block; position:relative; width:100%; padding:5px 34px 6px 10px; text-align:left; color:inherit}
+.equiptoggle:hover{background:var(--panel-2)}
+.equiptoggle:focus-visible{outline:2px solid var(--gold); outline-offset:-2px}
+.equipchev{position:absolute; right:12px; top:50%; transform:translateY(-50%) rotate(0); color:var(--ink-3); transition:transform .16s}
+.equiptoggle[aria-expanded="true"] .equipchev{transform:translateY(-50%) rotate(90deg)}
 .equiptop{display:flex; flex-wrap:wrap; align-items:center; gap:5px 7px}
 .equipname{font-size:14px; font-weight:700; margin-right:2px}
 .equipstats{display:flex; flex-wrap:wrap; gap:2px 9px; margin-top:2px; font:11px var(--mono); color:var(--ink-3)}
 .equipstats b{color:var(--ink-2); font-weight:600}
 .equipstats .neg b{color:var(--stamp)}
-.equipeffect{margin-top:2px; color:var(--ink-2); font-size:12px; line-height:1.4}
+.equipeffect{display:block; margin-top:2px; color:var(--ink-2); font-size:12px; line-height:1.4}
+.equipdetail{border-top:1px dashed var(--line-2); padding:7px 10px 9px; background:var(--panel-2)}
+.equipdetail[hidden]{display:none}
+.recipehead{display:flex; align-items:baseline; gap:8px; margin-bottom:5px; font-size:12px; font-weight:700}
+.recipehead .note{font-size:10.5px; font-weight:400; color:var(--ink-3)}
+.reciperows{display:flex; flex-direction:column; gap:3px}
+.reciperow{display:grid; grid-template-columns:minmax(125px,.85fr) minmax(170px,1.4fr); gap:8px; font-size:11.5px; line-height:1.45}
+.recipename{font-weight:600; color:var(--ink)}
+.recipehow{color:var(--ink-3)}
+.reciperow a,.directmethod a{color:var(--ink-2); text-decoration:underline; text-decoration-color:var(--line-2); text-underline-offset:2px}
+.directmethod{font-size:12px; color:var(--ink-2)}
 /* ---------- footer / modal ---------- */
 footer{
   border-top:1px solid var(--line); margin-top:44px; padding:20px 0 44px;
@@ -428,6 +443,7 @@ footer a{color:var(--ink-2)}
   .total{flex:none; gap:5px}
   .total .big{font-size:24px}
   .summary{display:none}
+  .reciperow{grid-template-columns:1fr; gap:0}
   .tab{padding:8px 1px 7px; font-size:8.5px; letter-spacing:-.04em}
   .tab[data-tab="legend"]{font-size:7px}
   .tab .c{display:block; margin:1px 0 0; font-size:8.5px; letter-spacing:0}
@@ -1005,21 +1021,43 @@ function equipRow(e){
   return '<article class="equipitem' + (equipHas(e.id) ? ' got' : '') + (e.unavailable ? ' unavailable' : '') + '">' +
     '<div class="vstamp"><button class="stamp" data-echeck="' + e.id + '" aria-pressed="' + equipHas(e.id) +
       '" aria-label="' + esc(e.name) + ' を入手済みにする">済</button></div>' +
-    '<div class="equipbody"><div class="equiptop"><span class="equipname">' + esc(e.name) + '</span>' +
+    '<div class="equipbody"><button class="equiptoggle" data-equip-open="equip-detail-' + e.id + '" aria-expanded="false" aria-controls="equip-detail-' + e.id + '">' +
+    '<span class="equiptop"><span class="equipname">' + esc(e.name) + '</span>' +
       '<span class="tag">' + esc(e.use) + '</span><span class="tag">' + esc(e.type) + '</span>' +
+      (e.dedicated ? '<span class="tag rare">専用：' + esc(e.dedicated) + '</span>' : '') +
       '<span class="rank" data-r="' + e.rank + '" title="装備ランク">' + e.rank + '</span>' +
-      (e.unavailable ? '<span class="tag unavailable">現在入手困難</span>' : '') + '</div>' +
-    '<div class="equipstats">' + equipStat('HP',e.hp) + equipStat('ちから',e.power) +
-      equipStat('ようりょく',e.magic) + equipStat('まもり',e.defense) + '</div>' +
-    '<div class="equipeffect">' + esc(e.effect) + '</div></div></article>';
+      (e.unavailable ? '<span class="tag unavailable">現在入手困難</span>' : '') + '</span>' +
+    '<span class="equipstats">' + equipStat('HP',e.hp) + equipStat('ちから',e.power) +
+      equipStat('ようりょく',e.magic) + equipStat('まもり',e.defense) + '</span>' +
+    '<span class="equipeffect">' + esc(e.effect) + '</span><span class="equipchev" aria-hidden="true">›</span></button>' +
+    equipDetail(e) + '</div></article>';
+}
+function equipDetail(e){
+  const recipe = e.recipe || {requirements:[], acquisition:null};
+  if (!recipe.requirements.length) {
+    const acq = recipe.acquisition || {method:'入手方法は装備ページ参照',url:e.source};
+    const url = acq.url || e.source;
+    return '<div class="equipdetail" id="equip-detail-' + e.id + '" hidden><div class="recipehead">入手方法</div>' +
+      '<div class="directmethod"><a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(acq.method) + '</a></div></div>';
+  }
+  const rows = recipe.requirements.map(r => '<div class="reciperow"><div class="recipename"><a href="' + esc(r.url) +
+    '" target="_blank" rel="noopener">' + esc(r.name) + '</a> ×' + r.count + '</div><div class="recipehow">' + esc(r.method) + '</div></div>').join('');
+  return '<div class="equipdetail" id="equip-detail-' + e.id + '" hidden><div class="recipehead">必要素材' +
+    '<span class="note">素材名から出典を開けます</span></div><div class="reciperows">' + rows + '</div></div>';
 }
 function renderEquipment(){
-  const orderedEquipment = EQUIPMENT.slice().sort((a, b) => Number(!!a.unavailable) - Number(!!b.unavailable));
+  const useOrder = ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め'];
+  const normal = EQUIPMENT.filter(e => !e.unavailable);
+  const groups = useOrder.map(use => [use, normal.filter(e => e.use === use)]).filter(([,list]) => list.length);
+  const unavailable = EQUIPMENT.filter(e => e.unavailable);
+  const groupHtml = groups.map(([use,list]) => '<div class="grouphead"><h3>' + esc(use) + '</h3><span class="n">' + list.length +
+    '種</span><span class="rule"></span></div><div class="equiplist">' + list.map(equipRow).join('') + '</div>').join('') +
+    (unavailable.length ? '<div class="grouphead"><h3>現在入手困難</h3><span class="n">' + unavailable.length +
+      '種</span><span class="rule"></span></div><div class="equiplist">' + unavailable.map(equipRow).join('') + '</div>' : '');
   elMain.innerHTML = '<div class="secthead"><h2>装備一覧</h2><span class="sectnote">実用性の高い装備' + EQUIPMENT.length +
     '種を、能力・効果とともに一覧にしています。入手済み <b class="num">' + S.eqGot.size + '</b>/' + EQUIPMENT.length + '</span><span class="sectrule"></span>' +
     '<span class="tools"><button class="ghost" id="exportBtn">書き出し</button><button class="ghost" id="importBtn">読み込み</button>' +
-    '<button class="ghost" id="eqResetBtn">装備チェック解除</button></span></div>' +
-    '<div class="equiplist">' + orderedEquipment.map(equipRow).join('') + '</div>';
+    '<button class="ghost" id="eqResetBtn">装備チェック解除</button></span></div>' + groupHtml;
 }
 
 /* ---------- render ---------- */
@@ -1051,7 +1089,7 @@ function refreshRow(id){
 }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tab],[data-dex-kind],[data-owned],[data-search-all],[data-acc],[data-check],[data-echeck],[data-open],[data-goto],[data-ring],[data-fg],#filterToggle,#clearF,#exportBtn,#importBtn,#resetBtn,#eqResetBtn');
+  const t = e.target.closest('[data-tab],[data-dex-kind],[data-owned],[data-search-all],[data-acc],[data-check],[data-echeck],[data-equip-open],[data-open],[data-goto],[data-ring],[data-fg],#filterToggle,#clearF,#exportBtn,#importBtn,#resetBtn,#eqResetBtn');
   if (!t) return;
 
   if (t.dataset.tab) { S.tab = t.dataset.tab; render(); window.scrollTo({top:0}); return; }
@@ -1112,6 +1150,15 @@ document.addEventListener('click', e => {
     if (equipHas(id)) S.eqGot.delete(id); else S.eqGot.add(id);
     save();
     const y = window.scrollY; render(); window.scrollTo({top:y});
+    return;
+  }
+
+  if (t.dataset.equipOpen) {
+    const panel = document.getElementById(t.dataset.equipOpen);
+    if (!panel) return;
+    const open = panel.hidden;
+    panel.hidden = !open;
+    t.setAttribute('aria-expanded', String(open));
     return;
   }
 
