@@ -24,13 +24,26 @@ const EQUIPMENT_ID_ORDER = [
 const EQUIPMENT_IDS = new Map(EQUIPMENT_ID_ORDER.map((name, index) => [name, index + 1]));
 
 // 同じ素材は同じリンク・入手方法を表示し、機械取得データの重複語を整える。
-const canonicalMaterials = new Map();
-for (const recipe of Object.values(equipmentRecipes)) for (const requirement of recipe.requirements) {
-  requirement.method = requirement.method
+const normalizeAcquisition = value => value.trim()
     .replace(/^ビッグボスがドロップ：/, '')
-    .replace(/でドロップ$/, '');
+    .replace(/でドロップ$/, '')
+    .replace(/・(ノーマル|超|極)・/g, '・$1モード・');
+
+const canonicalMaterials = new Map();
+for (const [name, acquisition] of Object.entries(equipmentBaseMaterials)) {
+  if (!acquisition?.location?.trim() || !acquisition?.source?.trim()) {
+    throw new Error(`強化元素材「${name}」の入手場所または出典が空です`);
+  }
+  canonicalMaterials.set(name, {
+    url: acquisition.source.trim(),
+    method: normalizeAcquisition(acquisition.location),
+    fromBaseRecipe: true,
+  });
+}
+for (const recipe of Object.values(equipmentRecipes)) for (const requirement of recipe.requirements) {
+  requirement.method = normalizeAcquisition(requirement.method);
   const current = canonicalMaterials.get(requirement.name);
-  if (!current || (current.url.includes('?search=') && !requirement.url.includes('?search='))) {
+  if (!current || (!current.fromBaseRecipe && current.url.includes('?search=') && !requirement.url.includes('?search='))) {
     canonicalMaterials.set(requirement.name, { url:requirement.url, method:requirement.method });
   }
 }
@@ -38,15 +51,7 @@ for (const recipe of Object.values(equipmentRecipes)) for (const requirement of 
   const canonical = canonicalMaterials.get(requirement.name);
   requirement.url = canonical.url;
   requirement.method = canonical.method;
-  if (requirement.name === '月光石') {
-    requirement.url = 'https://youkai.gamepedia.jp/busters/materials/16366';
-    requirement.method = '真チャレンジミッションで金評価';
-  }
 }
-equipmentRecipes['賢き王のうでわ'].acquisition = {
-  method:'ぬらりひょん（極モード・赤猫団が多いほど確率アップ）',
-  url:'https://youkaiwatch2.blog.jp/archives/50155718.html',
-};
 
 const EQUIPMENT_DEDICATED = {
   '勇ましき王のうでわ':'エンマ大王',
@@ -87,13 +92,13 @@ data.equipment = equipmentLines.map((line, index) => {
       }
       const baseRequirements = base.requirements.map(baseRequirement => {
         if (baseRequirement.kind === 'equipment') {
-          return { ...baseRequirement, location:'前段の装備' };
+          return { ...baseRequirement, nestedEquipment:true };
         }
-        const acquisition = equipmentBaseMaterials[baseRequirement.name];
-        if (!acquisition || !acquisition.location || !acquisition.source) {
+        const acquisition = canonicalMaterials.get(baseRequirement.name);
+        if (!acquisition) {
           throw new Error('強化元装備の素材入手場所が不足: ' + requirement.name + ' → ' + baseRequirement.name);
         }
-        return { ...baseRequirement, location:acquisition.location, source:acquisition.source };
+        return { ...baseRequirement, location:acquisition.method, source:acquisition.url };
       });
       requirement.baseRecipe = { method:base.method, requirements:baseRequirements };
     }

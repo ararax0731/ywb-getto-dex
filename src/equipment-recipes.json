@@ -142,7 +142,7 @@
         "name": "月光石",
         "count": 4,
         "url": "https://youkai.gamepedia.jp/busters/materials/16366",
-        "method": "入手方法は出典ページ参照"
+        "method": "真チャレンジミッションで金評価"
       },
       {
         "kind": "material",
@@ -271,7 +271,7 @@
         "name": "月光石",
         "count": 4,
         "url": "https://youkai.gamepedia.jp/busters/materials/16366",
-        "method": "入手方法は出典ページ参照"
+        "method": "真チャレンジミッションで金評価"
       },
       {
         "kind": "material",
@@ -747,8 +747,8 @@
   "賢き王のうでわ": {
     "requirements": [],
     "acquisition": {
-      "method": "ビッグボスがドロップ",
-      "url": ""
+      "method": "ぬらりひょん（極モード・赤猫団が多いほど確率アップ）",
+      "url": "https://youkaiwatch2.blog.jp/archives/50155718.html"
     }
   },
   "ニャンダフルな鈴": {
