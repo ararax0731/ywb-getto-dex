@@ -6,7 +6,8 @@ function normalizeAcquisition(value) {
     .trim()
     // 出典に当たり枠の記載が無いものは「ドロップ」とだけ書かれる。
     // 大当たり〜ハズレと並べたときに調べ漏れに見えないよう、枠が不明だと明示する。
-    .replace(/・ドロップ$/, '・当たり枠不明');
+    // 「当たり枠不明」だと390px幅で折り返す行が出るうえ、実機のフォント差で増えるので「枠不明」に縮めている。
+    .replace(/・ドロップ$/, '・枠不明');
 }
 
 module.exports = { normalizeAcquisition };

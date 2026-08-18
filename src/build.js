@@ -78,13 +78,23 @@ function equipmentUse(name, type, effect, power, magic) {
 // 赤猫団・白犬隊だけで手に入る素材が要る装備は、月兎組しか遊んでいない人には作れない。
 // これは「正規手段が消滅した」入手困難とは別の理由なので、並び替えはせず弱いマークだけ付ける。
 const OTHER_VERSION_TAGS = [{ key:'aka', label:'赤猫団' }, { key:'shiro', label:'白犬隊' }];
-function detectOtherVersion(recipe) {
-  const texts = [];
-  for (const requirement of recipe.requirements) {
-    texts.push(requirement.method || '');
-    if (requirement.baseRecipe) for (const base of requirement.baseRecipe.requirements) texts.push(base.location || '');
+// 入手方法の文言は method と location の両方に入り、装備本体・強化元・直接入手（acquisition）のどこにでも現れる。
+// 形を決め打ちするとデータを足したときに静かに拾えなくなるので、レシピ配下を再帰でたどって全部集める。
+function collectAcquisitionTexts(node, out, seen) {
+  if (!node || typeof node !== 'object' || seen.has(node)) return out;
+  seen.add(node);
+  if (Array.isArray(node)) {
+    for (const item of node) collectAcquisitionTexts(item, out, seen);
+    return out;
   }
-  const joined = texts.join('\n');
+  for (const [key, value] of Object.entries(node)) {
+    if ((key === 'method' || key === 'location') && typeof value === 'string') out.push(value);
+    else collectAcquisitionTexts(value, out, seen);
+  }
+  return out;
+}
+function detectOtherVersion(recipe) {
+  const joined = collectAcquisitionTexts(recipe, [], new Set()).join('\n');
   return OTHER_VERSION_TAGS.filter(tag => joined.includes('（' + tag.label + '限定）'));
 }
 data.equipment = equipmentLines.map((line, index) => {
