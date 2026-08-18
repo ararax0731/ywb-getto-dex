@@ -106,12 +106,10 @@ nav.tabs{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; w
 
 /* ---------- toolbar ---------- */
 .toolbar{padding:14px 0 10px; display:flex; flex-direction:column; gap:9px}
-.dexheadrow{display:flex; align-items:center; gap:9px; flex-wrap:wrap}
 .dexswitch{
   display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
   width:min(100%,360px); padding:3px; border:1px solid var(--line-2); border-radius:9px; background:var(--panel-3);
 }
-.dexheadrow .resultline{flex:1 1 480px}
 .dexkind{min-height:44px; padding:6px 16px; border-radius:6px; color:var(--ink-3); font-size:13.5px; font-weight:600; white-space:nowrap}
 .dexkind[aria-pressed="true"]{background:var(--panel); color:var(--ink); box-shadow:var(--shadow)}
 .dexkind .n{font-family:var(--mono); font-size:11px; margin-left:7px; opacity:.65; font-variant-numeric:tabular-nums}
@@ -456,7 +454,6 @@ footer a{color:var(--ink-2)}
   .chev{display:none}
   .detail{padding-left:14px}
   .mem .how{display:none}
-  .dexheadrow .resultline{flex-basis:100%}
 }
 </style>
 
@@ -779,9 +776,9 @@ function renderDex(){
   const areas = AREAS.filter(a => base.some(y => y.patrol.includes(a)));
   const html = [];
   html.push('<div class="toolbar">');
-  html.push('<div class="dexheadrow"><div class="dexswitch" role="group" aria-label="大辞典の種類">' + DEX_KINDS.map(k =>
+  html.push('<div class="dexswitch" role="group" aria-label="大辞典の種類">' + DEX_KINDS.map(k =>
     '<button class="dexkind" data-dex-kind="' + k.k + '" aria-pressed="' + (S.dexKind === k.k) + '">' +
-    k.n + '<span class="n">' + cnt(Y.filter(k.t)) + '</span></button>').join('') + '</div><div class="resultline" id="resultline"></div></div>');
+    k.n + '<span class="n">' + cnt(Y.filter(k.t)) + '</span></button>').join('') + '</div>');
   html.push('<div class="searchalways">' +
     '<label class="search"><input id="q" type="search" placeholder="妖怪名で検索" value="' + esc(S.q) + '"></label>' +
     '<button class="chip searchscope" data-search-all="1" aria-pressed="' + S.searchAll + '">その他の項目も検索</button></div>');
@@ -810,6 +807,7 @@ function renderDex(){
   if (areas.length) html.push('<div class="chips"><span class="chiplabel">パトロール</span>' +
     areas.map(a => chipBtn('area', a, a, cnt(base.filter(y => y.patrol.includes(a))))).join('') + '</div>');
   html.push('</div>');
+  html.push('<div class="resultline" id="resultline"></div>');
   html.push('</div>');
   html.push('<div id="listwrap"></div>');
   elMain.innerHTML = html.join('');
@@ -822,8 +820,6 @@ function renderList(){
   const list = filtered();
   const anyF = S.q || S.owned !== 'all' || Object.values(S.f).some(s => s.size);
   document.getElementById('resultline').innerHTML =
-    '<span><b class="num">' + list.length + '</b> 体を表示' +
-    '（うち入手済み <b class="num">' + list.filter(y => has(y.id)).length + '</b>）</span>' +
     (anyF ? '<button class="ghost" id="clearF" style="padding:2px 9px">絞り込みを解除</button>' : '') +
     '<span class="tools">' +
       '<button class="ghost" id="exportBtn">書き出し</button>' +
@@ -849,13 +845,11 @@ function howFallback(id){
   return line ? (line.length > 34 ? line.slice(0, 33) + '…' : line) : '';
 }
 function renderRings(){
-  const done = RINGS.filter(ringDone).length;
   const orderedRings = RINGS.map((ring, index) => ({ring, index}))
     .sort((a, b) => Number(ringDone(a.ring)) - Number(ringDone(b.ring)) || a.index - b.index)
     .map(v => v.ring);
   elMain.innerHTML =
-    '<div class="secthead"><h2>ようかいの輪</h2><span class="sectnote">メンバーを全員なかまにすると、エントランスで報酬がもらえます。' +
-    '<b class="num">' + done + '</b>/' + RINGS.length + ' 達成</span><span class="sectrule"></span></div>' +
+    '<div class="secthead"><h2>ようかいの輪</h2><span class="sectrule"></span></div>' +
     '<div class="accordion">' + orderedRings.map(r => {
       const got = r.members.filter(m => has(m.id)).length, all = r.members.length, ok = got === all;
       return '<article class="accitem' + (ok ? ' done' : '') + '" data-ring-id="' + r.id + '">' +
@@ -874,14 +868,12 @@ function renderRings(){
 
 /* ---------- legend ---------- */
 function renderLegend(){
-  const got = legends.filter(y => has(y.id)).length;
   const orderedLegends = legends.slice().sort((a, b) => Number(has(a.id)) - Number(has(b.id)) || a.no - b.no);
   elMain.innerHTML =
-    '<div class="secthead"><h2>レジェンド妖怪の封印解放</h2><span class="sectnote">必要な8体をすべてなかまにすると、妖怪大辞典の光るページから入手できます。' +
-    '<b class="num">' + got + '</b>/' + legends.length + ' 解放</span><span class="sectrule"></span></div>' +
+    '<div class="secthead"><h2>レジェンド妖怪の封印解放</h2><span class="sectrule"></span></div>' +
     '<div class="accordion">' + orderedLegends.map(l => {
       const need = l.legendNeeds || [];
-      const d = need.filter(n => has(n.id)).length, ready = d === need.length && need.length > 0;
+      const d = need.filter(n => has(n.id)).length;
       return '<article class="accitem' + (has(l.id) ? ' done' : '') + '" data-legend-id="' + l.id + '">' +
         '<div class="acchead"><button class="accside' + (has(l.id) ? ' done' : '') + '" data-check="' + l.id + '" aria-pressed="' + has(l.id) + '" aria-label="' + esc(l.name) + ' を入手済みにする">' + (has(l.id) ? '済' : d + '/' + need.length) + '</button>' +
           '<button class="acctoggle" data-acc="legend-' + l.id + '" aria-expanded="false"><span class="acctitle"><span>' + esc(l.name) + '</span></span></button></div>' +
@@ -1056,8 +1048,7 @@ function renderEquipment(){
       '種</span><span class="rule"></span></div><div class="equiplist">' + unavailable.map(equipRow).join('') + '</div>' : '');
   elMain.innerHTML = '<div class="secthead"><h2>装備一覧</h2><span class="sectnote">実用性の高い装備' + EQUIPMENT.length +
     '種を、能力・効果とともに一覧にしています。入手済み <b class="num">' + S.eqGot.size + '</b>/' + EQUIPMENT.length + '</span><span class="sectrule"></span>' +
-    '<span class="tools"><button class="ghost" id="exportBtn">書き出し</button><button class="ghost" id="importBtn">読み込み</button>' +
-    '<button class="ghost" id="eqResetBtn">装備チェック解除</button></span></div>' + groupHtml;
+    '</div>' + groupHtml;
 }
 
 /* ---------- render ---------- */
@@ -1089,7 +1080,7 @@ function refreshRow(id){
 }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tab],[data-dex-kind],[data-owned],[data-search-all],[data-acc],[data-check],[data-echeck],[data-equip-open],[data-open],[data-goto],[data-ring],[data-fg],#filterToggle,#clearF,#exportBtn,#importBtn,#resetBtn,#eqResetBtn');
+  const t = e.target.closest('[data-tab],[data-dex-kind],[data-owned],[data-search-all],[data-acc],[data-check],[data-echeck],[data-equip-open],[data-open],[data-goto],[data-ring],[data-fg],#filterToggle,#clearF,#exportBtn,#importBtn,#resetBtn');
   if (!t) return;
 
   if (t.dataset.tab) { S.tab = t.dataset.tab; render(); window.scrollTo({top:0}); return; }
@@ -1136,8 +1127,6 @@ document.addEventListener('click', e => {
         a.classList.toggle('done', has(id));
         a.classList.toggle('todo', !has(id));
       }
-      const bs = document.querySelectorAll('.resultline b');
-      if (bs[1]) bs[1].textContent = [...document.querySelectorAll('.row')].filter(r => has(+r.dataset.id)).length;
       renderTabs(); renderSummary();
     } else {
       const y = window.scrollY; render(); window.scrollTo({top:y});
@@ -1204,10 +1193,6 @@ document.addEventListener('click', e => {
   if (t.id === 'importBtn') { openSheet('import'); return; }
   if (t.id === 'resetBtn') {
     if (confirm('妖怪のチェックをすべて解除します。よろしいですか？')) { S.got.clear(); save(); render(); toast('妖怪のチェックを解除しました'); }
-    return;
-  }
-  if (t.id === 'eqResetBtn') {
-    if (confirm('装備のチェックをすべて解除します。よろしいですか？')) { S.eqGot.clear(); save(); render(); toast('装備のチェックを解除しました'); }
     return;
   }
 });

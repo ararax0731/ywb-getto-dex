@@ -105,6 +105,7 @@ const fire = ds => {
   for (const h of handlers.click) h(ev);
 };
 const D_ = JSON.parse(dataJson);
+const dexRowCount = () => (getEl('listwrap').innerHTML.match(/class="row(?:\s|")/g) || []).length;
 
 // 全タブを描画
 for (const tab of ['ring', 'legend', 'recipe', 'soul', 'equipment', 'dex']) fire({ tab });
@@ -181,8 +182,7 @@ console.log('フィルタ往復', F.length, '種 OK');
     for (const h of handlers.input) h({ target:{ id:'q', value }, isComposing:false });
   };
   const shown = () => {
-    const m = /<b class="num">(\d+)<\/b> 体/.exec(getEl('resultline').innerHTML);
-    return m ? +m[1] : -1;
+    return dexRowCount();
   };
   search('アタッカー');
   if (shown() !== 0) problems.push('通常検索で妖怪名以外の役割がヒットしている: ' + shown());
@@ -202,8 +202,7 @@ console.log('フィルタ往復', F.length, '種 OK');
   const expectedYoukai = D_.youkai.filter(y => !y.boss).length;
   const expectedBoss = D_.youkai.filter(y => y.boss).length;
   const shown = () => {
-    const m = /<b class="num">(\d+)<\/b> 体/.exec(getEl('resultline').innerHTML);
-    return m ? +m[1] : -1;
+    return dexRowCount();
   };
   if (shown() !== expectedYoukai) problems.push('妖怪表示 ' + shown() + ' / 期待 ' + expectedYoukai);
   fire({ dexKind: 'boss' });
@@ -237,8 +236,7 @@ console.log('フィルタ往復', F.length, '種 OK');
   const got = {};
   for (const [k, set] of Object.entries(exp)) {
     fire({ fg:'tag', fv:'u_' + k });
-    const m = /<b class="num">(\d+)<\/b> 体/.exec(getEl('resultline').innerHTML);
-    const n = m ? +m[1] : -1;
+    const n = dexRowCount();
     got[k] = n;
     if (n !== set.size) problems.push('用途フィルタ u_' + k + ': 表示 ' + n + ' / 期待 ' + set.size);
     fire({ fg:'tag', fv:'u_' + k });
@@ -275,7 +273,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   }
   const equipItems = [...eh.matchAll(/<article class="equipitem[^>]*>[\s\S]*?<span class="equipname">([^<]+)<\/span>/g)].map(m => m[1]);
   if (equipItems.slice(-2).join('|') !== '月光一文字|月影丸') problems.push('現在入手困難な装備が一覧末尾にない');
-  if (!/<div class="secthead">[\s\S]*?<span class="tools">[\s\S]*?id="eqResetBtn"[\s\S]*?<\/div><div class="grouphead">/.test(eh)) problems.push('装備の操作ボタンが見出し行にない');
+  for (const id of ['exportBtn','importBtn','eqResetBtn']) if (eh.includes('id="' + id + '"')) problems.push('装備一覧に不要な操作ボタンが残っている: ' + id);
   const useOrder = ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め','現在入手困難'];
   let lastUse = -1;
   for (const use of useOrder) {
@@ -302,6 +300,10 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
 {
   fire({ tab: 'dex' });
   const dexMain = getEl('main').innerHTML;
+  const resultLine = getEl('resultline').innerHTML;
+  if (/体を表示|うち入手済み/.test(resultLine)) problems.push('妖怪大辞典に表示数・入手済み数が残っている');
+  for (const id of ['exportBtn','importBtn','resetBtn']) if (!resultLine.includes('id="' + id + '"')) problems.push('妖怪の操作ボタンが元の位置にない: ' + id);
+  if (!/id="filterPanel"[\s\S]*?<div class="resultline" id="resultline"><\/div>/.test(dexMain)) problems.push('妖怪の操作ボタンが絞り込みの下にない');
   if (/data-fg="tribe"/.test(dexMain)) problems.push('種族の絞り込みが残っている');
   for (const tag of ['legend','rare','koten']) if (dexMain.includes('data-fv="' + tag + '"')) problems.push('削除対象の区分が残っている: ' + tag);
   if (!/<span class="chiplabel">やくわり<\/span>[\s\S]*?<\/div><div class="chips"><span class="chiplabel">区分<\/span>/.test(dexMain)) {
@@ -314,12 +316,12 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   }
   if (/class="tag tribe"/.test(dexHtml)) problems.push('妖怪行に族表記が残っている');
   fire({ owned: 'got' });
-  const m = /<b class="num">(\d+)<\/b> 体/.exec(getEl('resultline').innerHTML);
-  if (!m || +m[1] !== 4) problems.push('入手済みだけ: 表示 ' + (m ? m[1] : '取得不能') + ' / 期待 4');
+  const gotShown = dexRowCount();
+  if (gotShown !== 4) problems.push('入手済みだけ: 表示 ' + gotShown + ' / 期待 4');
   fire({ owned: 'missing' });
-  const mm = /<b class="num">(\d+)<\/b> 体/.exec(getEl('resultline').innerHTML);
+  const missingShown = dexRowCount();
   const expectedMissing = D_.youkai.filter(y => !y.boss).length - 4;
-  if (!mm || +mm[1] !== expectedMissing) problems.push('未入手だけ: 表示 ' + (mm ? mm[1] : '取得不能') + ' / 期待 ' + expectedMissing);
+  if (missingShown !== expectedMissing) problems.push('未入手だけ: 表示 ' + missingShown + ' / 期待 ' + expectedMissing);
   fire({ owned: 'all' });
   console.log('入手状態フィルタ OK');
 }
@@ -330,6 +332,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   for (const m of D_.rings[0].members) if (!saved.has(m.id)) fire({ check: String(m.id) });
   fire({ tab: 'ring' });
   const ringHtml = getEl('main').innerHTML;
+  if (/\d+\/\d+ 達成|メンバーを全員なかまにすると、エントランスで報酬がもらえます/.test(ringHtml)) problems.push('ようかいの輪の見出しに不要な説明・達成数が残っている');
   if ((ringHtml.match(/class="accitem/g) || []).length !== D_.rings.length) problems.push('ようかいの輪のプルダウン数が不一致');
   if (!/class="accside done"[^>]*>済<\/button>/.test(ringHtml)) problems.push('完成したようかいの輪に済ボタンがない');
   if (!/<div class="acchead"><button class="accside/.test(ringHtml)) problems.push('ようかいの輪の進捗が左側にない');
@@ -339,6 +342,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   if (ringDoneOrder.some((done, i) => done && ringDoneOrder.slice(i + 1).includes(false))) problems.push('完成したようかいの輪より下に未完成の輪がある');
   fire({ tab: 'legend' });
   const legendHtml = getEl('main').innerHTML;
+  if (/\d+\/\d+ 解放|必要な8体をすべてなかまにすると、妖怪大辞典の光るページから入手できます/.test(legendHtml)) problems.push('レジェンド見出しに不要な説明・解放数が残っている');
   if ((legendHtml.match(/class="accitem/g) || []).length !== D_.youkai.filter(y => y.legend).length) problems.push('レジェンドのプルダウン数が不一致');
   if (!/<div class="acchead"><button class="accside/.test(legendHtml)) problems.push('レジェンドの進捗が左側にない');
   if (/必要な妖怪 \d+体|\d+体入手済み|class="accmeta"/.test(legendHtml)) problems.push('レジェンドの名称下に必要数表記が残っている');
