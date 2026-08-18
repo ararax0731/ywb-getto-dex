@@ -95,7 +95,7 @@ h1 .sub{font-size:13px; color:var(--ink-3); letter-spacing:.08em; font-family:va
 .sep{width:1px; height:18px; background:var(--line); margin:0 -8px}
 
 /* ---------- tabs ---------- */
-nav.tabs{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; width:100%; min-height:38px}
+nav.tabs{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:2px; width:100%; min-height:38px}
 .tab{
   min-width:0; padding:9px 6px 8px; font-size:13px; font-weight:600; color:var(--ink-3);
   border-bottom:2px solid transparent; white-space:nowrap; letter-spacing:.01em; line-height:1.35;
@@ -594,8 +594,7 @@ const TABS = [
   { k:'ring',   n:'ようかいの輪', c:() => RINGS.filter(ringDone).length + '/' + RINGS.length },
   { k:'legend', n:'レジェンド解放', c:() => legends.filter(y => has(y.id)).length + '/' + legends.length },
   { k:'recipe', n:'進化・合成', c:() => (evoList.length + fuseList.length) + '' },
-  { k:'soul',   n:'魂', c:() => SOULS.length + '' },
-  { k:'equipment', n:'装備', c:() => EQUIPMENT.length },
+  { k:'soul',   n:'魂・装備', c:() => SOULS.length + '・' + EQUIPMENT.length },
 ];
 const elTabs = document.getElementById('tabs');
 const elMain = document.getElementById('main');
@@ -988,8 +987,7 @@ function renderSoul(){
       '<span class="n">' + list.length + '種</span><span class="rule"></span></div>' +
       '<div class="vlist">' + rows + '</div>';
   }).join('');
-  elMain.innerHTML =
-    '<div class="secthead"><h2>魂一覧</h2><span class="sectnote">' +
+  return '<div class="secthead"><h2>魂一覧</h2><span class="sectnote">' +
       '<span class="tag">妖怪</span>＝魂へんげ　<span class="tag koten">合成</span>＝魂の合成　<span class="tag rare">Ｂ</span>＝ビッグボス' +
     '</span><span class="sectrule"></span></div>' + groups;
 }
@@ -1041,9 +1039,10 @@ function renderEquipment(){
     '種</span><span class="rule"></span></div><div class="equiplist">' + list.map(equipRow).join('') + '</div>').join('') +
     (unavailable.length ? '<div class="grouphead"><h3>現在入手困難</h3><span class="n">' + unavailable.length +
       '種</span><span class="rule"></span></div><div class="equiplist">' + unavailable.map(equipRow).join('') + '</div>' : '');
-  elMain.innerHTML = '<div class="secthead"><h2>装備一覧</h2><span class="sectrule"></span>' +
-    '</div>' + groupHtml;
+  return '<div class="secthead"><h2>装備一覧</h2><span class="sectrule"></span></div>' + groupHtml;
 }
+
+function renderSoulEquipment(){ elMain.innerHTML = renderSoul() + renderEquipment(); }
 
 /* ---------- render ---------- */
 function render(){
@@ -1052,8 +1051,7 @@ function render(){
   else if (S.tab === 'ring') renderRings();
   else if (S.tab === 'legend') renderLegend();
   else if (S.tab === 'recipe') renderRecipe();
-  else if (S.tab === 'soul') renderSoul();
-  else renderEquipment();
+  else renderSoulEquipment();
 }
 
 /* ---------- interactions ---------- */

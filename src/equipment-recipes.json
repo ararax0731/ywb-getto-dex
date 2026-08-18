@@ -644,49 +644,6 @@
       "url": ""
     }
   },
-  "極合金シールド": {
-    "requirements": [
-      {
-        "kind": "equipment",
-        "name": "ダークメタルシールド",
-        "count": 1,
-        "url": "https://youkai.gamepedia.jp/busters/equipments/16387",
-        "method": "強化元の装備"
-      },
-      {
-        "kind": "material",
-        "name": "超バッテリー３０００",
-        "count": 5,
-        "url": "https://youkai.gamepedia.jp/busters/materials/16351",
-        "method": "ビッグボスがドロップ：ロボニャン3000・超モード・大当たり でドロップ"
-      },
-      {
-        "kind": "material",
-        "name": "ストロングホーン",
-        "count": 5,
-        "url": "https://youkai.gamepedia.jp/busters/materials/16352",
-        "method": "ビッグボスがドロップ：ロボニャン3000・極モード・中当たり でドロップ"
-      },
-      {
-        "kind": "material",
-        "name": "カブキロイドの大入袋",
-        "count": 6,
-        "url": "https://youkai.gamepedia.jp/busters/materials/6526",
-        "method": "ビッグボスがドロップ：カブキロイド・極モード・中当たり でドロップ"
-      },
-      {
-        "kind": "spirit",
-        "name": "はつでんしんの魂",
-        "count": 1,
-        "url": "https://youkai.gamepedia.jp/busters/spirits/4433",
-        "method": "対象妖怪を魂へんげ"
-      }
-    ],
-    "acquisition": {
-      "method": "強化レシピ",
-      "url": ""
-    }
-  },
   "白犬魔王のおまもり": {
     "requirements": [
       {

@@ -7,7 +7,7 @@ const equipmentRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-reci
 const equipmentBaseRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-base-recipes.json'), 'utf8'));
 const equipmentBaseMaterials = JSON.parse(fs.readFileSync(path.join(D, 'equipment-base-materials.json'), 'utf8'));
 
-// 選定済みの実用装備26種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
+// 選定済みの実用装備25種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
 const equipmentLines = fs.readFileSync(path.join(D, 'equipment.tsv'), 'utf8').trim().split(/\r?\n/);
 // 入手困難データやDOM参照を別の装備へずらさないため、削除前61種で使っていたIDを維持する。
 const EQUIPMENT_ID_ORDER = [
@@ -106,8 +106,8 @@ data.equipment = equipmentLines.map((line, index) => {
   if (availability.equipment[String(e.id)]) e.unavailable = availability.equipment[String(e.id)];
   return e;
 });
-if (data.equipment.length !== 26 || new Set(data.equipment.map(e => e.name)).size !== 26) {
-  throw new Error('装備は重複なし26種である必要があります');
+if (data.equipment.length !== 25 || new Set(data.equipment.map(e => e.name)).size !== 25) {
+  throw new Error('装備は重複なし25種である必要があります');
 }
 data.availability = { asOf:availability.asOf, criteria:availability.criteria };
 for (const y of data.youkai) if (availability.youkai[String(y.id)]) y.unavailable = availability.youkai[String(y.id)];

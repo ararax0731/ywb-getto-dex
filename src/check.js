@@ -15,8 +15,8 @@ for (const [label, re] of [
   ['reset', /box-sizing:border-box/],
 ]) if (!re.test(html)) throw new Error('index.html に ' + label + ' が無い');
 if ((html.match(/<title>/g) || []).length !== 1) throw new Error('title が重複している');
-if (!/nav\.tabs\{display:grid; grid-template-columns:repeat\(6,minmax\(0,1fr\)\)/.test(html)) {
-  throw new Error('6ページのナビが横スクロールなしの6列グリッドではない');
+if (!/nav\.tabs\{display:grid; grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/.test(html)) {
+  throw new Error('5ページのナビが横スクロールなしの5列グリッドではない');
 }
 if (!/\.tab\[data-tab="legend"\]\{font-size:7px\}/.test(html)) {
   throw new Error('モバイルのレジェンド解放タブが1行用の文字サイズではない');
@@ -108,13 +108,15 @@ const D_ = JSON.parse(dataJson);
 const dexRowCount = () => (getEl('listwrap').innerHTML.match(/class="row(?:\s|")/g) || []).length;
 
 // 全タブを描画
-for (const tab of ['ring', 'legend', 'recipe', 'soul', 'equipment', 'dex']) fire({ tab });
+for (const tab of ['ring', 'legend', 'recipe', 'soul', 'dex']) fire({ tab });
 console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
 
 // B魂の入手元リンクは、同名の通常妖怪ではなく必ずビッグボスを指す
 {
   fire({ tab: 'soul' });
-  const soulHtml = getEl('main').innerHTML;
+  const combinedHtml = getEl('main').innerHTML;
+  const equipmentStart = combinedHtml.indexOf('<h2>装備一覧</h2>');
+  const soulHtml = equipmentStart < 0 ? combinedHtml : combinedHtml.slice(0, equipmentStart);
   if (/\d+\/\d+体/.test(soulHtml)) problems.push('魂一覧に入手済み数／対象数の表記が残っている');
   if (/\d+種を効果の系統でまとめました/.test(soulHtml)) problems.push('魂一覧に不要な説明文が残っている');
   if (/class="soulnav"|href="#sg\d+"/.test(soulHtml)) problems.push('魂一覧に分類リンクが残っている');
@@ -253,18 +255,19 @@ console.log('フィルタ往復', F.length, '種 OK');
 for (const id of [1, 131, 383, 250]) { fire({ check: String(id) }); }
 console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').got);
 
-// 装備タブ: 選定した26種、用途順、素材、専用先、チェックなし、入手困難表示の整合
+// 魂・装備タブ: 選定した25種、用途順、素材、専用先、チェックなし、入手困難表示の整合
 {
-  if (D_.equipment.length !== 26 || new Set(D_.equipment.map(e => e.name)).size !== 26) problems.push('装備が重複なし26種ではない');
+  if (D_.equipment.length !== 25 || new Set(D_.equipment.map(e => e.name)).size !== 25) problems.push('装備が重複なし25種ではない');
   for (const [name,id] of [['鬼砕き・天',1],['月読みの杖',5],['Bラビットランチャー',47],['ニャンダフルな鈴',52]]) {
     if (D_.equipment.find(e => e.name === name)?.id !== id) problems.push('既存チェック用の装備IDが変わった: ' + name);
   }
   if (D_.equipment.some(e => !e.recipe || (!e.recipe.requirements.length && !e.recipe.acquisition))) problems.push('素材・入手方法のない装備がある');
-  fire({ tab:'equipment' });
+  fire({ tab:'soul' });
   let eh = getEl('main').innerHTML;
-  if ((eh.match(/class="equipitem/g) || []).length !== 26) problems.push('装備一覧の描画件数が26ではない');
+  if (!eh.includes('<h2>魂一覧</h2>') || !eh.includes('<h2>装備一覧</h2>')) problems.push('魂と装備が同じタブに描画されていない');
+  if ((eh.match(/class="equipitem/g) || []).length !== 25) problems.push('装備一覧の描画件数が25ではない');
   for (const name of ['鬼砕き・天','月光一文字','Bラビットランチャー','ニャンダフルな鈴']) if (!eh.includes(name)) problems.push('装備一覧にない: ' + name);
-  for (const name of ['四葉のおまもり','天狗のうちわ','高潔の帯','桃源郷のうでわ','グレネードサンダー','白き災いの根付','赤き禍の根付','レジェンドチャーム','冥土の根付','天下泰平おまもり','聖人のゆびわ','ルナホワイトシールド','月下の赤猫根付','月下の黒犬根付','月光の杖','ギヤマンリング','太陽神のうでわ','積乱雲のうでわ','魔王のうでわ','幻水龍刀','創造主の杖','白古魔の根付','赤魔寝鬼の根付','絶縁のフタ','大漁祈願の根付','氷河の根付','山神の魔よけ','黄泉の根付','破魔のこぶくろ','鬼砕き・絶','吸魂花の根付','伝説の盾','殺意のまなざし','光明のおまもり','オーガブレイカー']) {
+  for (const name of ['四葉のおまもり','天狗のうちわ','高潔の帯','桃源郷のうでわ','グレネードサンダー','白き災いの根付','赤き禍の根付','レジェンドチャーム','冥土の根付','天下泰平おまもり','聖人のゆびわ','ルナホワイトシールド','月下の赤猫根付','月下の黒犬根付','月光の杖','ギヤマンリング','太陽神のうでわ','積乱雲のうでわ','魔王のうでわ','幻水龍刀','創造主の杖','白古魔の根付','赤魔寝鬼の根付','絶縁のフタ','大漁祈願の根付','氷河の根付','山神の魔よけ','黄泉の根付','破魔のこぶくろ','鬼砕き・絶','吸魂花の根付','伝説の盾','殺意のまなざし','光明のおまもり','オーガブレイカー','極合金シールド']) {
     if (eh.includes(name)) problems.push('削除対象の装備が残っている: ' + name);
   }
   for (const name of ['月光一文字','月影丸']) if (!eh.includes(name) || !eh.includes('現在入手困難')) problems.push('入手困難装備の表示がない: ' + name);
@@ -281,7 +284,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     if (pos < 0 || pos <= lastUse) problems.push('装備の用途順が不正: ' + use);
     lastUse = pos;
   }
-  if ((eh.match(/data-equip-open=/g) || []).length !== 26 || (eh.match(/class="equipdetail"/g) || []).length !== 26) problems.push('装備素材の開閉UIが26件ない');
+  if ((eh.match(/data-equip-open=/g) || []).length !== 25 || (eh.match(/class="equipdetail"/g) || []).length !== 25) problems.push('装備素材の開閉UIが25件ない');
   for (const text of ['必要素材','強化元の作り方・入手場所も表示','強化元：真鬼砕き・黒','作り方（新規）','黒鬼・ノーマル・大当たり','専用：B-USAピョン','専用：USAピョン','専用：エンマ大王']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
   const baseRequirements = D_.equipment.flatMap(e => e.recipe.requirements).filter(r => r.kind === 'equipment' && r.baseRecipe).flatMap(r => r.baseRecipe.requirements);
   if ((eh.match(/class="basepart"/g) || []).length !== baseRequirements.length) problems.push('強化元装備の素材入手場所が全件描画されていない');
@@ -299,7 +302,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   fire({ tab:'dex' });
   const dh = getEl('listwrap').innerHTML;
   for (const y of unavailable) if (!dh.includes('id="y' + y.id + '"') || !dh.includes('現在入手困難')) problems.push('入手困難妖怪のグレー表示がない: ' + y.name);
-  console.log('装備26種・用途順・素材・専用先・チェックなし・入手困難 妖怪9体／装備2種 OK');
+  console.log('魂・装備タブ／装備25種・用途順・素材・専用先・チェックなし・入手困難 妖怪9体／装備2種 OK');
 }
 
 // 入手状態フィルタ（すべて・未入手だけ・入手済みだけ）
@@ -385,7 +388,9 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   const sh = getEl('main').innerHTML;
   const cut = sh.indexOf('魂一覧');
   if (cut < 0) throw new Error('魂一覧の見出しが出ていない');
-  const list = sh.slice(cut);
+  const equipCut = sh.indexOf('<h2>装備一覧</h2>', cut);
+  if (equipCut < 0) throw new Error('魂・装備タブに装備一覧の見出しが出ていない');
+  const list = sh.slice(cut, equipCut);
   for (const g of D_.soulGroups) if (!list.includes('>' + g + '</h3>')) problems.push('魂の分類が出ていない: ' + g);
   const miss = D_.souls.filter(s => !list.includes('>' + s.name + '</span>'));
   if (miss.length) problems.push('魂が一覧にない: ' + miss.map(s => s.name).join(', '));
