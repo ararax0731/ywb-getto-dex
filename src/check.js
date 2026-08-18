@@ -320,6 +320,8 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   // 期待値はレシピ全体の文字列から取る。build.js の detectOtherVersion（method / location のみ）より
   // 広い範囲を見ているので、あちらの走査漏れがこちら側との不一致として出る。同じ走査を再実装すると
   // 同じ見落としを共有して相互検証にならない。
+  // 逆に入手方法以外のフィールド（素材名など）も含むので、build.js が正しくてもここが落ちることはある。
+  // 落ちたときは、まず recipe のどこに版限定表記が入ったかを見ること。
   const otherVersionExpected = D_.equipment
     .filter(e => /（赤猫団限定）|（白犬隊限定）/.test(JSON.stringify(e.recipe)))
     .map(e => e.name).sort();
@@ -337,8 +339,18 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     if (!eh.includes(text)) problems.push('版限定素材のマークの色分けがない: ' + text);
   }
   // 白古魔・赤魔寝鬼のノーマル／極の4種が対象。出典に当たり枠が書かれていないのはこの4種だけ。
-  const unknownSlots = [...new Set([...eh.matchAll(/([^<>：]+・枠不明)/g)].map(m => m[1]))].sort();
-  if (unknownSlots.length !== 4) problems.push('当たり枠不明の表示が4種ではない: ' + unknownSlots.join('|'));
+  // 件数だけ見ると別の素材と入れ替わっても通ってしまうので、4種の文字列そのものと突き合わせる。
+  // タグ直後（`>`）から拾うのは、埋め込み JSON にも同じ文字列があり、全文に当てると丸ごと飲み込むため。
+  const unknownSlotExpected = [
+    '白古魔（赤猫団限定）・ノーマルモード・枠不明',
+    '白古魔（赤猫団限定）・極モード・枠不明',
+    '赤魔寝鬼（白犬隊限定）・ノーマルモード・枠不明',
+    '赤魔寝鬼（白犬隊限定）・極モード・枠不明',
+  ].sort();
+  const unknownSlots = [...new Set([...eh.matchAll(/>([^<>]*・枠不明)</g)].map(m => m[1]))].sort();
+  if (unknownSlots.join('|') !== unknownSlotExpected.join('|')) {
+    problems.push('当たり枠不明の表示が想定の4種と違う: ' + unknownSlots.join('|'));
+  }
   if (/・ドロップ</.test(eh)) problems.push('当たり枠が「ドロップ」のまま描画されている');
   for (const text of ['推奨度','採用理由：','注意：','能力・効果の出典','現在入手困難：月光一文字','Excelで選定した全']) {
     if (eh.includes(text)) problems.push('装備一覧に削除対象の文言が残っている: ' + text);
