@@ -486,7 +486,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     'ぬらりひょんのB魂','白古魔GのB魂',
     '火の魂','水の魂','雷の魂','氷の魂','土の魂','風の魂',
     '火・氷耐性アップ','土・風耐性アップ','雷・水耐性アップ','水・氷・風耐性アップ',
-    '挑発','赤鬼のB魂','鬼食いのB魂',
+    '挑発','赤鬼のB魂','鬼食いのB魂','聖なる魂','自分がかけるよいとりつき継続ターンアップ',
   ];
   const stillPresent = removedSoulNames.filter(name => D_.souls.some(s => s.name === name));
   if (stillPresent.length) problems.push('指定削除の魂が残っている: ' + stillPresent.join(', '));
@@ -494,7 +494,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   if (hpAbsorb?.effect !== '攻撃で与えたダメージの10%分、HPを回復する（魂レベル10時）。') problems.push('HP吸収の説明が指定文言ではない');
   if (!D_.souls.some(s => s.name === 'ギヤマンどくろのB魂')) problems.push('ギヤマンどくろのB魂が一覧にない');
   if (!list.includes('class="soulbottom"')) problems.push('魂一覧が2行構成になっていない');
-  for (const group of ['まもり','全ステータス','属性を与える','属性に耐える','昇天・復活','トラップ','ガード・回避・耐久','入手・ともだちチャンス','立ち回り・その他']) {
+  for (const group of ['まもり','全ステータス','属性を与える','属性に耐える','昇天・復活','トラップ','ガード・回避・耐久','入手・ともだちチャンス','立ち回り・その他','とりつき','クリティカル','与ダメージ・敵弱体','すばやさ','わざゲージ・妖気ゲージ','ちから・ようりょく']) {
     if (D_.soulGroups.includes(group) || list.includes('>' + group + '</h3>')) problems.push('0種の魂分類が残っている: ' + group);
   }
   if (/<table[\s>]/.test(sh)) problems.push('魂タブに横スクロールの原因となるtableが残っている');
