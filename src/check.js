@@ -116,6 +116,7 @@ console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
   fire({ tab: 'soul' });
   const soulHtml = getEl('main').innerHTML;
   if (/\d+\/\d+体/.test(soulHtml)) problems.push('魂一覧に入手済み数／対象数の表記が残っている');
+  if (/\d+種を効果の系統でまとめました/.test(soulHtml)) problems.push('魂一覧に不要な説明文が残っている');
   for (const removed of [
     'つやつや魂', 'ブシ王のB魂', 'わるいとりつき継続ターンアップ', 'わざゲージ減少率ダウン',
     '回復時まもりアップ', 'ピンチ時HP自然回復', '敵に見つかっていない間HP自然回復',
@@ -167,7 +168,7 @@ console.log('詳細生成', opened, '/', D_.youkai.length);
 const F = [
   ...['S','A','B','C','D','E'].map(v => ({ fg:'rank', fv:v })),
   ...['アタッカー','タンク','ヒーラー','レンジャー'].map(v => ({ fg:'role', fv:v })),
-  ...['unavailable','aka','shiro','tsuki','evo','fuse','gasha',
+  ...['unavailable','aka','shiro','tsuki','gasha',
       'u_ring','u_lgnd','u_evo','u_fuse','u_soul'].map(v => ({ fg:'tag', fv:v })),
   ...[...new Set(D_.youkai.flatMap(y=>y.patrol))].map(v => ({ fg:'area', fv:v })),
 ];
@@ -284,6 +285,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   if ((eh.match(/data-equip-open=/g) || []).length !== 40 || (eh.match(/class="equipdetail"/g) || []).length !== 40) problems.push('装備素材の開閉UIが40件ない');
   for (const text of ['必要素材','素材名から出典を開けます','専用：B-USAピョン','専用：USAピョン','専用：エンマ大王']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
   if (/data-echeck=|class="vstamp"|入手済み/.test(eh)) problems.push('装備一覧にチェックUIまたは入手済み表記が残っている');
+  if (/実用性の高い装備|能力・効果とともに一覧|入手済み\s*\d+\/\d+/.test(eh)) problems.push('装備一覧に不要な説明文が残っている');
   const unavailable = D_.youkai.filter(y => y.unavailable);
   const expectedUnavailable = ['妖怪ガッツK','妖怪ガッツF','赤鬼','青鬼','ツチノコパンダ','ニャン騎士','ニャン魔女','レッドJ','マイティードッグ'];
   if (unavailable.map(y => y.name).join('|') !== expectedUnavailable.join('|')) problems.push('現在入手困難な妖怪が想定の9体ではない');
@@ -303,6 +305,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   if (!/id="filterPanel"[\s\S]*?<div class="resultline" id="resultline"><\/div>/.test(dexMain)) problems.push('妖怪の操作ボタンが絞り込みの下にない');
   if (/data-fg="tribe"/.test(dexMain)) problems.push('種族の絞り込みが残っている');
   for (const tag of ['legend','rare','koten']) if (dexMain.includes('data-fv="' + tag + '"')) problems.push('削除対象の区分が残っている: ' + tag);
+  for (const tag of ['evo','fuse']) if (dexMain.includes('data-fv="' + tag + '"')) problems.push('削除対象の絞り込みが残っている: ' + tag);
   if (!/<span class="chiplabel">やくわり<\/span>[\s\S]*?<\/div><div class="chips"><span class="chiplabel">区分<\/span>/.test(dexMain)) {
     problems.push('やくわりと区分が別の行になっていない');
   }

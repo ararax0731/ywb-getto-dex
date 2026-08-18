@@ -549,8 +549,6 @@ const TAGS = [
   { k:'aka',    n:'赤猫団限定', t:y => y.only === '赤猫団' },
   { k:'shiro',  n:'白犬隊限定', t:y => y.only === '白犬隊' },
   { k:'tsuki',  n:'月兎組限定', t:y => y.only === '月兎組' },
-  { k:'evo',    n:'進化で入手', t:y => !!y.evolve },
-  { k:'fuse',   n:'合成で入手', t:y => !!y.fuse },
   { k:'gasha',  n:'ガシャ',     t:y => y.gasha.length > 0 },
 ];
 const DEX_KINDS = [
@@ -1000,7 +998,7 @@ function renderSoul(){
       '<div class="vlist">' + rows + '</div>';
   }).join('');
   elMain.innerHTML =
-    '<div class="secthead"><h2>魂一覧</h2><span class="sectnote">' + SOULS.length + '種を効果の系統でまとめました。' +
+    '<div class="secthead"><h2>魂一覧</h2><span class="sectnote">' +
       '<span class="tag">妖怪</span>＝魂へんげ　<span class="tag koten">合成</span>＝魂の合成　<span class="tag rare">Ｂ</span>＝ビッグボス' +
     '</span><span class="sectrule"></span></div>' + nav + groups;
 }
@@ -1045,8 +1043,7 @@ function renderEquipment(){
     '種</span><span class="rule"></span></div><div class="equiplist">' + list.map(equipRow).join('') + '</div>').join('') +
     (unavailable.length ? '<div class="grouphead"><h3>現在入手困難</h3><span class="n">' + unavailable.length +
       '種</span><span class="rule"></span></div><div class="equiplist">' + unavailable.map(equipRow).join('') + '</div>' : '');
-  elMain.innerHTML = '<div class="secthead"><h2>装備一覧</h2><span class="sectnote">実用性の高い装備' + EQUIPMENT.length +
-    '種を用途別にまとめています。行を押すと必要素材を確認できます。</span><span class="sectrule"></span>' +
+  elMain.innerHTML = '<div class="secthead"><h2>装備一覧</h2><span class="sectrule"></span>' +
     '</div>' + groupHtml;
 }
 
