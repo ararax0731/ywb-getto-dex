@@ -253,18 +253,18 @@ console.log('フィルタ往復', F.length, '種 OK');
 for (const id of [1, 131, 383, 250]) { fire({ check: String(id) }); }
 console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').got);
 
-// 装備タブ: 選定した40種、用途順、素材、専用先、チェックなし、入手困難表示の整合
+// 装備タブ: 選定した26種、用途順、素材、専用先、チェックなし、入手困難表示の整合
 {
-  if (D_.equipment.length !== 40 || new Set(D_.equipment.map(e => e.name)).size !== 40) problems.push('装備が重複なし40種ではない');
-  for (const [name,id] of [['鬼砕き・天',1],['月読みの杖',5],['Bラビットランチャー',47],['伝説の盾',61]]) {
+  if (D_.equipment.length !== 26 || new Set(D_.equipment.map(e => e.name)).size !== 26) problems.push('装備が重複なし26種ではない');
+  for (const [name,id] of [['鬼砕き・天',1],['月読みの杖',5],['Bラビットランチャー',47],['ニャンダフルな鈴',52]]) {
     if (D_.equipment.find(e => e.name === name)?.id !== id) problems.push('既存チェック用の装備IDが変わった: ' + name);
   }
   if (D_.equipment.some(e => !e.recipe || (!e.recipe.requirements.length && !e.recipe.acquisition))) problems.push('素材・入手方法のない装備がある');
   fire({ tab:'equipment' });
   let eh = getEl('main').innerHTML;
-  if ((eh.match(/class="equipitem/g) || []).length !== 40) problems.push('装備一覧の描画件数が40ではない');
-  for (const name of ['鬼砕き・天','月光一文字','Bラビットランチャー','伝説の盾']) if (!eh.includes(name)) problems.push('装備一覧にない: ' + name);
-  for (const name of ['四葉のおまもり','天狗のうちわ','高潔の帯','桃源郷のうでわ','グレネードサンダー','白き災いの根付','赤き禍の根付','レジェンドチャーム','冥土の根付','天下泰平おまもり','聖人のゆびわ','ルナホワイトシールド','月下の赤猫根付','月下の黒犬根付','月光の杖','ギヤマンリング','太陽神のうでわ','積乱雲のうでわ','魔王のうでわ','幻水龍刀','創造主の杖']) {
+  if ((eh.match(/class="equipitem/g) || []).length !== 26) problems.push('装備一覧の描画件数が26ではない');
+  for (const name of ['鬼砕き・天','月光一文字','Bラビットランチャー','ニャンダフルな鈴']) if (!eh.includes(name)) problems.push('装備一覧にない: ' + name);
+  for (const name of ['四葉のおまもり','天狗のうちわ','高潔の帯','桃源郷のうでわ','グレネードサンダー','白き災いの根付','赤き禍の根付','レジェンドチャーム','冥土の根付','天下泰平おまもり','聖人のゆびわ','ルナホワイトシールド','月下の赤猫根付','月下の黒犬根付','月光の杖','ギヤマンリング','太陽神のうでわ','積乱雲のうでわ','魔王のうでわ','幻水龍刀','創造主の杖','白古魔の根付','赤魔寝鬼の根付','絶縁のフタ','大漁祈願の根付','氷河の根付','山神の魔よけ','黄泉の根付','破魔のこぶくろ','鬼砕き・絶','吸魂花の根付','伝説の盾','殺意のまなざし','光明のおまもり','オーガブレイカー']) {
     if (eh.includes(name)) problems.push('削除対象の装備が残っている: ' + name);
   }
   for (const name of ['月光一文字','月影丸']) if (!eh.includes(name) || !eh.includes('現在入手困難')) problems.push('入手困難装備の表示がない: ' + name);
@@ -274,14 +274,14 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   const equipItems = [...eh.matchAll(/<article class="equipitem[^>]*>[\s\S]*?<span class="equipname">([^<]+)<\/span>/g)].map(m => m[1]);
   if (equipItems.slice(-2).join('|') !== '月光一文字|月影丸') problems.push('現在入手困難な装備が一覧末尾にない');
   for (const id of ['exportBtn','importBtn','eqResetBtn']) if (eh.includes('id="' + id + '"')) problems.push('装備一覧に不要な操作ボタンが残っている: ' + id);
-  const useOrder = ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め','現在入手困難'];
+  const useOrder = ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','専用ビルド','仲間集め','現在入手困難'];
   let lastUse = -1;
   for (const use of useOrder) {
     const pos = eh.indexOf('<h3>' + use + '</h3>');
     if (pos < 0 || pos <= lastUse) problems.push('装備の用途順が不正: ' + use);
     lastUse = pos;
   }
-  if ((eh.match(/data-equip-open=/g) || []).length !== 40 || (eh.match(/class="equipdetail"/g) || []).length !== 40) problems.push('装備素材の開閉UIが40件ない');
+  if ((eh.match(/data-equip-open=/g) || []).length !== 26 || (eh.match(/class="equipdetail"/g) || []).length !== 26) problems.push('装備素材の開閉UIが26件ない');
   for (const text of ['必要素材','強化元の作り方も表示','強化元：真鬼砕き・黒','作り方（新規）','専用：B-USAピョン','専用：USAピョン','専用：エンマ大王']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
   if (/class="recipename"><a\s/.test(eh)) problems.push('装備素材に外部リンクが残っている');
   if (/素材名から出典を開けます|レシピ補完：/.test(eh)) problems.push('装備素材に外部遷移を促す文言が残っている');
@@ -296,7 +296,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   fire({ tab:'dex' });
   const dh = getEl('listwrap').innerHTML;
   for (const y of unavailable) if (!dh.includes('id="y' + y.id + '"') || !dh.includes('現在入手困難')) problems.push('入手困難妖怪のグレー表示がない: ' + y.name);
-  console.log('装備40種・用途順・素材・専用先・チェックなし・入手困難 妖怪9体／装備2種 OK');
+  console.log('装備26種・用途順・素材・専用先・チェックなし・入手困難 妖怪9体／装備2種 OK');
 }
 
 // 入手状態フィルタ（すべて・未入手だけ・入手済みだけ）
