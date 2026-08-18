@@ -282,7 +282,10 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     lastUse = pos;
   }
   if ((eh.match(/data-equip-open=/g) || []).length !== 26 || (eh.match(/class="equipdetail"/g) || []).length !== 26) problems.push('装備素材の開閉UIが26件ない');
-  for (const text of ['必要素材','強化元の作り方も表示','強化元：真鬼砕き・黒','作り方（新規）','専用：B-USAピョン','専用：USAピョン','専用：エンマ大王']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
+  for (const text of ['必要素材','強化元の作り方・入手場所も表示','強化元：真鬼砕き・黒','作り方（新規）','黒鬼・ノーマル・大当たり','専用：B-USAピョン','専用：USAピョン','専用：エンマ大王']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
+  const baseRequirements = D_.equipment.flatMap(e => e.recipe.requirements).filter(r => r.kind === 'equipment' && r.baseRecipe).flatMap(r => r.baseRecipe.requirements);
+  if ((eh.match(/class="basepart"/g) || []).length !== baseRequirements.length) problems.push('強化元装備の素材入手場所が全件描画されていない');
+  if (baseRequirements.some(r => !r.location || (r.kind === 'material' && !r.source))) problems.push('強化元装備の素材入手場所・出典が不足している');
   if (/class="recipename"><a\s/.test(eh)) problems.push('装備素材に外部リンクが残っている');
   if (/素材名から出典を開けます|レシピ補完：/.test(eh)) problems.push('装備素材に外部遷移を促す文言が残っている');
   for (const use of ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め']) {
