@@ -1,0 +1,15 @@
+{
+  "asOf": "2026-08-18",
+  "criteria": "現在、新規プレイヤーが正規手段で取得することがほぼ不可能なもの",
+  "youkai": {
+    "408": {
+      "reason": "白犬隊ダウンロード版の購入特典。3DS eショップでの新規販売が終了しているため、未購入者は現在ほぼ入手できません。",
+      "source": "https://support.nintendo.com/jp/information/2022/0216.html"
+    },
+    "409": {
+      "reason": "赤猫団ダウンロード版の購入特典。3DS eショップでの新規販売が終了しているため、未購入者は現在ほぼ入手できません。",
+      "source": "https://support.nintendo.com/jp/information/2022/0216.html"
+    }
+  },
+  "equipment": {}
+}

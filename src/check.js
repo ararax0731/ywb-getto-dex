@@ -15,10 +15,10 @@ for (const [label, re] of [
   ['reset', /box-sizing:border-box/],
 ]) if (!re.test(html)) throw new Error('index.html に ' + label + ' が無い');
 if ((html.match(/<title>/g) || []).length !== 1) throw new Error('title が重複している');
-if (!/nav\.tabs\{display:grid; grid-template-columns:repeat\(5,minmax\(0,1fr\)\)/.test(html)) {
-  throw new Error('5ページのナビが横スクロールなしの5列グリッドではない');
+if (!/nav\.tabs\{display:grid; grid-template-columns:repeat\(6,minmax\(0,1fr\)\)/.test(html)) {
+  throw new Error('6ページのナビが横スクロールなしの6列グリッドではない');
 }
-if (!/\.tab\[data-tab="legend"\]\{font-size:7\.5px\}/.test(html)) {
+if (!/\.tab\[data-tab="legend"\]\{font-size:7px\}/.test(html)) {
   throw new Error('モバイルのレジェンド解放タブが1行用の文字サイズではない');
 }
 if (!/class="searchalways"[\s\S]*id="q"[\s\S]*id="filterToggle"/.test(html)) {
@@ -107,7 +107,7 @@ const fire = ds => {
 const D_ = JSON.parse(dataJson);
 
 // 全タブを描画
-for (const tab of ['ring', 'legend', 'recipe', 'soul', 'dex']) fire({ tab });
+for (const tab of ['ring', 'legend', 'recipe', 'soul', 'equipment', 'dex']) fire({ tab });
 console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
 
 // B魂の入手元リンクは、同名の通常妖怪ではなく必ずビッグボスを指す
@@ -167,7 +167,7 @@ const F = [
   ...['S','A','B','C','D','E'].map(v => ({ fg:'rank', fv:v })),
   ...[...new Set(D_.youkai.map(y=>y.tribe).filter(Boolean))].map(v => ({ fg:'tribe', fv:v })),
   ...['アタッカー','タンク','ヒーラー','レンジャー'].map(v => ({ fg:'role', fv:v })),
-  ...['legend','rare','koten','aka','shiro','tsuki','evo','fuse','gasha',
+  ...['legend','rare','unavailable','koten','aka','shiro','tsuki','evo','fuse','gasha',
       'u_ring','u_lgnd','u_evo','u_fuse','u_soul'].map(v => ({ fg:'tag', fv:v })),
   ...[...new Set(D_.youkai.flatMap(y=>y.patrol))].map(v => ({ fg:'area', fv:v })),
 ];
@@ -251,6 +251,26 @@ console.log('フィルタ往復', F.length, '種 OK');
 // チェック操作
 for (const id of [1, 131, 383, 250]) { fire({ check: String(id) }); }
 console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').got);
+
+// 装備タブ: Excelの61種のみ、チェック保存、入手困難表示の整合
+{
+  if (D_.equipment.length !== 61 || new Set(D_.equipment.map(e => e.name)).size !== 61) problems.push('装備が重複なし61種ではない');
+  fire({ tab:'equipment' });
+  let eh = getEl('main').innerHTML;
+  if ((eh.match(/class="equipitem/g) || []).length !== 61) problems.push('装備一覧の描画件数が61ではない');
+  for (const name of ['鬼砕き・天','月光一文字','Bラビットランチャー','伝説の盾']) if (!eh.includes(name)) problems.push('装備一覧にない: ' + name);
+  if (!eh.includes('今回の61種には該当なし')) problems.push('装備の現在入手困難が0件である旨が出ていない');
+  fire({ echeck:'1' });
+  if (!(JSON.parse(store['ywb-getto-dex-v1'] || '{}').eqGot || []).includes(1)) problems.push('装備チェックが保存されない');
+  eh = getEl('main').innerHTML;
+  if (!/class="equipitem got"/.test(eh)) problems.push('装備の入手済み表示が更新されない');
+  const unavailable = D_.youkai.filter(y => y.unavailable);
+  if (unavailable.map(y => y.name).join('|') !== 'ニャン騎士|ニャン魔女') problems.push('現在入手困難な妖怪が想定の2体ではない');
+  fire({ tab:'dex' });
+  const dh = getEl('listwrap').innerHTML;
+  for (const y of unavailable) if (!dh.includes('id="y' + y.id + '"') || !dh.includes('現在入手困難')) problems.push('入手困難妖怪のグレー表示がない: ' + y.name);
+  console.log('装備61種・入手困難2体・装備チェック保存 OK');
+}
 
 // 入手状態フィルタ（すべて・未入手だけ・入手済みだけ）
 {

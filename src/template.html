@@ -95,7 +95,7 @@ h1 .sub{font-size:13px; color:var(--ink-3); letter-spacing:.08em; font-family:va
 .sep{width:1px; height:18px; background:var(--line); margin:0 -8px}
 
 /* ---------- tabs ---------- */
-nav.tabs{display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:2px; width:100%}
+nav.tabs{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; width:100%}
 .tab{
   min-width:0; padding:9px 6px 8px; font-size:13px; font-weight:600; color:var(--ink-3);
   border-bottom:2px solid transparent; white-space:nowrap; letter-spacing:.01em; line-height:1.35;
@@ -171,6 +171,12 @@ main{padding-bottom:80px}
 .rowhead:hover{background:var(--panel-2)}
 .row.got .rowhead{background:linear-gradient(90deg,var(--stamp-wash),transparent 320px)}
 .row.got .rowhead:hover{background:linear-gradient(90deg,var(--stamp-wash),var(--panel-2) 320px)}
+.row.unavailable{background:color-mix(in srgb,var(--panel-3) 72%,var(--panel)); border-top-style:dashed}
+.row.unavailable .rowhead,.row.unavailable .rowhead:hover{background:transparent}
+.row.unavailable .nm,.row.unavailable .ym{color:var(--ink-3)}
+.tag.unavailable{border-style:dashed; border-color:var(--ink-3); color:var(--ink-2); background:var(--panel-3); font-weight:700}
+.availability-note{border-left:3px solid var(--ink-3); padding:7px 10px; margin:0; color:var(--ink-2); background:var(--panel-3); font-size:12px; line-height:1.6}
+.availability-note a{color:inherit; text-decoration:underline}
 .stampcell{display:flex; align-items:center; justify-content:center; align-self:stretch; border-right:1px solid var(--line); padding:7px 0}
 .stamp{
   width:28px; height:28px; border-radius:99px; border:1.5px dashed var(--line-2);
@@ -362,6 +368,28 @@ h2{font-family:var(--serif); font-size:19px; font-weight:600; letter-spacing:.04
 }
 .soulnav a:hover{border-color:var(--ink-3); color:var(--ink)}
 
+/* ---------- equipment ---------- */
+.equiplist{display:flex; flex-direction:column; background:var(--panel); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow); overflow:hidden}
+.equipitem{display:grid; grid-template-columns:44px minmax(0,1fr); border-top:1px solid var(--line)}
+.equipitem:first-child{border-top:none}
+.equipitem.got{background:var(--stamp-wash)}
+.equipitem.unavailable{background:var(--panel-3); border-top-style:dashed; color:var(--ink-3)}
+.equipbody{min-width:0; padding:8px 11px 9px}
+.equiptop{display:flex; flex-wrap:wrap; align-items:center; gap:5px 7px}
+.equipname{font-size:14.5px; font-weight:700; margin-right:2px}
+.equiptier{width:22px; height:22px; display:grid; place-items:center; border:1px solid var(--line-2); border-radius:5px; font:700 11px var(--mono)}
+.equiptier[data-tier="S"]{border-color:var(--gold-line); color:var(--gold); background:var(--gold-wash)}
+.equipstats{display:flex; flex-wrap:wrap; gap:3px 10px; margin-top:4px; font:11.5px var(--mono); color:var(--ink-3)}
+.equipstats b{color:var(--ink-2); font-weight:600}
+.equipstats .neg b{color:var(--stamp)}
+.equipeffect{margin-top:4px; color:var(--ink-2); font-size:12.5px; line-height:1.55}
+.equipdetail{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:3px 18px; margin-top:5px; padding-top:5px; border-top:1px dashed var(--line)}
+.equipdetail p{margin:0; color:var(--ink-3); font-size:11.5px; line-height:1.55}
+.equipdetail b{color:var(--ink-2)}
+.equipsource{color:var(--ink-3); text-decoration:underline; text-underline-offset:2px}
+.equiptools{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin:0 0 10px; color:var(--ink-3); font-size:12px}
+.equiptools .tools{margin-left:auto}
+
 /* ---------- footer / modal ---------- */
 footer{
   border-top:1px solid var(--line); margin-top:44px; padding:20px 0 44px;
@@ -407,7 +435,7 @@ footer a{color:var(--ink-2)}
   .total .big{font-size:24px}
   .summary{display:none}
   .tab{padding:8px 1px 7px; font-size:8.5px; letter-spacing:-.04em}
-  .tab[data-tab="legend"]{font-size:7.5px}
+  .tab[data-tab="legend"]{font-size:7px}
   .tab .c{display:block; margin:1px 0 0; font-size:8.5px; letter-spacing:0}
   .rowhead{grid-template-columns:40px minmax(0,1fr); padding-right:9px; column-gap:8px}
   .rowbody{padding:5px 0 6px}
@@ -418,6 +446,7 @@ footer a{color:var(--ink-2)}
   .chev{display:none}
   .detail{padding-left:14px}
   .mem .how{display:none}
+  .equipdetail{grid-template-columns:1fr}
 }
 </style>
 
@@ -426,7 +455,7 @@ footer a{color:var(--ink-2)}
     <div class="masthead">
       <div>
         <p class="eyebrow">妖怪ウォッチバスターズ 赤猫団／白犬隊／月兎組</p>
-        <h1>妖怪大辞典 チェック表<span class="sub">全470体・ようかいの輪・レジェンド解放・進化・合成・魂</span></h1>
+        <h1>妖怪大辞典 チェック表<span class="sub">全470体・ようかいの輪・レジェンド解放・進化・合成・魂・装備</span></h1>
       </div>
       <div class="total">
         <span class="big" id="totGot">0</span><span class="of">/ 470</span><span class="pct" id="totPct">0%</span>
@@ -443,7 +472,7 @@ footer a{color:var(--ink-2)}
 <footer>
   <div class="wrap">
     <p class="fnote">チェックはこの端末のブラウザに保存されます（同じ端末・同じブラウザで開けば続きから使えます）。別の端末へ移すときは「書き出し」から文字列をコピーし、移した先で「読み込み」に貼り付けてください。</p>
-    <p class="fnote">出典：妖怪ウォッチバスターズ 攻略「ゲームの匠」（妖怪・ようかいの輪・魂データ）／妖怪ウォッチバスターズ 攻略大百科・妖怪ウォッチバスターズ攻略（ようかいの輪の報酬と入手メモ）。ボス妖怪はランク・種族の表記がない個体があります。</p>
+    <p class="fnote">出典：妖怪ウォッチバスターズ 攻略「ゲームの匠」（妖怪・ようかいの輪・魂データ）／妖怪ウォッチバスターズ 攻略大百科（装備データ）／任天堂サポート（3DS eショップ・オンラインサービス終了情報）。ボス妖怪はランク・種族の表記がない個体があります。</p>
   </div>
 </footer>
 
@@ -465,13 +494,15 @@ footer a{color:var(--ink-2)}
 (function(){
 "use strict";
 const DATA = JSON.parse(document.getElementById('ywb-data').textContent);
-const Y = DATA.youkai, RINGS = DATA.rings, SOULS = DATA.souls;
+const Y = DATA.youkai, RINGS = DATA.rings, SOULS = DATA.souls, EQUIPMENT = DATA.equipment;
 const byId = new Map(Y.map(y => [y.id, y]));
+const equipById = new Map(EQUIPMENT.map(e => [e.id, e]));
 const KEY = 'ywb-getto-dex-v1';
 
 /* ---------- state ---------- */
 const S = {
   got: new Set(),
+  eqGot: new Set(),
   tab: 'dex',
   dexKind: 'youkai',
   filtersOpen: false,
@@ -484,8 +515,9 @@ const S = {
 try {
   const raw = JSON.parse(localStorage.getItem(KEY) || '{}');
   if (Array.isArray(raw.got)) S.got = new Set(raw.got.filter(n => byId.has(n)));
+  if (Array.isArray(raw.eqGot)) S.eqGot = new Set(raw.eqGot.filter(n => equipById.has(n)));
 } catch(e){}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify({v:1, got:[...S.got]})); } catch(e){} };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({v:2, got:[...S.got], eqGot:[...S.eqGot]})); } catch(e){} };
 
 /* ---------- text helpers ---------- */
 const kana = s => s.replace(/[ァ-ヶ]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
@@ -508,6 +540,7 @@ const AREAS = [...new Set(Y.flatMap(y => y.patrol))].sort();
 const TAGS = [
   { k:'legend', n:'レジェンド', t:y => y.legend },
   { k:'rare',   n:'レア',       t:y => y.rare },
+  { k:'unavailable', n:'現在入手困難', t:y => !!y.unavailable },
   { k:'koten',  n:'古典妖怪',   t:y => y.koten },
   { k:'aka',    n:'赤猫団限定', t:y => y.only === '赤猫団' },
   { k:'shiro',  n:'白犬隊限定', t:y => y.only === '白犬隊' },
@@ -567,6 +600,7 @@ const TABS = [
   { k:'legend', n:'レジェンド解放', c:() => legends.filter(y => has(y.id)).length + '/' + legends.length },
   { k:'recipe', n:'進化・合成', c:() => (evoList.length + fuseList.length) + '' },
   { k:'soul',   n:'魂', c:() => SOULS.length + '' },
+  { k:'equipment', n:'装備', c:() => S.eqGot.size + '/' + EQUIPMENT.length },
 ];
 const elTabs = document.getElementById('tabs');
 const elMain = document.getElementById('main');
@@ -645,7 +679,8 @@ function rowHTML(y){
   if (y.only === '赤猫団') tags.push('<span class="tag aka">赤猫団</span>');
   if (y.only === '白犬隊') tags.push('<span class="tag shiro">白犬隊</span>');
   if (y.only === '月兎組') tags.push('<span class="tag tsuki">月兎組</span>');
-  return '<li class="row' + (has(y.id) ? ' got' : '') + '" id="y' + y.id + '" data-id="' + y.id + '">' +
+  if (y.unavailable) tags.push('<span class="tag unavailable">現在入手困難</span>');
+  return '<li class="row' + (has(y.id) ? ' got' : '') + (y.unavailable ? ' unavailable' : '') + '" id="y' + y.id + '" data-id="' + y.id + '">' +
     '<div class="rowhead">' +
       '<span class="stampcell"><button class="stamp" data-check="' + y.id + '" aria-pressed="' + has(y.id) + '" ' +
         'aria-label="' + esc(y.name) + ' を入手済みにする">済</button></span>' +
@@ -667,6 +702,8 @@ function rowHTML(y){
 function detailHTML(y){
   const b = [];
   const blk = (h, body) => body ? '<div class="dblock"><p class="dh">' + h + '</p>' + body + '</div>' : '';
+  if (y.unavailable) b.push(blk('現在入手困難', '<p class="availability-note">' + esc(y.unavailable.reason) +
+    ' <a href="' + esc(y.unavailable.source) + '" target="_blank" rel="noopener">根拠</a></p>'));
   if (y.desc) b.push(blk('妖怪解説', '<div class="flavor">' + esc(y.desc) + '</div>'));
 
   const basics = [];
@@ -787,7 +824,7 @@ function renderList(){
     '<span class="tools">' +
       '<button class="ghost" id="exportBtn">書き出し</button>' +
       '<button class="ghost" id="importBtn">読み込み</button>' +
-      '<button class="ghost" id="resetBtn">全チェック解除</button>' +
+      '<button class="ghost" id="resetBtn">妖怪チェック解除</button>' +
     '</span>';
   document.getElementById('listwrap').innerHTML = list.length
     ? '<ul class="ledger" id="ledger" style="list-style:none; margin:0; padding:0">' + list.map(rowHTML).join('') + '</ul>'
@@ -975,6 +1012,41 @@ function renderSoul(){
     '</span><span class="sectrule"></span></div>' + nav + groups;
 }
 
+/* ---------- equipment ---------- */
+const equipHas = id => S.eqGot.has(id);
+const equipStat = (label, value) => '<span class="' + (value < 0 ? 'neg' : '') + '">' + label + ' <b>' +
+  (value > 0 ? '+' : '') + value + '</b></span>';
+function equipRow(e){
+  return '<article class="equipitem' + (equipHas(e.id) ? ' got' : '') + (e.unavailable ? ' unavailable' : '') + '">' +
+    '<div class="vstamp"><button class="stamp" data-echeck="' + e.id + '" aria-pressed="' + equipHas(e.id) +
+      '" aria-label="' + esc(e.name) + ' を入手済みにする">済</button></div>' +
+    '<div class="equipbody"><div class="equiptop"><span class="equipname">' + esc(e.name) + '</span>' +
+      '<span class="equiptier" data-tier="' + e.tier + '" title="推奨度">' + e.tier + '</span>' +
+      '<span class="tag">' + esc(e.use) + '</span><span class="tag">' + esc(e.type) + '</span>' +
+      '<span class="rank" data-r="' + e.rank + '" title="装備ランク">' + e.rank + '</span>' +
+      (e.unavailable ? '<span class="tag unavailable">現在入手困難</span>' : '') + '</div>' +
+    '<div class="equipstats">' + equipStat('HP',e.hp) + equipStat('ちから',e.power) +
+      equipStat('ようりょく',e.magic) + equipStat('まもり',e.defense) + '</div>' +
+    '<div class="equipeffect">' + esc(e.effect) + '</div>' +
+    '<div class="equipdetail"><p><b>採用理由：</b>' + esc(e.reason) + '</p>' +
+      (e.limit ? '<p><b>注意：</b>' + esc(e.limit) + '</p>' : '') +
+      (e.unavailable ? '<p><b>現在入手困難：</b>' + esc(e.unavailable.reason) + '</p>' : '') +
+      '<p><a class="equipsource" href="' + esc(e.source) + '" target="_blank" rel="noopener">能力・効果の出典</a></p></div></div></article>';
+}
+function renderEquipment(){
+  const unavailable = EQUIPMENT.filter(e => e.unavailable);
+  const groups = ['S','A','B'].map(tier => {
+    const list = EQUIPMENT.filter(e => e.tier === tier);
+    return '<div class="grouphead"><h3>推奨度 ' + tier + '</h3><span class="n">' + list.length + '種</span><span class="rule"></span></div>' +
+      '<div class="equiplist">' + list.map(equipRow).join('') + '</div>';
+  }).join('');
+  elMain.innerHTML = '<div class="secthead"><h2>実用装備一覧</h2><span class="sectnote">Excelで選定した全' + EQUIPMENT.length +
+    '種。入手済み <b class="num">' + S.eqGot.size + '</b>/' + EQUIPMENT.length + '</span><span class="sectrule"></span></div>' +
+    '<div class="equiptools"><span>現在入手困難：' + (unavailable.length ? unavailable.map(e => esc(e.name)).join('・') : '今回の61種には該当なし') +
+    '（判定日 ' + esc(DATA.availability.asOf) + '）</span><span class="tools"><button class="ghost" id="exportBtn">書き出し</button>' +
+    '<button class="ghost" id="importBtn">読み込み</button><button class="ghost" id="eqResetBtn">装備チェック解除</button></span></div>' + groups;
+}
+
 /* ---------- render ---------- */
 function render(){
   renderTabs(); renderSummary();
@@ -982,7 +1054,8 @@ function render(){
   else if (S.tab === 'ring') renderRings();
   else if (S.tab === 'legend') renderLegend();
   else if (S.tab === 'recipe') renderRecipe();
-  else renderSoul();
+  else if (S.tab === 'soul') renderSoul();
+  else renderEquipment();
 }
 
 /* ---------- interactions ---------- */
@@ -1003,7 +1076,7 @@ function refreshRow(id){
 }
 
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-tab],[data-dex-kind],[data-owned],[data-search-all],[data-acc],[data-check],[data-open],[data-goto],[data-ring],[data-fg],#filterToggle,#clearF,#exportBtn,#importBtn,#resetBtn');
+  const t = e.target.closest('[data-tab],[data-dex-kind],[data-owned],[data-search-all],[data-acc],[data-check],[data-echeck],[data-open],[data-goto],[data-ring],[data-fg],#filterToggle,#clearF,#exportBtn,#importBtn,#resetBtn,#eqResetBtn');
   if (!t) return;
 
   if (t.dataset.tab) { S.tab = t.dataset.tab; render(); window.scrollTo({top:0}); return; }
@@ -1059,6 +1132,14 @@ document.addEventListener('click', e => {
     return;
   }
 
+  if (t.dataset.echeck) {
+    const id = +t.dataset.echeck;
+    if (equipHas(id)) S.eqGot.delete(id); else S.eqGot.add(id);
+    save();
+    const y = window.scrollY; render(); window.scrollTo({top:y});
+    return;
+  }
+
   if (t.dataset.open) {
     const li = t.closest('.row'), id = +t.dataset.open;
     const open = li.classList.toggle('open');
@@ -1100,7 +1181,11 @@ document.addEventListener('click', e => {
   if (t.id === 'exportBtn') { openSheet('export'); return; }
   if (t.id === 'importBtn') { openSheet('import'); return; }
   if (t.id === 'resetBtn') {
-    if (confirm('チェックをすべて解除します。よろしいですか？')) { S.got.clear(); save(); render(); toast('すべて解除しました'); }
+    if (confirm('妖怪のチェックをすべて解除します。よろしいですか？')) { S.got.clear(); save(); render(); toast('妖怪のチェックを解除しました'); }
+    return;
+  }
+  if (t.id === 'eqResetBtn') {
+    if (confirm('装備のチェックをすべて解除します。よろしいですか？')) { S.eqGot.clear(); save(); render(); toast('装備のチェックを解除しました'); }
     return;
   }
 });
@@ -1130,7 +1215,7 @@ function openSheet(m){
   if (m === 'export') {
     sheetTitle.textContent = 'チェックの書き出し';
     sheetNote.textContent = '下の文字列をコピーして保存してください。別の端末で「読み込み」に貼り付けると復元できます。';
-    sheetText.value = JSON.stringify({v:1, got:[...S.got].sort((a,b)=>a-b)});
+    sheetText.value = JSON.stringify({v:2, got:[...S.got].sort((a,b)=>a-b), eqGot:[...S.eqGot].sort((a,b)=>a-b)});
     sheetOk.textContent = 'コピー';
   } else {
     sheetTitle.textContent = 'チェックの読み込み';
@@ -1156,8 +1241,9 @@ sheetOk.addEventListener('click', () => {
       const o = JSON.parse(sheetText.value);
       if (!Array.isArray(o.got)) throw 0;
       S.got = new Set(o.got.filter(n => byId.has(n)));
+      S.eqGot = new Set((Array.isArray(o.eqGot) ? o.eqGot : []).filter(n => equipById.has(n)));
       save(); modal.hidden = true; render();
-      toast(S.got.size + '体を読み込みました');
+      toast('妖怪' + S.got.size + '体・装備' + S.eqGot.size + '種を読み込みました');
     } catch(e) { toast('読み込めませんでした。書き出した文字列をそのまま貼り付けてください'); }
   }
 });

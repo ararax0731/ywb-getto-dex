@@ -2,6 +2,84 @@ const fs = require('fs'), path = require('path');
 const D = __dirname;
 const tpl = fs.readFileSync(path.join(D, 'template.html'), 'utf8');
 const data = JSON.parse(fs.readFileSync(path.join(D, 'data.json'), 'utf8'));
+const availability = JSON.parse(fs.readFileSync(path.join(D, 'availability.json'), 'utf8'));
+
+// Excelで確定した実用装備61種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
+const equipmentLines = fs.readFileSync(path.join(D, 'equipment.tsv'), 'utf8').trim().split(/\r?\n/);
+const S_TIER = new Set([
+  '鬼砕き・天','月光一文字','月影丸','ギヤマンリング','月読みの杖','月光の杖','創造主の杖',
+  '月下の黒犬根付','月下の赤猫根付','太古の魔犬根付','妖魔の鬼猫根付','ルナゴールドシールド',
+  'ルナホワイトシールド','大傘「桜吹雪」','常闇のフタ','導きのおまもり','光明のおまもり',
+]);
+const B_TIER = new Set([
+  '桃源郷のうでわ','グレネードサンダー','聖人のゆびわ','天狗のうちわ','高潔の帯','四葉のおまもり',
+  '吸魂花の根付','ニャンダフルな鈴','白古魔の根付','赤魔寝鬼の根付','絶縁のフタ','大漁祈願の根付',
+  '氷河の根付','山神の魔よけ','黄泉の根付','破魔のこぶくろ','伝説の盾',
+]);
+const EQUIPMENT_LIMITS = {
+  '鬼砕き・天':'HP-85。回避に不慣れな操作では気絶リスクが高い。',
+  '月光一文字':'赤猫団限定。攻撃を止めると強化が切れる。',
+  '月影丸':'白犬隊限定。攻撃を止めると弱体効果が切れる。',
+  '月下の黒犬根付':'赤猫団限定。', '月下の赤猫根付':'白犬隊限定。',
+  'Bラビットランチャー':'B-USAピョン専用。QRコード入手。',
+  'ベイダーチップ':'USAピョン専用。QRコード入手。',
+  '勇ましき王のうでわ':'エンマ大王専用。攻略資料によってランク表記に差があります。',
+  '優しき王のうでわ':'エンマ大王専用。攻略資料によってランク表記に差があります。',
+  '賢き王のうでわ':'エンマ大王専用。攻略資料によってランク表記に差があります。',
+  '天狗のうちわ':'天狗系専用。特殊効果はない。',
+  'ニャンダフルな鈴':'ネコ妖怪向けの仲間集め専用。',
+  '創造主の杖':'まもり-50。', '天界の杖':'まもり-50。',
+  'ギヤマンリング':'ちから-40。物理型には不向き。',
+};
+function equipmentUse(name, type, effect) {
+  if (['Bラビットランチャー','ベイダーチップ','勇ましき王のうでわ','優しき王のうでわ','賢き王のうでわ','天狗のうちわ'].includes(name)) return '専用ビルド';
+  if (name === 'ニャンダフルな鈴') return '仲間集め';
+  if (/ぞくせいのダメージを軽減|ドレイン系/.test(effect)) return '属性・技対策';
+  if (['月光の杖','天界の杖','聖人のゆびわ','白犬魔王のおまもり','赤猫魔王のまわし'].includes(name)) return 'ヒーラー・支援';
+  if (['盾','おまもり'].includes(type) || /ねらわれやすく|まもりがアップ|クリティカルを受けない|よろけなく|スタン状態/.test(effect)) return 'タンク・耐久';
+  if (type === 'チャーム' || type === 'ベルト') return '汎用・耐久';
+  if (/回復/.test(effect)) return 'ヒーラー・支援';
+  if (['杖','ゆびわ'].includes(type) || /ようりょく/.test(effect)) return '妖術アタッカー';
+  return '物理アタッカー';
+}
+function equipmentReason(e, use) {
+  const fixed = {
+    '鬼砕き・天':'全装備中トップ級のちから400。会心型の自操作アタッカーで定番。',
+    '月光一文字':'長時間攻撃を継続できる相手への物理火力が非常に高い。',
+    '月影丸':'継続攻撃で敵の守りを下げ、味方全体の物理火力にも貢献。',
+    'ギヤマンリング':'高い妖力と耐久を両立し、属性相性による減衰を無視できる。',
+    '月読みの杖':'妖力400に加えて味方全員を強化できる。',
+    '月光の杖':'高妖力と瀕死回復の強化を両立するヒーラー向け最終候補。',
+  };
+  if (fixed[e.name]) return fixed[e.name];
+  if (/月下の|太古の魔犬|妖魔の鬼猫/.test(e.name)) return '全能力を大きく伸ばす高耐久の万能装備。';
+  return ({
+    '属性・技対策':'特定の属性・技が厳しいボス戦で被ダメージを抑える明確な役割がある。',
+    '専用ビルド':'対象妖怪の役割や性能を大きく変える専用装備。',
+    '仲間集め':'戦闘火力ではなく仲間集めの効率化に用途がある。',
+    'タンク・耐久':'高い耐久値またはタンク運用に直結する固有効果を持つ。',
+    'ヒーラー・支援':'回復量・味方強化・生存力のいずれかを実戦的に伸ばす。',
+    '妖術アタッカー':'妖力と火力補助効果の組み合わせが妖術ビルドで有効。',
+    '汎用・耐久':'複数能力を伸ばしつつ、役割が明確な耐久・支援効果を持つ。',
+  })[use] || '物理火力または特定条件下のダメージを実戦的に伸ばす。';
+}
+data.equipment = equipmentLines.map((line, index) => {
+  const p = line.split('|');
+  if (p.length !== 9) throw new Error('装備TSVの列数が不正: ' + (index + 1));
+  const [name,type,rank,hp,power,magic,defense,effect,source] = p;
+  const e = { id:index + 1, name, type, rank:+rank, hp:+hp, power:+power, magic:+magic, defense:+defense, effect, source };
+  e.tier = S_TIER.has(name) ? 'S' : B_TIER.has(name) ? 'B' : 'A';
+  e.use = equipmentUse(name, type, effect);
+  e.limit = EQUIPMENT_LIMITS[name] || '';
+  e.reason = equipmentReason(e, e.use);
+  if (availability.equipment[String(e.id)]) e.unavailable = availability.equipment[String(e.id)];
+  return e;
+});
+if (data.equipment.length !== 61 || new Set(data.equipment.map(e => e.name)).size !== 61) {
+  throw new Error('装備は重複なし61種である必要があります');
+}
+data.availability = { asOf:availability.asOf, criteria:availability.criteria };
+for (const y of data.youkai) if (availability.youkai[String(y.id)]) y.unavailable = availability.youkai[String(y.id)];
 
 // B魂は同名の通常妖怪ではなく、入手元のビッグボスへ明示的にリンクする。
 // 名前が省略されるB魂（Pブレイカー等）や形態違いがあるため、名前による推測はしない。
