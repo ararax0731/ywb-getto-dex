@@ -374,13 +374,6 @@ h2{font-family:var(--serif); font-size:19px; font-weight:600; letter-spacing:.04
 .grouphead h3{font-family:var(--serif); font-size:15.5px; font-weight:600; letter-spacing:.03em; margin:0}
 .grouphead .n{font-family:var(--mono); font-size:11px; color:var(--ink-3)}
 .grouphead .rule{flex:1; height:1px; background:var(--line); min-width:16px}
-.soulnav{display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 4px}
-.soulnav a{
-  font-size:12px; border:1px solid var(--line-2); border-radius:99px; padding:3px 10px; color:var(--ink-2);
-  background:var(--panel);
-}
-.soulnav a:hover{border-color:var(--ink-3); color:var(--ink)}
-
 /* ---------- equipment ---------- */
 .equiplist{display:flex; flex-direction:column; background:var(--panel); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow); overflow:hidden}
 .equipitem{border-top:1px solid var(--line)}
@@ -995,8 +988,6 @@ function soulSwap(){
 }
 
 function renderSoul(){
-  const nav = '<div class="soulnav">' + DATA.soulGroups.map((g, i) =>
-    '<a href="#sg' + i + '">' + esc(g) + '</a>').join('') + '</div>';
   const groups = DATA.soulGroups.map((g, i) => {
     const list = SOULS.filter(s => s.group === g)
       .sort((a, b) => CAT_ORDER[a.cat] - CAT_ORDER[b.cat] || a.id - b.id);
@@ -1010,7 +1001,7 @@ function renderSoul(){
   elMain.innerHTML =
     '<div class="secthead"><h2>魂一覧</h2><span class="sectnote">' +
       '<span class="tag">妖怪</span>＝魂へんげ　<span class="tag koten">合成</span>＝魂の合成　<span class="tag rare">Ｂ</span>＝ビッグボス' +
-    '</span><span class="sectrule"></span></div>' + nav + groups;
+    '</span><span class="sectrule"></span></div>' + groups;
 }
 
 /* ---------- equipment ---------- */

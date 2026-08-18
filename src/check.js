@@ -117,6 +117,7 @@ console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
   const soulHtml = getEl('main').innerHTML;
   if (/\d+\/\d+体/.test(soulHtml)) problems.push('魂一覧に入手済み数／対象数の表記が残っている');
   if (/\d+種を効果の系統でまとめました/.test(soulHtml)) problems.push('魂一覧に不要な説明文が残っている');
+  if (/class="soulnav"|href="#sg\d+"/.test(soulHtml)) problems.push('魂一覧に分類リンクが残っている');
   for (const removed of [
     'つやつや魂', 'ブシ王のB魂', 'わるいとりつき継続ターンアップ', 'わざゲージ減少率ダウン',
     '回復時まもりアップ', 'ピンチ時HP自然回復', '敵に見つかっていない間HP自然回復',
