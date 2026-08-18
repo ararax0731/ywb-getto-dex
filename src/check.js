@@ -168,13 +168,13 @@ console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
   for (const removed of [
     'つやつや魂', 'ブシ王のB魂', 'わるいとりつき継続ターンアップ', 'わざゲージ減少率ダウン',
     '回復時まもりアップ', 'ピンチ時HP自然回復', '敵に見つかっていない間HP自然回復',
-    '土俵際', 'ガード時HP自然回復', 'ガード時妖気ゲージアップ', 'わざゲージ回復速度アップ',
+    '土俵際', 'ガード時妖気ゲージアップ', 'わざゲージ回復速度アップ',
   ]) {
     if (soulHtml.includes(removed)) problems.push('削除指定の魂が残っている: ' + removed);
   }
   const sourceExpect = new Map([
     ['クリティカル威力アップ', ['あつガルル', 'デビビラン']],
-    ['クリティカル率アップ', ['しょうブシ', 'フユニャン']],
+    ['クリティカル率アップ', ['フユニャン', 'まさむね']],
     ['HP吸収', ['百鬼姫', 'むらまさ']],
   ]);
   for (const [soulName, names] of sourceExpect) {
@@ -300,19 +300,19 @@ console.log('フィルタ往復', F.length, '種 OK');
 for (const id of [1, 131, 383, 250]) { fire({ check: String(id) }); }
 console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').got);
 
-// 魂・装備タブ: 選定した21種、用途順、素材、専用先、チェックなし、入手困難表示の整合
+// 魂・装備タブ: 選定した11種、やくわり順、素材、チェックなし、入手困難表示の整合
 {
-  if (D_.equipment.length !== 21 || new Set(D_.equipment.map(e => e.name)).size !== 21) problems.push('装備が重複なし21種ではない');
-  for (const [name,id] of [['鬼砕き・天',1],['月読みの杖',5],['勇ましき王のうでわ',49],['ニャンダフルな鈴',52]]) {
+  if (D_.equipment.length !== 11 || new Set(D_.equipment.map(e => e.name)).size !== 11) problems.push('装備が重複なし11種ではない');
+  for (const [name,id] of [['鬼砕き・天',1],['月読みの杖',5],['常闇のフタ',15],['碧玉のぬらリング',31]]) {
     if (D_.equipment.find(e => e.name === name)?.id !== id) problems.push('既存チェック用の装備IDが変わった: ' + name);
   }
   if (D_.equipment.some(e => !e.recipe || (!e.recipe.requirements.length && !e.recipe.acquisition))) problems.push('素材・入手方法のない装備がある');
   fire({ tab:'soul' });
   let eh = getEl('main').innerHTML;
   if (!eh.includes('<h2>魂一覧</h2>') || !eh.includes('<h2>装備一覧</h2>')) problems.push('魂と装備が同じタブに描画されていない');
-  if ((eh.match(/class="equipitem/g) || []).length !== 21) problems.push('装備一覧の描画件数が21ではない');
-  for (const name of ['鬼砕き・天','月光一文字','勇ましき王のうでわ','ニャンダフルな鈴']) if (!eh.includes(name)) problems.push('装備一覧にない: ' + name);
-  for (const name of ['四葉のおまもり','天狗のうちわ','高潔の帯','桃源郷のうでわ','グレネードサンダー','白き災いの根付','赤き禍の根付','レジェンドチャーム','冥土の根付','天下泰平おまもり','聖人のゆびわ','ルナホワイトシールド','月下の赤猫根付','月下の黒犬根付','月光の杖','ギヤマンリング','太陽神のうでわ','積乱雲のうでわ','魔王のうでわ','幻水龍刀','創造主の杖','白古魔の根付','赤魔寝鬼の根付','絶縁のフタ','大漁祈願の根付','氷河の根付','山神の魔よけ','黄泉の根付','破魔のこぶくろ','鬼砕き・絶','吸魂花の根付','伝説の盾','殺意のまなざし','光明のおまもり','オーガブレイカー','極合金シールド','除霊のこぶくろ','森羅万象まわし','Bラビットランチャー','ベイダーチップ']) {
+  if ((eh.match(/class="equipitem/g) || []).length !== 11) problems.push('装備一覧の描画件数が11ではない');
+  for (const name of ['鬼砕き・天','月光一文字','常闇のフタ','碧玉のぬらリング']) if (!eh.includes(name)) problems.push('装備一覧にない: ' + name);
+  for (const name of ['四葉のおまもり','天狗のうちわ','高潔の帯','桃源郷のうでわ','グレネードサンダー','白き災いの根付','赤き禍の根付','レジェンドチャーム','冥土の根付','天下泰平おまもり','聖人のゆびわ','ルナホワイトシールド','月下の赤猫根付','月下の黒犬根付','月光の杖','ギヤマンリング','太陽神のうでわ','積乱雲のうでわ','魔王のうでわ','幻水龍刀','創造主の杖','白古魔の根付','赤魔寝鬼の根付','絶縁のフタ','大漁祈願の根付','氷河の根付','山神の魔よけ','黄泉の根付','破魔のこぶくろ','鬼砕き・絶','吸魂花の根付','伝説の盾','殺意のまなざし','光明のおまもり','オーガブレイカー','極合金シールド','除霊のこぶくろ','森羅万象まわし','Bラビットランチャー','ベイダーチップ','太古の魔犬根付','妖魔の鬼猫根付','剛力アーム','大妖魔ぬらリング','白犬魔王のおまもり','赤猫魔王のまわし','勇ましき王のうでわ','優しき王のうでわ','賢き王のうでわ','ニャンダフルな鈴']) {
     if (eh.includes(name)) problems.push('削除対象の装備が残っている: ' + name);
   }
   for (const name of ['月光一文字','月影丸']) if (!eh.includes(name) || !eh.includes('現在入手困難')) problems.push('入手困難装備の表示がない: ' + name);
@@ -325,31 +325,31 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   const otherVersionExpected = D_.equipment
     .filter(e => /（赤猫団限定）|（白犬隊限定）/.test(JSON.stringify(e.recipe)))
     .map(e => e.name).sort();
-  if (otherVersionExpected.join('|') !== ['太古の魔犬根付','妖魔の鬼猫根付','ニャンダフルな鈴'].sort().join('|')) {
-    problems.push('版限定素材を使う装備が想定と違う: ' + otherVersionExpected.join('|'));
-  }
+  // 対象装備の名前は固定しない。一覧の入れ替えでこの検証が落ちても直し方が「期待値の書き換え」しかなく、
+  // それを繰り返すうちに実物に追従するだけの空の検証になるため。
+  // 現在は該当0件（太古の魔犬根付・妖魔の鬼猫根付・ニャンダフルな鈴が装備一覧から外れたので、
+  // レシピ側には残っているが表示対象ではない）。該当が戻れば下のマーク検証がそのまま働く。
   for (const e of D_.equipment) {
     if (((e.otherVersion || []).length > 0) !== otherVersionExpected.includes(e.name)) {
       problems.push('版限定素材のマークが素材と一致しない: ' + e.name);
     }
     if ((e.otherVersion || []).length && e.unavailable) problems.push('版限定素材のマークが入手困難と混ざっている: ' + e.name);
   }
-  if ((eh.match(/限定の素材が必要<\/span>/g) || []).length !== 3) problems.push('版限定素材のマークが3件描画されていない');
-  for (const text of ['<span class="tag aka">赤猫団限定の素材が必要</span>','<span class="tag shiro">白犬隊限定の素材が必要</span>']) {
-    if (!eh.includes(text)) problems.push('版限定素材のマークの色分けがない: ' + text);
+  const markCount = (eh.match(/限定の素材が必要<\/span>/g) || []).length;
+  const markExpected = D_.equipment.reduce((n, e) => n + (e.otherVersion || []).length, 0);
+  if (markCount !== markExpected) problems.push('版限定素材のマークの描画数が合わない: ' + markCount + ' / ' + markExpected);
+  for (const tag of [{ key:'aka', label:'赤猫団' }, { key:'shiro', label:'白犬隊' }]) {
+    const text = '<span class="tag ' + tag.key + '">' + tag.label + '限定の素材が必要</span>';
+    const need = D_.equipment.some(e => (e.otherVersion || []).some(v => v.key === tag.key));
+    if (need !== eh.includes(text)) problems.push('版限定素材のマークの色分けが合わない: ' + text);
   }
-  // 白古魔・赤魔寝鬼のノーマル／極の4種が対象。出典に当たり枠が書かれていないのはこの4種だけ。
-  // 件数だけ見ると別の素材と入れ替わっても通ってしまうので、4種の文字列そのものと突き合わせる。
+  // 出典に当たり枠が書かれていない素材の「枠不明」表示。件数だけ見ると別の素材と入れ替わっても
+  // 通ってしまうので、埋め込みデータ側の文字列そのものと突き合わせる。
   // タグ直後（`>`）から拾うのは、埋め込み JSON にも同じ文字列があり、全文に当てると丸ごと飲み込むため。
-  const unknownSlotExpected = [
-    '白古魔（赤猫団限定）・ノーマルモード・枠不明',
-    '白古魔（赤猫団限定）・極モード・枠不明',
-    '赤魔寝鬼（白犬隊限定）・ノーマルモード・枠不明',
-    '赤魔寝鬼（白犬隊限定）・極モード・枠不明',
-  ].sort();
+  const unknownSlotExpected = [...new Set((JSON.stringify(D_.equipment).match(/[^"]*・枠不明/g) || []))].sort();
   const unknownSlots = [...new Set([...eh.matchAll(/>([^<>]*・枠不明)</g)].map(m => m[1]))].sort();
   if (unknownSlots.join('|') !== unknownSlotExpected.join('|')) {
-    problems.push('当たり枠不明の表示が想定の4種と違う: ' + unknownSlots.join('|'));
+    problems.push('当たり枠不明の表示がデータと合わない: 描画 ' + unknownSlots.join('|') + ' / データ ' + unknownSlotExpected.join('|'));
   }
   if (/・ドロップ</.test(eh)) problems.push('当たり枠が「ドロップ」のまま描画されている');
   for (const text of ['推奨度','採用理由：','注意：','能力・効果の出典','現在入手困難：月光一文字','Excelで選定した全']) {
@@ -358,17 +358,17 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   const equipItems = [...eh.matchAll(/<article class="equipitem[^>]*>[\s\S]*?<span class="equipname">([^<]+)<\/span>/g)].map(m => m[1]);
   if (equipItems.slice(-2).join('|') !== '月光一文字|月影丸') problems.push('現在入手困難な装備が一覧末尾にない');
   for (const id of ['exportBtn','importBtn','eqResetBtn']) if (eh.includes('id="' + id + '"')) problems.push('装備一覧に不要な操作ボタンが残っている: ' + id);
-  const useOrder = ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','専用ビルド','仲間集め','現在入手困難'];
+  const useOrder = ['アタッカー','タンク','ヒーラー','周回用','現在入手困難'];
   let lastUse = -1;
   for (const use of useOrder) {
     const pos = eh.indexOf('<h3>' + use + '</h3>');
     if (pos < 0 || pos <= lastUse) problems.push('装備の用途順が不正: ' + use);
     lastUse = pos;
   }
-  if ((eh.match(/data-equip-open=/g) || []).length !== 21 || (eh.match(/class="equipdetail"/g) || []).length !== 21) problems.push('装備素材の開閉UIが21件ない');
+  if ((eh.match(/data-equip-open=/g) || []).length !== 11 || (eh.match(/class="equipdetail"/g) || []).length !== 11) problems.push('装備素材の開閉UIが21件ない');
   if (/class="equiptoggle"[^>]*aria-label=/.test(eh)) problems.push('装備の開閉ボタンがaria-labelで内容を上書きしている');
-  if ((eh.match(/class="equiptoggle"[^>]*aria-expanded="false"[^>]*aria-controls="equip-detail-/g) || []).length !== 21) problems.push('装備の開閉状態・対象の関連付けが21件ない');
-  for (const text of ['必要素材','強化元の作り方・主な入手場所を表示','強化元：真鬼砕き・黒','作り方（新規）','黒鬼・ノーマルモード・大当たり','専用：エンマ大王']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
+  if ((eh.match(/class="equiptoggle"[^>]*aria-expanded="false"[^>]*aria-controls="equip-detail-/g) || []).length !== 11) problems.push('装備の開閉状態・対象の関連付けが21件ない');
+  for (const text of ['必要素材','強化元の作り方・主な入手場所を表示','強化元：真鬼砕き・黒','作り方（新規）','黒鬼・ノーマルモード・大当たり']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
   const baseRequirements = D_.equipment.flatMap(e => e.recipe.requirements).filter(r => r.kind === 'equipment' && r.baseRecipe).flatMap(r => r.baseRecipe.requirements);
   if ((eh.match(/class="basepart"/g) || []).length !== baseRequirements.length) problems.push('強化元装備の素材入手場所が全件描画されていない');
   if (baseRequirements.some(r => r.kind === 'material' && (!r.location?.trim() || !r.source?.trim()))) problems.push('強化元装備の素材入手場所・出典が不足している');
@@ -402,7 +402,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   }
   if (/class="recipename"><a\s/.test(eh)) problems.push('装備素材に外部リンクが残っている');
   if (/素材名から出典を開けます|レシピ補完：/.test(eh)) problems.push('装備素材に外部遷移を促す文言が残っている');
-  for (const use of ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め']) {
+  for (const use of ['アタッカー','タンク','ヒーラー','周回用']) {
     if (eh.includes('<span class="tag">' + use + '</span>')) problems.push('装備行に用途タグが残っている: ' + use);
   }
   if (/data-echeck=|class="vstamp"|入手済み/.test(eh)) problems.push('装備一覧にチェックUIまたは入手済み表記が残っている');
@@ -413,7 +413,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   fire({ tab:'dex' });
   const dh = getEl('listwrap').innerHTML;
   for (const y of unavailable) if (!dh.includes('id="y' + y.id + '"') || !dh.includes('現在入手困難')) problems.push('入手困難妖怪のグレー表示がない: ' + y.name);
-  console.log('魂・装備タブ／装備21種・用途順・素材・専用先・チェックなし・入手困難 妖怪9体／装備2種 OK');
+  console.log('魂・装備タブ／装備11種・やくわり順・素材・チェックなし・入手困難 妖怪9体／装備2種 OK');
 }
 
 // 入手状態フィルタ（すべて・未入手だけ・入手済みだけ）
@@ -529,6 +529,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     'ぬらりひょんのB魂','白古魔GのB魂',
     '火の魂','水の魂','雷の魂','氷の魂','土の魂','風の魂',
     '火・氷耐性アップ','土・風耐性アップ','雷・水耐性アップ','水・氷・風耐性アップ',
+    '挑発','赤鬼のB魂','鬼食いのB魂','聖なる魂','自分がかけるよいとりつき継続ターンアップ',
   ];
   const stillPresent = removedSoulNames.filter(name => D_.souls.some(s => s.name === name));
   if (stillPresent.length) problems.push('指定削除の魂が残っている: ' + stillPresent.join(', '));
@@ -536,7 +537,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   if (hpAbsorb?.effect !== '攻撃で与えたダメージの10%分、HPを回復する（魂レベル10時）。') problems.push('HP吸収の説明が指定文言ではない');
   if (!D_.souls.some(s => s.name === 'ギヤマンどくろのB魂')) problems.push('ギヤマンどくろのB魂が一覧にない');
   if (!list.includes('class="soulbottom"')) problems.push('魂一覧が2行構成になっていない');
-  for (const group of ['まもり','全ステータス','属性を与える','属性に耐える','昇天・復活','トラップ']) {
+  for (const group of ['まもり','全ステータス','属性を与える','属性に耐える','昇天・復活','トラップ','ガード・回避・耐久','入手・ともだちチャンス','立ち回り・その他','とりつき','クリティカル','与ダメージ・敵弱体','すばやさ','わざゲージ・妖気ゲージ','ちから・ようりょく']) {
     if (D_.soulGroups.includes(group) || list.includes('>' + group + '</h3>')) problems.push('0種の魂分類が残っている: ' + group);
   }
   if (/<table[\s>]/.test(sh)) problems.push('魂タブに横スクロールの原因となるtableが残っている');

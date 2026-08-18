@@ -8,7 +8,7 @@ const equipmentBaseRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-
 const equipmentBaseMaterials = JSON.parse(fs.readFileSync(path.join(D, 'equipment-base-materials.json'), 'utf8'));
 const { normalizeAcquisition } = require('./equipment-utils');
 
-// 選定済みの実用装備21種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
+// 選定済みの実用装備11種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
 const equipmentLines = fs.readFileSync(path.join(D, 'equipment.tsv'), 'utf8').trim().split(/\r?\n/);
 // 入手困難データやDOM参照を別の装備へずらさないため、削除前61種で使っていたIDを維持する。
 const EQUIPMENT_ID_ORDER = [
@@ -58,22 +58,13 @@ for (const recipe of Object.values(equipmentRecipes)) for (const requirement of 
   requirement.method = canonical.method;
 }
 
-const EQUIPMENT_DEDICATED = {
-  '勇ましき王のうでわ':'エンマ大王',
-  '優しき王のうでわ':'エンマ大王',
-  '賢き王のうでわ':'エンマ大王',
-};
-function equipmentUse(name, type, effect, power, magic) {
-  if (EQUIPMENT_DEDICATED[name]) return '専用ビルド';
-  if (name === 'ニャンダフルな鈴') return '仲間集め';
-  if (/ぞくせいのダメージを軽減|ドレイン系/.test(effect)) return '属性・技対策';
-  if (['月光の杖','天界の杖','聖人のゆびわ','白犬魔王のおまもり','赤猫魔王のまわし'].includes(name)) return 'ヒーラー・支援';
-  if (['盾','おまもり'].includes(type) || /ねらわれやすく|まもりがアップ|クリティカルを受けない|よろけなく|スタン状態/.test(effect)) return 'タンク・耐久';
-  if (magic > power) return '妖術アタッカー';
-  if (type === 'チャーム' || type === 'ベルト') return '汎用・耐久';
-  if (/回復/.test(effect)) return 'ヒーラー・支援';
-  if (['杖','ゆびわ'].includes(type) || /ようりょく/.test(effect)) return '妖術アタッカー';
-  return '物理アタッカー';
+// 周回用はやくわりではなく稼ぎ効率の装備なので、やくわり3種と分けて最後に並べる。
+const EQUIPMENT_FARMING = new Set(['碧玉のぬらリング']);
+function equipmentUse(name, type, effect) {
+  if (EQUIPMENT_FARMING.has(name)) return '周回用';
+  if (/回復/.test(effect)) return 'ヒーラー';
+  if (['盾','おまもり'].includes(type) || /ねらわれやすく|まもりがアップ|クリティカルを受けない|よろけなく|スタン状態/.test(effect)) return 'タンク';
+  return 'アタッカー';
 }
 // 赤猫団・白犬隊だけで手に入る素材が要る装備は、月兎組しか遊んでいない人には作れない。
 // これは「正規手段が消滅した」入手困難とは別の理由なので、並び替えはせず弱いマークだけ付ける。
@@ -104,8 +95,7 @@ data.equipment = equipmentLines.map((line, index) => {
   const id = EQUIPMENT_IDS.get(name);
   if (!id) throw new Error('装備の固定IDがありません: ' + name);
   const e = { id, name, type, rank:+rank, hp:+hp, power:+power, magic:+magic, defense:+defense, effect, source };
-  e.use = equipmentUse(name, type, effect, e.power, e.magic);
-  e.dedicated = EQUIPMENT_DEDICATED[name] || '';
+  e.use = equipmentUse(name, type, effect);
   e.recipe = equipmentRecipes[name];
   if (!e.recipe || (!e.recipe.requirements.length && !e.recipe.acquisition)) throw new Error('装備素材がありません: ' + name);
   for (const requirement of e.recipe.requirements) {
@@ -137,8 +127,8 @@ data.equipment = equipmentLines.map((line, index) => {
   if (availability.equipment[String(e.id)]) e.unavailable = availability.equipment[String(e.id)];
   return e;
 });
-if (data.equipment.length !== 21 || new Set(data.equipment.map(e => e.name)).size !== 21) {
-  throw new Error('装備は重複なし21種である必要があります');
+if (data.equipment.length !== 11 || new Set(data.equipment.map(e => e.name)).size !== 11) {
+  throw new Error('装備は重複なし11種である必要があります');
 }
 data.availability = { asOf:availability.asOf, criteria:availability.criteria };
 for (const y of data.youkai) if (availability.youkai[String(y.id)]) y.unavailable = availability.youkai[String(y.id)];
@@ -180,7 +170,7 @@ const B_SOUL_BOSS_IDS = new Map([
 // 魂変化そのもののデータは変更せず、一覧上の候補表示だけを絞る。
 const SOUL_SOURCE_NAMES = new Map([
   [4,  ['あつガルル', 'デビビラン']],
-  [8,  ['しょうブシ', 'フユニャン']],
+  [8,  ['フユニャン', 'まさむね']],
   [14, ['アライ魔将']],
   [17, ['妖怪ガッツK', 'ばくそく']],
   [20, ['こえんら', 'サンタク老師', 'ふくろじじい']],
@@ -191,6 +181,7 @@ const SOUL_SOURCE_NAMES = new Map([
   [48, ['ジンギスギスカン']],
   [49, ['百鬼姫', 'むらまさ']],
   [53, ['ひつま武士']],
+  [55, ['から傘魔人', 'うみぼうず']],
   [54, ['ヒョウヘンヌ', 'ヒョウヘンナ', 'ドンヨリーヌ']],
   [60, ['麒麟', 'イッカク']],
   [63, ['コマさん', 'ししコマ']],
@@ -275,23 +266,22 @@ for (const r of data.rings) {
 
 // 魂を効果の系統で分類する（元データは入手区分しか持っていない）
 const SOUL_GROUPS = [
-  ['ちから・ようりょく', [10,41,42,48,53,58,92,93,101,103,106,121]],
+  ['攻撃・クリティカル', [10,41,42,48,53,58,92,93,101,103,106,121,4,8,65,79,87,119,125,96]],
   ['まもり',             [25,26,32,51]],
-  ['すばやさ',           [1,9,17,28,31,100,109]],
+  ['すばやさ',           [1,9,17,28,31,109]],
   ['全ステータス',       [20,38,46,54,63,78,104,113,120]],
   ['HP回復・粘り',       [3,5,6,23,27,29,33,35,36,44,47,49,55,60,62,86,94,107]],
-  ['クリティカル',       [4,8,65,79,87,119,125]],
   ['わざ・必殺技',       [13,21,56,105,112,115,116]],
-  ['わざゲージ・妖気ゲージ', [14,24,34,39,66,67,111,114]],
-  ['与ダメージ・敵弱体', [11,45,50,57,81,96,117,118]],
+  ['わざゲージ・妖気ゲージ', [24,34,39,66,67,111,114]],
+  ['与ダメージ・敵弱体', [11,45,50,57,81,117,118]],
   ['属性を与える',       [72,73,74,75,76,77]],
   ['属性に耐える',       [7,16,19,22,37,43,59,61,68,69]],
   ['とりつき',           [2,30,64,88,110]],
   ['ガード・回避・耐久', [12,52,80,84,85,91,99,122]],
   ['昇天・復活',         [18,70,102]],
   ['トラップ',           [15,89,108,124]],
-  ['入手・ともだちチャンス', [71,90,97,98]],
-  ['立ち回り・その他',   [40,82,83,95,123]],
+  ['入手・ともだちチャンス', [90,98]],
+  ['その他',             [14,40,71,82,83,95,97,100,123]],
 ];
 {
   const soulById = new Map(data.souls.map(s => [s.id, s]));
@@ -342,11 +332,12 @@ const SOUL_GROUPS = [
   data.souls = data.souls.filter(s => !dropIds.has(s.id));
   // 利用者が実用性の観点から一覧から外すと指定した魂。
   const userDropIds = new Set([
-    1,2,5,6,9,10,12,18,23,24,25,26,27,28,29,31,32,35,38,41,42,44,45,47,50,51,52,55,58,66,67,70,78,79,80,81,83,84,85,86,89,90,95,98,102,108,124,125,
+    1,2,5,6,9,10,12,18,23,24,25,26,27,28,29,31,32,35,38,41,42,44,45,47,50,51,52,58,66,67,70,78,79,80,81,83,84,85,86,89,90,95,98,102,108,124,125,
     11,13,17,20,39,46,48,53,54,57,63,92,93,94,103,109,111,112,114,116,
     30,87,113,118,120,
     105,110,115,117,
     43,61,68,69,72,73,74,75,76,77,104,
+    40,91,99,64,88,
     121,122,
   ]);
   const unknownUserDrops = [...userDropIds].filter(id => !soulById.has(id));

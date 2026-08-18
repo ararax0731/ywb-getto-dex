@@ -1000,7 +1000,6 @@ function equipRow(e){
     '<div class="equipbody"><button class="equiptoggle" data-equip-open="equip-detail-' + e.id + '" aria-expanded="false" aria-controls="equip-detail-' + e.id + '">' +
     '<span class="equiptop"><span class="equipname">' + esc(e.name) + '</span>' +
       '<span class="tag">' + esc(e.type) + '</span>' +
-      (e.dedicated ? '<span class="tag rare">専用：' + esc(e.dedicated) + '</span>' : '') +
       '<span class="rank" data-r="' + e.rank + '" title="装備ランク">' + e.rank + '</span>' +
       (e.unavailable ? '<span class="tag unavailable">現在入手困難</span>' : '') +
       (e.otherVersion || []).map(v => '<span class="tag ' + v.key + '">' + esc(v.label) + '限定の素材が必要</span>').join('') + '</span>' +
@@ -1037,7 +1036,7 @@ function equipDetail(e){
     '<span class="note">強化元の作り方・主な入手場所を表示</span></div><div class="reciperows">' + rows + '</div></div>';
 }
 function renderEquipment(){
-  const useOrder = ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め'];
+  const useOrder = ['アタッカー','タンク','ヒーラー','周回用'];
   const normal = EQUIPMENT.filter(e => !e.unavailable);
   const groups = useOrder.map(use => [use, normal.filter(e => e.use === use)]).filter(([,list]) => list.length);
   const unavailable = EQUIPMENT.filter(e => e.unavailable);
