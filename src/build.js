@@ -5,9 +5,9 @@ const data = JSON.parse(fs.readFileSync(path.join(D, 'data.json'), 'utf8'));
 const availability = JSON.parse(fs.readFileSync(path.join(D, 'availability.json'), 'utf8'));
 const equipmentRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-recipes.json'), 'utf8'));
 
-// 選定済みの実用装備45種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
+// 選定済みの実用装備40種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
 const equipmentLines = fs.readFileSync(path.join(D, 'equipment.tsv'), 'utf8').trim().split(/\r?\n/);
-// localStorage の既存チェックを別の装備へずらさないため、削除前61種で使っていたIDを維持する。
+// 入手困難データやDOM参照を別の装備へずらさないため、削除前61種で使っていたIDを維持する。
 const EQUIPMENT_ID_ORDER = [
   '鬼砕き・天','月光一文字','月影丸','ギヤマンリング','月読みの杖','月光の杖','創造主の杖',
   '月下の黒犬根付','月下の赤猫根付','太古の魔犬根付','妖魔の鬼猫根付','ルナゴールドシールド','ルナホワイトシールド',
@@ -20,26 +20,32 @@ const EQUIPMENT_ID_ORDER = [
   '赤魔寝鬼の根付','絶縁のフタ','大漁祈願の根付','氷河の根付','山神の魔よけ','黄泉の根付','破魔のこぶくろ','伝説の盾',
 ];
 const EQUIPMENT_IDS = new Map(EQUIPMENT_ID_ORDER.map((name, index) => [name, index + 1]));
-const S_TIER = new Set([
-  '鬼砕き・天','月光一文字','月影丸','月読みの杖','創造主の杖','太古の魔犬根付',
-  '妖魔の鬼猫根付','ルナゴールドシールド','大傘「桜吹雪」','常闇のフタ','導きのおまもり','光明のおまもり',
-]);
-const B_TIER = new Set([
-  '吸魂花の根付','ニャンダフルな鈴','白古魔の根付','赤魔寝鬼の根付','絶縁のフタ','大漁祈願の根付',
-  '氷河の根付','山神の魔よけ','黄泉の根付','破魔のこぶくろ','伝説の盾',
-]);
-const EQUIPMENT_LIMITS = {
-  '鬼砕き・天':'HP-85。回避に不慣れな操作では気絶リスクが高い。',
-  '月光一文字':'赤猫団限定。攻撃を止めると強化が切れる。',
-  '月影丸':'白犬隊限定。攻撃を止めると弱体効果が切れる。',
-  'Bラビットランチャー':'B-USAピョン専用。QRコード入手。',
-  'ベイダーチップ':'USAピョン専用。QRコード入手。',
-  '勇ましき王のうでわ':'エンマ大王専用。攻略資料によってランク表記に差があります。',
-  '優しき王のうでわ':'エンマ大王専用。攻略資料によってランク表記に差があります。',
-  '賢き王のうでわ':'エンマ大王専用。攻略資料によってランク表記に差があります。',
-  'ニャンダフルな鈴':'ネコ妖怪向けの仲間集め専用。',
-  '創造主の杖':'まもり-50。', '天界の杖':'まもり-50。',
+
+// 同じ素材は同じリンク・入手方法を表示し、機械取得データの重複語を整える。
+const canonicalMaterials = new Map();
+for (const recipe of Object.values(equipmentRecipes)) for (const requirement of recipe.requirements) {
+  requirement.method = requirement.method
+    .replace(/^ビッグボスがドロップ：/, '')
+    .replace(/でドロップ$/, '');
+  const current = canonicalMaterials.get(requirement.name);
+  if (!current || (current.url.includes('?search=') && !requirement.url.includes('?search='))) {
+    canonicalMaterials.set(requirement.name, { url:requirement.url, method:requirement.method });
+  }
+}
+for (const recipe of Object.values(equipmentRecipes)) for (const requirement of recipe.requirements) {
+  const canonical = canonicalMaterials.get(requirement.name);
+  requirement.url = canonical.url;
+  requirement.method = canonical.method;
+  if (requirement.name === '月光石') {
+    requirement.url = 'https://youkai.gamepedia.jp/busters/materials/16366';
+    requirement.method = '真チャレンジミッションで金評価';
+  }
+}
+equipmentRecipes['賢き王のうでわ'].acquisition = {
+  method:'ぬらりひょん（極モード・赤猫団が多いほど確率アップ）',
+  url:'https://youkaiwatch2.blog.jp/archives/50155718.html',
 };
+
 const EQUIPMENT_DEDICATED = {
   'Bラビットランチャー':'B-USAピョン',
   'ベイダーチップ':'USAピョン',
@@ -59,25 +65,6 @@ function equipmentUse(name, type, effect, power, magic) {
   if (['杖','ゆびわ'].includes(type) || /ようりょく/.test(effect)) return '妖術アタッカー';
   return '物理アタッカー';
 }
-function equipmentReason(e, use) {
-  const fixed = {
-    '鬼砕き・天':'全装備中トップ級のちから400。会心型の自操作アタッカーで定番。',
-    '月光一文字':'長時間攻撃を継続できる相手への物理火力が非常に高い。',
-    '月影丸':'継続攻撃で敵の守りを下げ、味方全体の物理火力にも貢献。',
-    '月読みの杖':'妖力400に加えて味方全員を強化できる。',
-  };
-  if (fixed[e.name]) return fixed[e.name];
-  if (/月下の|太古の魔犬|妖魔の鬼猫/.test(e.name)) return '全能力を大きく伸ばす高耐久の万能装備。';
-  return ({
-    '属性・技対策':'特定の属性・技が厳しいボス戦で被ダメージを抑える明確な役割がある。',
-    '専用ビルド':'対象妖怪の役割や性能を大きく変える専用装備。',
-    '仲間集め':'戦闘火力ではなく仲間集めの効率化に用途がある。',
-    'タンク・耐久':'高い耐久値またはタンク運用に直結する固有効果を持つ。',
-    'ヒーラー・支援':'回復量・味方強化・生存力のいずれかを実戦的に伸ばす。',
-    '妖術アタッカー':'妖力と火力補助効果の組み合わせが妖術ビルドで有効。',
-    '汎用・耐久':'複数能力を伸ばしつつ、役割が明確な耐久・支援効果を持つ。',
-  })[use] || '物理火力または特定条件下のダメージを実戦的に伸ばす。';
-}
 data.equipment = equipmentLines.map((line, index) => {
   const p = line.split('|');
   if (p.length !== 9) throw new Error('装備TSVの列数が不正: ' + (index + 1));
@@ -85,18 +72,23 @@ data.equipment = equipmentLines.map((line, index) => {
   const id = EQUIPMENT_IDS.get(name);
   if (!id) throw new Error('装備の固定IDがありません: ' + name);
   const e = { id, name, type, rank:+rank, hp:+hp, power:+power, magic:+magic, defense:+defense, effect, source };
-  e.tier = S_TIER.has(name) ? 'S' : B_TIER.has(name) ? 'B' : 'A';
   e.use = equipmentUse(name, type, effect, e.power, e.magic);
   e.dedicated = EQUIPMENT_DEDICATED[name] || '';
-  e.limit = EQUIPMENT_LIMITS[name] || '';
-  e.reason = equipmentReason(e, e.use);
   e.recipe = equipmentRecipes[name];
   if (!e.recipe || (!e.recipe.requirements.length && !e.recipe.acquisition)) throw new Error('装備素材がありません: ' + name);
+  for (const requirement of e.recipe.requirements) {
+    if (!requirement.name || !requirement.count || !requirement.url || !requirement.method) {
+      throw new Error('装備素材の項目が不足: ' + name);
+    }
+  }
+  if (!e.recipe.requirements.length && (!e.recipe.acquisition.method || !e.recipe.acquisition.url)) {
+    throw new Error('装備の入手方法が不足: ' + name);
+  }
   if (availability.equipment[String(e.id)]) e.unavailable = availability.equipment[String(e.id)];
   return e;
 });
-if (data.equipment.length !== 45 || new Set(data.equipment.map(e => e.name)).size !== 45) {
-  throw new Error('装備は重複なし45種である必要があります');
+if (data.equipment.length !== 40 || new Set(data.equipment.map(e => e.name)).size !== 40) {
+  throw new Error('装備は重複なし40種である必要があります');
 }
 data.availability = { asOf:availability.asOf, criteria:availability.criteria };
 for (const y of data.youkai) if (availability.youkai[String(y.id)]) y.unavailable = availability.youkai[String(y.id)];
