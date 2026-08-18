@@ -8,7 +8,7 @@ const equipmentBaseRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-
 const equipmentBaseMaterials = JSON.parse(fs.readFileSync(path.join(D, 'equipment-base-materials.json'), 'utf8'));
 const { normalizeAcquisition } = require('./equipment-utils');
 
-// 選定済みの実用装備21種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
+// 選定済みの実用装備12種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
 const equipmentLines = fs.readFileSync(path.join(D, 'equipment.tsv'), 'utf8').trim().split(/\r?\n/);
 // 入手困難データやDOM参照を別の装備へずらさないため、削除前61種で使っていたIDを維持する。
 const EQUIPMENT_ID_ORDER = [
@@ -114,8 +114,8 @@ data.equipment = equipmentLines.map((line, index) => {
   if (availability.equipment[String(e.id)]) e.unavailable = availability.equipment[String(e.id)];
   return e;
 });
-if (data.equipment.length !== 21 || new Set(data.equipment.map(e => e.name)).size !== 21) {
-  throw new Error('装備は重複なし21種である必要があります');
+if (data.equipment.length !== 12 || new Set(data.equipment.map(e => e.name)).size !== 12) {
+  throw new Error('装備は重複なし12種である必要があります');
 }
 data.availability = { asOf:availability.asOf, criteria:availability.criteria };
 for (const y of data.youkai) if (availability.youkai[String(y.id)]) y.unavailable = availability.youkai[String(y.id)];
@@ -267,8 +267,8 @@ const SOUL_GROUPS = [
   ['ガード・回避・耐久', [12,52,80,84,85,91,99,122]],
   ['昇天・復活',         [18,70,102]],
   ['トラップ',           [15,89,108,124]],
-  ['入手・ともだちチャンス', [71,90,97,98]],
-  ['立ち回り・その他',   [40,82,83,95,123]],
+  ['入手・ともだちチャンス', [90,98]],
+  ['その他',             [40,71,82,83,95,97,123]],
 ];
 {
   const soulById = new Map(data.souls.map(s => [s.id, s]));
@@ -324,6 +324,7 @@ const SOUL_GROUPS = [
     30,87,113,118,120,
     105,110,115,117,
     43,61,68,69,72,73,74,75,76,77,104,
+    40,91,99,
     121,122,
   ]);
   const unknownUserDrops = [...userDropIds].filter(id => !soulById.has(id));
