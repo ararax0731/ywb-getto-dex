@@ -664,7 +664,7 @@
         "kind": "material",
         "name": "白古魔Gの群青玉",
         "count": 5,
-        "method": "白古魔ゴールド（極モード報酬）",
+        "method": "白古魔ゴールド・極モード・中当たり",
         "url": "https://youkai.gamepedia.jp/busters/materials?search=%E7%99%BD%E5%8F%A4%E9%AD%94G%E3%81%AE%E7%BE%A4%E9%9D%92%E7%8E%89"
       },
       {
@@ -765,7 +765,7 @@
         "name": "プリチーの宝玉",
         "count": 5,
         "url": "https://youkai.gamepedia.jp/busters/materials/1153",
-        "method": "ビッグボスがドロップ：白古魔ゴールド・超モード・ハズレ でドロップ"
+        "method": "白古魔ゴールド・ノーマルモード・中当たり"
       },
       {
         "kind": "material",
@@ -786,7 +786,7 @@
         "name": "レッドJのキバ",
         "count": 3,
         "url": "https://youkai.gamepedia.jp/busters/materials/839",
-        "method": "ビッグボスがドロップ：レッドJ・ノーマルモード・大当たり でドロップ"
+        "method": "めざせ月兎組！紅白ボス合戦！・中当たり"
       }
     ],
     "acquisition": {

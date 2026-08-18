@@ -27,8 +27,8 @@
   "どんどろの泥": { "location": "どんどろ・ノーマル・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/1257" },
   "あやとりさまの操り糸": { "location": "あやとりさま・ノーマル・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/6512" },
   "あやとりさまの玉": { "location": "あやとりさま・ノーマル・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/6513" },
-  "ブキミーの宝玉": { "location": "プリズンブレイカー・超・ハズレ", "source": "https://youkai.gamepedia.jp/busters/materials/1156" },
-  "ブキミーのカタマリ": { "location": "マイティードッグ（白犬隊限定）・ノーマル・中当たり", "source": "https://youkai.gamepedia.jp/busters/materials/1148" },
+  "ブキミーの宝玉": { "location": "真打登場！カブキロイド！・小当たり", "source": "https://youkai.gamepedia.jp/busters/materials/1156" },
+  "ブキミーのカタマリ": { "location": "ラスボス逆襲！赤いババアと白のイカ！・小当たり", "source": "https://youkai.gamepedia.jp/busters/materials/1148" },
   "28号のモーター": { "location": "ロボニャン28号・ノーマル・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/1292" },
   "28号のバッテリー": { "location": "ロボニャン28号・ノーマル・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/1291" },
   "ニョロロンの宝玉": { "location": "ぬらりひょん・ノーマル・中当たり", "source": "https://youkai.gamepedia.jp/busters/materials/1157" },
@@ -45,7 +45,7 @@
   "白古魔Gの福福玉": { "location": "白古魔ゴールド・ノーマル・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/16791" },
   "赤魔寝鬼Gの太縄": { "location": "赤魔寝鬼ゴールド・ノーマル・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/16796" },
   "赤魔寝鬼Gの福吉小判": { "location": "赤魔寝鬼ゴールド・ノーマル・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/16797" },
-  "レッドJのキバ": { "location": "レッドJ（赤猫団限定）・ノーマル・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/839" },
-  "レッドJの首輪玉": { "location": "レッドJ（赤猫団限定）・ノーマル・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/852" },
+  "レッドJのキバ": { "location": "めざせ月兎組！紅白ボス合戦！・中当たり", "source": "https://youkai.gamepedia.jp/busters/materials/839" },
+  "レッドJの首輪玉": { "location": "赤い悪魔とさすらいのオロチ・大当たり", "source": "https://youkai.gamepedia.jp/busters/materials/852" },
   "プリチーのカケラ": { "location": "びちゃんこ手ぬぐいを回収せよ！・小当たり", "source": "https://youkai.gamepedia.jp/busters/materials/1129" }
 }

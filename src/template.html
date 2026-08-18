@@ -997,7 +997,7 @@ const equipStat = (label, value) => '<span class="' + (value < 0 ? 'neg' : '') +
   (value > 0 ? '+' : '') + value + '</b></span>';
 function equipRow(e){
   return '<article class="equipitem' + (e.unavailable ? ' unavailable' : '') + '">' +
-    '<div class="equipbody"><button class="equiptoggle" data-equip-open="equip-detail-' + e.id + '" aria-expanded="false" aria-controls="equip-detail-' + e.id + '" aria-label="' + esc(e.name) + 'の素材と入手場所を開く">' +
+    '<div class="equipbody"><button class="equiptoggle" data-equip-open="equip-detail-' + e.id + '" aria-expanded="false" aria-controls="equip-detail-' + e.id + '">' +
     '<span class="equiptop"><span class="equipname">' + esc(e.name) + '</span>' +
       '<span class="tag">' + esc(e.type) + '</span>' +
       (e.dedicated ? '<span class="tag rare">専用：' + esc(e.dedicated) + '</span>' : '') +

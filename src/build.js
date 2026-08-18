@@ -6,6 +6,7 @@ const availability = JSON.parse(fs.readFileSync(path.join(D, 'availability.json'
 const equipmentRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-recipes.json'), 'utf8'));
 const equipmentBaseRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-base-recipes.json'), 'utf8'));
 const equipmentBaseMaterials = JSON.parse(fs.readFileSync(path.join(D, 'equipment-base-materials.json'), 'utf8'));
+const { normalizeAcquisition } = require('./equipment-utils');
 
 // 選定済みの実用装備21種。TSVを正本にしてサイトと一覧の食い違いを防ぐ。
 const equipmentLines = fs.readFileSync(path.join(D, 'equipment.tsv'), 'utf8').trim().split(/\r?\n/);
@@ -24,10 +25,14 @@ const EQUIPMENT_ID_ORDER = [
 const EQUIPMENT_IDS = new Map(EQUIPMENT_ID_ORDER.map((name, index) => [name, index + 1]));
 
 // 同じ素材は同じリンク・入手方法を表示し、機械取得データの重複語を整える。
-const normalizeAcquisition = value => value.trim()
-    .replace(/^ビッグボスがドロップ：/, '')
-    .replace(/でドロップ$/, '')
-    .replace(/・(ノーマル|超|極)・/g, '・$1モード・');
+for (const [name, recipe] of Object.entries(equipmentRecipes)) {
+  if (recipe.requirements.length || !recipe.acquisition) continue;
+  if (!recipe.acquisition.method?.trim() || !recipe.acquisition.url?.trim()) {
+    throw new Error(`装備「${name}」の入手方法または出典が空です`);
+  }
+  recipe.acquisition.method = normalizeAcquisition(recipe.acquisition.method);
+  recipe.acquisition.url = recipe.acquisition.url.trim();
+}
 
 const canonicalMaterials = new Map();
 for (const [name, acquisition] of Object.entries(equipmentBaseMaterials)) {
@@ -92,7 +97,7 @@ data.equipment = equipmentLines.map((line, index) => {
       }
       const baseRequirements = base.requirements.map(baseRequirement => {
         if (baseRequirement.kind === 'equipment') {
-          return { ...baseRequirement, nestedEquipment:true };
+          return { ...baseRequirement };
         }
         const acquisition = canonicalMaterials.get(baseRequirement.name);
         if (!acquisition) {

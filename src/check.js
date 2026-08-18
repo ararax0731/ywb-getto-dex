@@ -4,6 +4,11 @@ const D = __dirname;
 const html = fs.readFileSync(path.join(D, '..', 'index.html'), 'utf8');
 const rawBaseMaterials = JSON.parse(fs.readFileSync(path.join(D, 'equipment-base-materials.json'), 'utf8'));
 const rawEquipmentRecipes = JSON.parse(fs.readFileSync(path.join(D, 'equipment-recipes.json'), 'utf8'));
+const { normalizeAcquisition } = require('./equipment-utils');
+
+if (normalizeAcquisition('黒鬼・極・中当たり でドロップ ') !== '黒鬼・極モード・中当たり') {
+  throw new Error('素材入手方法の正規化後に末尾空白が残る');
+}
 
 for (const [name, acquisition] of Object.entries(rawBaseMaterials)) {
   if (!acquisition?.location?.trim() || !acquisition?.source?.trim()) {
@@ -16,6 +21,24 @@ for (const [equipment, recipe] of Object.entries(rawEquipmentRecipes)) {
       throw new Error('装備素材の入手方法に前後空白がある: ' + equipment + ' → ' + requirement.name);
     }
   }
+  if (!recipe.requirements.length && recipe.acquisition && (recipe.acquisition.method !== recipe.acquisition.method.trim() ||
+      recipe.acquisition.url !== recipe.acquisition.url.trim())) {
+    throw new Error('装備自体の入手方法・出典に前後空白がある: ' + equipment);
+  }
+}
+
+// 正本同士に表記揺れがあれば、生成時の統合で隠れる前に検出する。
+const rawMethodsByMaterial = new Map();
+const addRawMethod = (name, method) => {
+  if (!rawMethodsByMaterial.has(name)) rawMethodsByMaterial.set(name, new Set());
+  rawMethodsByMaterial.get(name).add(normalizeAcquisition(method));
+};
+for (const [name, acquisition] of Object.entries(rawBaseMaterials)) addRawMethod(name, acquisition.location);
+for (const recipe of Object.values(rawEquipmentRecipes)) {
+  for (const requirement of recipe.requirements) addRawMethod(requirement.name, requirement.method);
+}
+for (const [name, methods] of rawMethodsByMaterial) {
+  if (methods.size > 1) throw new Error('正本内で同じ素材の入手方法が不一致: ' + name + ' → ' + [...methods].join(' / '));
 }
 
 // スマホで正しい幅になるか（Artifact のラッパが無いぶん自前で持っている必要がある）
@@ -300,14 +323,15 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     lastUse = pos;
   }
   if ((eh.match(/data-equip-open=/g) || []).length !== 21 || (eh.match(/class="equipdetail"/g) || []).length !== 21) problems.push('装備素材の開閉UIが21件ない');
-  if ((eh.match(/class="equiptoggle"[^>]*aria-label="[^"]+の素材と入手場所を開く"/g) || []).length !== 21) problems.push('装備の開閉ボタンに説明ラベルが21件ない');
+  if (/class="equiptoggle"[^>]*aria-label=/.test(eh)) problems.push('装備の開閉ボタンがaria-labelで内容を上書きしている');
+  if ((eh.match(/class="equiptoggle"[^>]*aria-expanded="false"[^>]*aria-controls="equip-detail-/g) || []).length !== 21) problems.push('装備の開閉状態・対象の関連付けが21件ない');
   for (const text of ['必要素材','強化元の作り方・主な入手場所を表示','強化元：真鬼砕き・黒','作り方（新規）','黒鬼・ノーマルモード・大当たり','専用：エンマ大王']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
   const baseRequirements = D_.equipment.flatMap(e => e.recipe.requirements).filter(r => r.kind === 'equipment' && r.baseRecipe).flatMap(r => r.baseRecipe.requirements);
   if ((eh.match(/class="basepart"/g) || []).length !== baseRequirements.length) problems.push('強化元装備の素材入手場所が全件描画されていない');
   if (baseRequirements.some(r => r.kind === 'material' && (!r.location?.trim() || !r.source?.trim()))) problems.push('強化元装備の素材入手場所・出典が不足している');
   if (!eh.includes('<span class="howlabel">入手：</span>') || /content:'入手：'/.test(html)) problems.push('「入手：」が実テキストで統一されていない');
   if (!eh.includes('装備：巨大釜のフタ') || !eh.includes('（さらに前段の装備が必要）') || eh.includes('入手：前段の装備')) problems.push('前段装備の案内が不明瞭');
-  if (!/\.reciperow,\.basepart\{grid-template-columns:1fr; gap:0\}/.test(html)) problems.push('スマホで強化元素材が1列表示になっていない');
+  if (!/\.reciperow\s*,\s*\.basepart\s*\{[^}]*grid-template-columns\s*:\s*1fr\s*;[^}]*gap\s*:\s*0\s*[;}]/.test(html)) problems.push('スマホで強化元素材が1列表示になっていない');
   const methodsByMaterial = new Map();
   for (const equipment of D_.equipment) {
     for (const requirement of equipment.recipe.requirements) {
@@ -321,6 +345,18 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     }
   }
   for (const [name, methods] of methodsByMaterial) if (methods.size > 1) problems.push('同じ素材の入手方法が不一致: ' + name);
+  for (const equipment of D_.equipment) {
+    for (const requirement of equipment.recipe.requirements) {
+      if (requirement.method !== requirement.method.trim()) problems.push('生成後の素材入手方法に前後空白がある: ' + equipment.name + ' → ' + requirement.name);
+      for (const base of requirement.baseRecipe?.requirements || []) {
+        if (base.kind === 'material' && base.location !== base.location.trim()) problems.push('生成後の強化元素材の入手場所に前後空白がある: ' + base.name);
+      }
+    }
+    if (equipment.recipe.acquisition && (equipment.recipe.acquisition.method !== equipment.recipe.acquisition.method.trim() ||
+        equipment.recipe.acquisition.url !== equipment.recipe.acquisition.url.trim())) {
+      problems.push('生成後の装備入手方法・出典に前後空白がある: ' + equipment.name);
+    }
+  }
   if (/class="recipename"><a\s/.test(eh)) problems.push('装備素材に外部リンクが残っている');
   if (/素材名から出典を開けます|レシピ補完：/.test(eh)) problems.push('装備素材に外部遷移を促す文言が残っている');
   for (const use of ['物理アタッカー','妖術アタッカー','タンク・耐久','ヒーラー・支援','汎用・耐久','属性・技対策','専用ビルド','仲間集め']) {
