@@ -167,7 +167,7 @@ console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
   }
   const sourceExpect = new Map([
     ['クリティカル威力アップ', ['あつガルル', 'デビビラン']],
-    ['クリティカル率アップ', ['しょうブシ', 'フユニャン']],
+    ['クリティカル率アップ', ['フユニャン', 'まさむね']],
     ['HP吸収', ['百鬼姫', 'むらまさ']],
   ]);
   for (const [soulName, names] of sourceExpect) {
