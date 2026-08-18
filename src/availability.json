@@ -2,6 +2,26 @@
   "asOf": "2026-08-18",
   "criteria": "現在、新規プレイヤーが正規手段で取得することがほぼ不可能なもの",
   "youkai": {
+    "37": {
+      "reason": "ようかいの輪「白犬隊参謀部」の報酬ですが、輪の完成に白犬隊4人限定報酬の青鬼が必要です。",
+      "source": "https://game-e.com/youkai-watch-busters/boss-mission/02.php"
+    },
+    "38": {
+      "reason": "ようかいの輪「赤猫一番隊」の報酬ですが、輪の完成に赤猫団4人限定報酬の赤鬼が必要です。",
+      "source": "https://game-e.com/youkai-watch-busters/boss-mission/01.php"
+    },
+    "138": {
+      "reason": "極・赤鬼のスペシャル報酬。現在は赤猫団の本体・ソフトを4組そろえたローカル通信が実質必要です。",
+      "source": "https://game-e.com/youkai-watch-busters/boss-mission/01.php"
+    },
+    "139": {
+      "reason": "極・青鬼のスペシャル報酬。現在は白犬隊の本体・ソフトを4組そろえたローカル通信が実質必要です。",
+      "source": "https://game-e.com/youkai-watch-busters/boss-mission/02.php"
+    },
+    "342": {
+      "reason": "すれ違い通信でまれに出現します。現在も機能自体は使えますが、自然なすれ違いでの入手は非常に困難です。",
+      "source": "https://gameobera.blog.jp/archives/37748634.html"
+    },
     "408": {
       "reason": "白犬隊ダウンロード版の購入特典。3DS eショップでの新規販売が終了しているため、未購入者は現在ほぼ入手できません。",
       "source": "https://support.nintendo.com/jp/information/2022/0216.html"
@@ -9,7 +29,24 @@
     "409": {
       "reason": "赤猫団ダウンロード版の購入特典。3DS eショップでの新規販売が終了しているため、未購入者は現在ほぼ入手できません。",
       "source": "https://support.nintendo.com/jp/information/2022/0216.html"
+    },
+    "450": {
+      "reason": "仲間になるレッドJは赤猫団4人限定のスペシャル報酬。現在は本体・ソフトを4組そろえたローカル通信が実質必要です。",
+      "source": "https://game-e.com/youkai-watch-busters/youkai/450.php"
+    },
+    "451": {
+      "reason": "仲間になるマイティードッグは白犬隊4人限定のスペシャル報酬。現在は本体・ソフトを4組そろえたローカル通信が実質必要です。",
+      "source": "https://game-e.com/youkai-watch-busters/youkai/451.php"
     }
   },
-  "equipment": {}
+  "equipment": {
+    "2": {
+      "reason": "作成に赤猫団4人限定のスペシャル報酬素材を6個使用します。オンライン協力終了後は同色4組でのローカル通信が実質必要です。",
+      "source": "https://youkai.gamepedia.jp/busters/equipments/16374"
+    },
+    "3": {
+      "reason": "作成に白犬隊4人限定のスペシャル報酬素材を6個使用します。オンライン協力終了後は同色4組でのローカル通信が実質必要です。",
+      "source": "https://youkai.gamepedia.jp/busters/equipments/16375"
+    }
+  }
 }

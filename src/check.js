@@ -259,17 +259,18 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   let eh = getEl('main').innerHTML;
   if ((eh.match(/class="equipitem/g) || []).length !== 61) problems.push('装備一覧の描画件数が61ではない');
   for (const name of ['鬼砕き・天','月光一文字','Bラビットランチャー','伝説の盾']) if (!eh.includes(name)) problems.push('装備一覧にない: ' + name);
-  if (!eh.includes('今回の61種には該当なし')) problems.push('装備の現在入手困難が0件である旨が出ていない');
+  for (const name of ['月光一文字','月影丸']) if (!eh.includes(name) || !eh.includes('現在入手困難')) problems.push('入手困難装備の表示がない: ' + name);
   fire({ echeck:'1' });
   if (!(JSON.parse(store['ywb-getto-dex-v1'] || '{}').eqGot || []).includes(1)) problems.push('装備チェックが保存されない');
   eh = getEl('main').innerHTML;
   if (!/class="equipitem got"/.test(eh)) problems.push('装備の入手済み表示が更新されない');
   const unavailable = D_.youkai.filter(y => y.unavailable);
-  if (unavailable.map(y => y.name).join('|') !== 'ニャン騎士|ニャン魔女') problems.push('現在入手困難な妖怪が想定の2体ではない');
+  const expectedUnavailable = ['妖怪ガッツK','妖怪ガッツF','赤鬼','青鬼','ツチノコパンダ','ニャン騎士','ニャン魔女','レッドJ','マイティードッグ'];
+  if (unavailable.map(y => y.name).join('|') !== expectedUnavailable.join('|')) problems.push('現在入手困難な妖怪が想定の9体ではない');
   fire({ tab:'dex' });
   const dh = getEl('listwrap').innerHTML;
   for (const y of unavailable) if (!dh.includes('id="y' + y.id + '"') || !dh.includes('現在入手困難')) problems.push('入手困難妖怪のグレー表示がない: ' + y.name);
-  console.log('装備61種・入手困難2体・装備チェック保存 OK');
+  console.log('装備61種・入手困難 妖怪9体／装備2種・装備チェック保存 OK');
 }
 
 // 入手状態フィルタ（すべて・未入手だけ・入手済みだけ）
