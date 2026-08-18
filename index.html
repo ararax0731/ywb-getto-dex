@@ -99,7 +99,7 @@ h1 .sub{font-size:13px; color:var(--ink-3); letter-spacing:.08em; font-family:va
 .meterbar{height:4px; background:var(--panel-3); border-radius:99px; overflow:hidden}
 .meterbar > i{display:block; height:100%; background:var(--gold-line); border-radius:99px; transition:width .35s ease}
 
-.summary{display:flex; flex-wrap:wrap; gap:6px 22px; padding:8px 0 12px; align-items:center}
+.summary{display:flex; flex-wrap:wrap; gap:6px 22px; min-height:62px; padding:8px 0 12px; align-items:center}
 .stat{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--ink-2)}
 .stat b{font-family:var(--mono); font-size:13px; color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
 .stat .meterbar{width:52px}
@@ -107,7 +107,7 @@ h1 .sub{font-size:13px; color:var(--ink-3); letter-spacing:.08em; font-family:va
 .sep{width:1px; height:18px; background:var(--line); margin:0 -8px}
 
 /* ---------- tabs ---------- */
-nav.tabs{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; width:100%}
+nav.tabs{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; width:100%; min-height:38px}
 .tab{
   min-width:0; padding:9px 6px 8px; font-size:13px; font-weight:600; color:var(--ink-3);
   border-bottom:2px solid transparent; white-space:nowrap; letter-spacing:.01em; line-height:1.35;
@@ -118,10 +118,12 @@ nav.tabs{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:2px; w
 
 /* ---------- toolbar ---------- */
 .toolbar{padding:14px 0 10px; display:flex; flex-direction:column; gap:9px}
+.dexheadrow{display:flex; align-items:center; gap:9px; flex-wrap:wrap}
 .dexswitch{
-  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-self:flex-start;
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr));
   width:min(100%,360px); padding:3px; border:1px solid var(--line-2); border-radius:9px; background:var(--panel-3);
 }
+.dexheadrow .resultline{flex:1 1 480px}
 .dexkind{min-height:44px; padding:6px 16px; border-radius:6px; color:var(--ink-3); font-size:13.5px; font-weight:600; white-space:nowrap}
 .dexkind[aria-pressed="true"]{background:var(--panel); color:var(--ink); box-shadow:var(--shadow)}
 .dexkind .n{font-family:var(--mono); font-size:11px; margin-left:7px; opacity:.65; font-variant-numeric:tabular-nums}
@@ -172,7 +174,7 @@ select.sel{
 .resultline{font-size:12px; color:var(--ink-3); display:flex; gap:12px; align-items:center; flex-wrap:wrap}
 
 /* ---------- ledger list ---------- */
-main{padding-bottom:80px}
+main{min-height:100vh; padding-bottom:80px}
 .ledger{background:var(--panel); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow); overflow:hidden}
 .row{border-top:1px solid var(--line)}
 .row:first-child{border-top:none}
@@ -306,12 +308,13 @@ main{padding-bottom:80px}
 .accordion{background:var(--panel); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow); overflow:hidden}
 .accitem{border-top:1px solid var(--line)}
 .accitem:first-child{border-top:none}
-.acchead{display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:stretch}
+.acchead{display:grid; grid-template-columns:auto minmax(0,1fr); align-items:stretch}
 .acctoggle{min-width:0; min-height:54px; padding:9px 12px; text-align:left}
 .acctoggle:hover{background:var(--panel-2)}
-.acctitle{display:block; font-family:var(--serif); font-size:15.5px; font-weight:600; line-height:1.35}
+.acctitle{display:flex; align-items:baseline; gap:7px 12px; min-width:0; font-family:var(--serif); font-size:15.5px; font-weight:600; line-height:1.35; white-space:nowrap}
+.accreward{min-width:0; overflow:hidden; text-overflow:ellipsis; color:var(--ink-3); font-family:var(--sans); font-size:11.5px; font-weight:400}
 .accmeta{display:block; margin-top:2px; color:var(--ink-3); font-size:11.5px; line-height:1.45}
-.accside{min-width:54px; padding:7px 9px; display:grid; place-items:center; border-left:1px solid var(--line); color:var(--ink-3); font-family:var(--mono); font-size:11px}
+.accside{min-width:54px; padding:7px 9px; display:grid; place-items:center; border-right:1px solid var(--line); color:var(--ink-3); font-family:var(--mono); font-size:11px}
 .accside.done{color:var(--stamp); background:var(--stamp-wash); font-family:var(--serif); font-size:12px; font-weight:700}
 .accpanel{padding:6px 12px 11px; border-top:1px dashed var(--line); background:var(--panel-2)}
 .accpanel[hidden]{display:none}
@@ -393,9 +396,6 @@ h2{font-family:var(--serif); font-size:19px; font-weight:600; letter-spacing:.04
 .equipstats b{color:var(--ink-2); font-weight:600}
 .equipstats .neg b{color:var(--stamp)}
 .equipeffect{margin-top:2px; color:var(--ink-2); font-size:12px; line-height:1.4}
-.equiptools{display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin:0 0 10px; color:var(--ink-3); font-size:12px}
-.equiptools .tools{margin-left:auto}
-
 /* ---------- footer / modal ---------- */
 footer{
   border-top:1px solid var(--line); margin-top:44px; padding:20px 0 44px;
@@ -452,6 +452,7 @@ footer a{color:var(--ink-2)}
   .chev{display:none}
   .detail{padding-left:14px}
   .mem .how{display:none}
+  .dexheadrow .resultline{flex-basis:100%}
 }
 </style>
 
@@ -694,7 +695,7 @@ function rowHTML(y){
         '<span class="metacell">' +
           '<span class="no">No.' + String(y.no).padStart(3, '0') + '</span>' +
           (y.rank ? '<span class="rank" data-r="' + y.rank + '">' + y.rank + '</span>' : '') +
-          (y.role ? '<span class="tag role">' + esc(y.role) + '</span>' : '') +
+          (y.role && !y.boss ? '<span class="tag role">' + esc(y.role) + '</span>' : '') +
           tags.join('') + usesHTML(y) + '<span class="chev">▶</span>' +
         '</span>' +
       '</div>' +
@@ -774,9 +775,9 @@ function renderDex(){
   const areas = AREAS.filter(a => base.some(y => y.patrol.includes(a)));
   const html = [];
   html.push('<div class="toolbar">');
-  html.push('<div class="dexswitch" role="group" aria-label="大辞典の種類">' + DEX_KINDS.map(k =>
+  html.push('<div class="dexheadrow"><div class="dexswitch" role="group" aria-label="大辞典の種類">' + DEX_KINDS.map(k =>
     '<button class="dexkind" data-dex-kind="' + k.k + '" aria-pressed="' + (S.dexKind === k.k) + '">' +
-    k.n + '<span class="n">' + cnt(Y.filter(k.t)) + '</span></button>').join('') + '</div>');
+    k.n + '<span class="n">' + cnt(Y.filter(k.t)) + '</span></button>').join('') + '</div><div class="resultline" id="resultline"></div></div>');
   html.push('<div class="searchalways">' +
     '<label class="search"><input id="q" type="search" placeholder="妖怪名で検索" value="' + esc(S.q) + '"></label>' +
     '<button class="chip searchscope" data-search-all="1" aria-pressed="' + S.searchAll + '">その他の項目も検索</button></div>');
@@ -784,8 +785,9 @@ function renderDex(){
   html.push('<button class="filtertoggle" id="filterToggle" aria-expanded="' + S.filtersOpen + '">絞り込み' +
     (activeFilters ? '<span class="num" style="color:var(--stamp)">適用中</span>' : '') + '</button>');
   html.push('<div class="filterpanel" id="filterPanel"' + (S.filtersOpen ? '' : ' hidden') + '>');
+  const sortOptions = S.dexKind === 'boss' ? ['no:No.順','yomi:五十音順'] : ['no:No.順','rank:ランク順','tribe:種族順','yomi:五十音順'];
   html.push('<div class="searchrow"><select class="sel" id="sort">' +
-      ['no:No.順','rank:ランク順','tribe:種族順','yomi:五十音順'].map(o => {
+      sortOptions.map(o => {
         const [v,n] = o.split(':');
         return '<option value="' + v + '"' + (S.sort === v ? ' selected' : '') + '>' + n + '</option>';
       }).join('') + '</select></div>');
@@ -794,9 +796,9 @@ function renderDex(){
       '<button class="chip' + (o[0] === 'missing' ? ' warm' : '') + '" data-owned="' + o[0] + '" aria-pressed="' + (S.owned === o[0]) + '">' + o[1] + '</button>').join('') + '</div>');
   if (ranks.length) html.push('<div class="chips"><span class="chiplabel">ランク</span>' +
     ranks.map(r => chipBtn('rank', r, r, cnt(base.filter(y => y.rank === r)))).join('') + '</div>');
-  if (roles.length) html.push('<div class="chips"><span class="chiplabel">やくわり</span>' +
+  if (S.dexKind !== 'boss' && roles.length) html.push('<div class="chips"><span class="chiplabel">やくわり</span>' +
     roles.map(r => chipBtn('role', r, r, cnt(base.filter(y => y.role === r)))).join('') + '</div>');
-  if (tags.length) html.push('<div class="chips"><span class="chiplabel">区分</span>' +
+  if (S.dexKind !== 'boss' && tags.length) html.push('<div class="chips"><span class="chiplabel">区分</span>' +
     tags.map(t => chipBtn('tag', t.k, t.n, cnt(base.filter(t.t)))).join('') + '</div>');
   if (useTags.length) html.push('<div class="chips"><span class="chiplabel">必要</span>' +
     useTags.map(t => { const i = USETAGS.indexOf(t); return chipBtn('tag', t.k, '<b class="use">' + USES[i].s + '</b>' + t.n,
@@ -804,7 +806,6 @@ function renderDex(){
   if (areas.length) html.push('<div class="chips"><span class="chiplabel">パトロール</span>' +
     areas.map(a => chipBtn('area', a, a, cnt(base.filter(y => y.patrol.includes(a))))).join('') + '</div>');
   html.push('</div>');
-  html.push('<div class="resultline" id="resultline"></div>');
   html.push('</div>');
   html.push('<div id="listwrap"></div>');
   elMain.innerHTML = html.join('');
@@ -854,10 +855,9 @@ function renderRings(){
     '<div class="accordion">' + orderedRings.map(r => {
       const got = r.members.filter(m => has(m.id)).length, all = r.members.length, ok = got === all;
       return '<article class="accitem' + (ok ? ' done' : '') + '" data-ring-id="' + r.id + '">' +
-        '<div class="acchead"><button class="acctoggle" data-acc="ring-' + r.id + '" aria-expanded="false">' +
-          '<span class="acctitle">' + esc(r.name) + '</span>' +
-          '<span class="accmeta">' + got + '/' + all + '体　報酬 ' + esc(r.reward || '—') + '</span></button>' +
-          '<button class="accside' + (ok ? ' done' : '') + '" data-acc="ring-' + r.id + '" aria-label="' + esc(r.name) + 'の必要妖怪を表示">' + (ok ? '済' : got + '/' + all) + '</button></div>' +
+        '<div class="acchead"><button class="accside' + (ok ? ' done' : '') + '" data-acc="ring-' + r.id + '" aria-label="' + esc(r.name) + 'の必要妖怪を表示">' + (ok ? '済' : got + '/' + all) + '</button>' +
+          '<button class="acctoggle" data-acc="ring-' + r.id + '" aria-expanded="false"><span class="acctitle"><span>' + esc(r.name) + '</span>' +
+          '<span class="accreward">報酬 ' + esc(r.reward || '—') + '</span></span></button></div>' +
         '<div class="accpanel" id="ring-' + r.id + '" hidden>' +
         (r.comment ? '<p class="cardcomment">' + esc(r.comment) + '</p>' : '') +
         '<div class="members">' + r.members.map(m =>
@@ -879,10 +879,8 @@ function renderLegend(){
       const need = l.legendNeeds || [];
       const d = need.filter(n => has(n.id)).length, ready = d === need.length && need.length > 0;
       return '<article class="accitem' + (has(l.id) ? ' done' : '') + '" data-legend-id="' + l.id + '">' +
-        '<div class="acchead"><button class="acctoggle" data-acc="legend-' + l.id + '" aria-expanded="false">' +
-          '<span class="acctitle">' + esc(l.name) + '</span>' +
-          '<span class="accmeta">必要な妖怪 ' + need.length + '体・' + d + '体入手済み</span></button>' +
-          '<button class="accside' + (has(l.id) ? ' done' : '') + '" data-check="' + l.id + '" aria-pressed="' + has(l.id) + '" aria-label="' + esc(l.name) + ' を入手済みにする">' + (has(l.id) ? '済' : d + '/' + need.length) + '</button></div>' +
+        '<div class="acchead"><button class="accside' + (has(l.id) ? ' done' : '') + '" data-check="' + l.id + '" aria-pressed="' + has(l.id) + '" aria-label="' + esc(l.name) + ' を入手済みにする">' + (has(l.id) ? '済' : d + '/' + need.length) + '</button>' +
+          '<button class="acctoggle" data-acc="legend-' + l.id + '" aria-expanded="false"><span class="acctitle"><span>' + esc(l.name) + '</span></span></button></div>' +
         '<div class="accpanel" id="legend-' + l.id + '" hidden>' +
         (l.skill ? '<p class="cardcomment">スキル「' + esc(l.skill.name) + '」' + esc(l.skill.desc) + '</p>' : '') +
         '<div class="members">' + need.map(n =>
@@ -1028,11 +1026,12 @@ function equipRow(e){
     '<div class="equipeffect">' + esc(e.effect) + '</div></div></article>';
 }
 function renderEquipment(){
+  const orderedEquipment = EQUIPMENT.slice().sort((a, b) => Number(!!a.unavailable) - Number(!!b.unavailable));
   elMain.innerHTML = '<div class="secthead"><h2>装備一覧</h2><span class="sectnote">実用性の高い装備' + EQUIPMENT.length +
-    '種を、能力・効果とともに一覧にしています。入手済み <b class="num">' + S.eqGot.size + '</b>/' + EQUIPMENT.length + '</span><span class="sectrule"></span></div>' +
-    '<div class="equiptools"><span class="tools"><button class="ghost" id="exportBtn">書き出し</button>' +
-    '<button class="ghost" id="importBtn">読み込み</button><button class="ghost" id="eqResetBtn">装備チェック解除</button></span></div>' +
-    '<div class="equiplist">' + EQUIPMENT.map(equipRow).join('') + '</div>';
+    '種を、能力・効果とともに一覧にしています。入手済み <b class="num">' + S.eqGot.size + '</b>/' + EQUIPMENT.length + '</span><span class="sectrule"></span>' +
+    '<span class="tools"><button class="ghost" id="exportBtn">書き出し</button><button class="ghost" id="importBtn">読み込み</button>' +
+    '<button class="ghost" id="eqResetBtn">装備チェック解除</button></span></div>' +
+    '<div class="equiplist">' + orderedEquipment.map(equipRow).join('') + '</div>';
 }
 
 /* ---------- render ---------- */
@@ -1071,7 +1070,7 @@ document.addEventListener('click', e => {
 
   if (t.dataset.dexKind) {
     S.dexKind = t.dataset.dexKind;
-    S.q = ''; S.searchAll = false; S.owned = 'all';
+    S.q = ''; S.searchAll = false; S.owned = 'all'; S.sort = 'no';
     for (const k in S.f) S.f[k].clear();
     renderDex(); return;
   }

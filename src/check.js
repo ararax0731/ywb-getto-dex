@@ -208,6 +208,10 @@ console.log('フィルタ往復', F.length, '種 OK');
   if (shown() !== expectedYoukai) problems.push('妖怪表示 ' + shown() + ' / 期待 ' + expectedYoukai);
   fire({ dexKind: 'boss' });
   if (shown() !== expectedBoss) problems.push('ボス表示 ' + shown() + ' / 期待 ' + expectedBoss);
+  const bossMain = getEl('main').innerHTML;
+  if (/<span class="chiplabel">(?:やくわり|区分)<\/span>/.test(bossMain)) problems.push('ボスのやくわり・区分フィルタが残っている');
+  if (/option value="(?:rank|tribe)"/.test(bossMain)) problems.push('ボスの並び順にランク順・種族順が残っている');
+  if (/class="tag role"/.test(getEl('listwrap').innerHTML)) problems.push('ボス行にやくわりが残っている');
   fire({ dexKind: 'youkai' });
   console.log('大辞典切替 妖怪' + expectedYoukai + '体 / ボス' + expectedBoss + '体 OK');
 }
@@ -262,6 +266,9 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   for (const text of ['推奨度','採用理由：','注意：','能力・効果の出典','現在入手困難：月光一文字','Excelで選定した全']) {
     if (eh.includes(text)) problems.push('装備一覧に削除対象の文言が残っている: ' + text);
   }
+  const equipItems = [...eh.matchAll(/<article class="equipitem[^>]*>[\s\S]*?<span class="equipname">([^<]+)<\/span>/g)].map(m => m[1]);
+  if (equipItems.slice(-2).join('|') !== '月光一文字|月影丸') problems.push('現在入手困難な装備が一覧末尾にない');
+  if (!/<div class="secthead">[\s\S]*?<span class="tools">[\s\S]*?id="eqResetBtn"[\s\S]*?<\/div><div class="equiplist">/.test(eh)) problems.push('装備の操作ボタンが見出し行にない');
   fire({ echeck:'1' });
   if (!(JSON.parse(store['ywb-getto-dex-v1'] || '{}').eqGot || []).includes(1)) problems.push('装備チェックが保存されない');
   eh = getEl('main').innerHTML;
@@ -309,11 +316,16 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   const ringHtml = getEl('main').innerHTML;
   if ((ringHtml.match(/class="accitem/g) || []).length !== D_.rings.length) problems.push('ようかいの輪のプルダウン数が不一致');
   if (!/class="accside done"[^>]*>済<\/button>/.test(ringHtml)) problems.push('完成したようかいの輪に済ボタンがない');
+  if (!/<div class="acchead"><button class="accside/.test(ringHtml)) problems.push('ようかいの輪の進捗が左側にない');
+  if (/class="accmeta"/.test(ringHtml)) problems.push('ようかいの輪の名称下に進捗表記が残っている');
+  if (!/class="acctitle">[\s\S]*?class="accreward">報酬 /.test(ringHtml)) problems.push('ようかいの輪の報酬が名称右にない');
   const ringDoneOrder = [...ringHtml.matchAll(/class="accitem( done)?" data-ring-id=/g)].map(m => Boolean(m[1]));
   if (ringDoneOrder.some((done, i) => done && ringDoneOrder.slice(i + 1).includes(false))) problems.push('完成したようかいの輪より下に未完成の輪がある');
   fire({ tab: 'legend' });
   const legendHtml = getEl('main').innerHTML;
   if ((legendHtml.match(/class="accitem/g) || []).length !== D_.youkai.filter(y => y.legend).length) problems.push('レジェンドのプルダウン数が不一致');
+  if (!/<div class="acchead"><button class="accside/.test(legendHtml)) problems.push('レジェンドの進捗が左側にない');
+  if (/必要な妖怪 \d+体|\d+体入手済み|class="accmeta"/.test(legendHtml)) problems.push('レジェンドの名称下に必要数表記が残っている');
   const legendDoneOrder = [...legendHtml.matchAll(/class="accitem( done)?" data-legend-id=/g)].map(m => Boolean(m[1]));
   if (legendDoneOrder.some((done, i) => done && legendDoneOrder.slice(i + 1).includes(false))) problems.push('入手済みレジェンドより下に未入手レジェンドがある');
   console.log('輪・レジェンド 済を末尾へ移動 OK');
