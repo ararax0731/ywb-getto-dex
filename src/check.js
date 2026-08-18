@@ -145,12 +145,12 @@ console.log('タブ描画 OK / innerHTML書き込み回数', renderCount);
   const sourceExpect = new Map([
     ['クリティカル威力アップ', ['あつガルル', 'デビビラン']],
     ['クリティカル率アップ', ['しょうブシ', 'フユニャン']],
-    ['HP吸収', ['百鬼姫', 'ガブニャン']],
+    ['HP吸収', ['百鬼姫', 'むらまさ']],
   ]);
   for (const [soulName, names] of sourceExpect) {
     const s = D_.souls.find(v => v.name === soulName);
-    const ids = new Set((s && s.sourceOwnerIds) || []);
-    const gotNames = D_.youkai.filter(y => ids.has(y.id)).map(y => y.name);
+    const byYoukaiId = new Map(D_.youkai.map(y => [y.id, y]));
+    const gotNames = ((s && s.sourceOwnerIds) || []).map(id => byYoukaiId.get(id)?.name).filter(Boolean);
     if (gotNames.join('|') !== names.join('|')) {
       problems.push('通常魂の表示妖怪が不一致: ' + soulName + ' → ' + gotNames.join('、'));
     }
@@ -445,7 +445,7 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
     'ロボニャン28号のB魂','レッドJのB魂','妖気ゲージ上昇率アップ','ウィスマロのB魂','あやとりさまのB魂',
     '鬼系へのダメージアップ','氷ぞくせいのダメージアップ',
     'R3000のB魂','カブキロイドのB魂','忍の魂','自分にかかったよいとりつき継続ターンアップ',
-    '赤魔寝鬼のB魂','白古魔のB魂','赤魔寝鬼／白古魔のB魂','ギヤマンどくろのB魂',
+    '赤魔寝鬼のB魂','白古魔のB魂','赤魔寝鬼／白古魔のB魂','ウバウネのB魂',
     '日ノ神のB魂','どんどろのB魂','地獄大山椒のB魂',
     'ぬらりひょんのB魂','白古魔GのB魂',
     '火の魂','水の魂','雷の魂','氷の魂','土の魂','風の魂',
@@ -453,6 +453,9 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   ];
   const stillPresent = removedSoulNames.filter(name => D_.souls.some(s => s.name === name));
   if (stillPresent.length) problems.push('指定削除の魂が残っている: ' + stillPresent.join(', '));
+  const hpAbsorb = D_.souls.find(s => s.name === 'HP吸収');
+  if (hpAbsorb?.effect !== '攻撃で与えたダメージの10%分、HPを回復する（魂レベル10時）。') problems.push('HP吸収の説明が指定文言ではない');
+  if (!D_.souls.some(s => s.name === 'ギヤマンどくろのB魂')) problems.push('ギヤマンどくろのB魂が一覧にない');
   if (!list.includes('class="soulbottom"')) problems.push('魂一覧が2行構成になっていない');
   for (const group of ['まもり','全ステータス','属性を与える','属性に耐える','昇天・復活','トラップ']) {
     if (D_.soulGroups.includes(group) || list.includes('>' + group + '</h3>')) problems.push('0種の魂分類が残っている: ' + group);
