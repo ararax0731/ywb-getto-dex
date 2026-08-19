@@ -9,6 +9,8 @@ id は「使用済み」の保存キーなので再ビルドしても変わっ�
 """
 import hashlib, json, os, re
 
+import numpy as np, segno
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC, OUT = os.path.join(ROOT, 'src'), os.path.join(ROOT, 'qr')
 
@@ -82,6 +84,19 @@ def great_cat(name):
     return GREAT + c if c else UNKNOWN
 
 
+def regen(payload, n):
+    """payload から QR を作り直して rows を返す。
+
+    ゲームの匠の画像は QR の中央にロゴが焼き込まれていて(全1852枚で共通の
+    101モジュール)、誤り訂正で読めているだけなので、そのまま保存すると
+    訂正余力を食ったまま配ることになる。元と同じ version 6 / ECC H になる
+    ことを確かめてから差し替える(違えば元の行列をそのまま使う)。"""
+    m = segno.make(payload, error='h').matrix
+    if len(m) != n:
+        return None
+    return [np.packbits(np.array(row, np.uint8)).tobytes().hex() for row in m]
+
+
 def load(name):
     p = os.path.join(SRC, name)
     return json.load(open(p, encoding='utf-8')) if os.path.exists(p) else None
@@ -99,7 +114,7 @@ def payload_id(payload, used):
 
 
 def main():
-    items, seen = [], set()
+    items, seen, n_regen_ng = [], set(), 0
     for it in load('qr-modules.json')['items']:
         key = it['payload'].upper()             # 大小違いは同じコイン(符号化方式の違い)
         if it['cat'] in DROP or key in seen:
@@ -112,9 +127,14 @@ def main():
             cat = precious_of(name) or UNKNOWN
         else:
             cat = it['cat']
-        items.append({'id': it['id'], 'cat': cat, 'name': name,
-                      'date': it.get('date', ''), 'n': it['n'], 'rows': it['rows']})
+        # 名前・日付は画面に出さない(ラベルは通し番号)ので出力には載せない
+        rows = regen(it['payload'], it['n'])
+        if rows is None:
+            rows, n_regen_ng = it['rows'], n_regen_ng + 1
+        items.append({'id': it['id'], 'cat': cat, 'n': it['n'], 'rows': rows})
     ng = len(items)
+    if n_regen_ng:
+        print('※ 作り直せず元の行列のまま: %d 件' % n_regen_ng)
 
     v, vs = load('qr-video.json'), []
     if v:
@@ -146,7 +166,7 @@ def main():
     for p, c, n, r in vs:
         i = payload_id(p, used_id)              # 他の項目が増減してもidは動かない
         used_id.add(i)
-        items.append({'id': i, 'cat': c, 'name': '', 'date': '', 'n': n, 'rows': r})
+        items.append({'id': i, 'cat': c, 'n': n, 'rows': r})
 
     items.sort(key=lambda x: (x['cat'], x['id']))
     cats = [{'id': c, 'name': CAT[c][0], 'group': CAT[c][1]}
