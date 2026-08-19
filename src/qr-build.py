@@ -43,6 +43,8 @@ COLOR = [(r'赤|Red', 1), (r'黄色|Yellow', 2), (r'オレンジ|橙|Orange', 3)
          (r'緑|Green', 5), (r'水色|Light[ 　]*Blue', 8), (r'青|Blue', 6), (r'紫|Purple', 7)]
 G_TAIL = r'[ 　]*[GgＧｇ]'      # 「コインG」「コイン　G」「コインＧ」
 DROP = {9, 10, 12, 13}          # 極玉 / 1つ星 / アイテム / ブースト
+# コイン名でなくレア度だけを題名にした動画。色が判らず「分類不明」になるので採らない。
+DROP_VIDS = {'cL3wkPSO1nI', 'Mh_jN4ci1Wo', 'E6IROuCeDEM'}
 
 
 def color_of(text, tail):
@@ -123,7 +125,12 @@ def main():
             key = it['payload'].upper()
             if key in seen:
                 continue
-            t = it.get('title') or title.get((it.get('sources') or [''])[0], '')
+            src = [s for s in (it.get('sources') or []) if s not in DROP_VIDS]
+            if not src:                       # 除外した動画でしか見つかっていない
+                continue
+            t = it.get('title') or ''
+            if not t or (it.get('sources') or [''])[0] in DROP_VIDS:
+                t = title.get(src[0], '')     # 除外動画の題名では分類しない
             if '極玉' in t:
                 continue
             seen.add(key)

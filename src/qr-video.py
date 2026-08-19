@@ -24,7 +24,7 @@ WORK = (r'C:\Users\doubl\AppData\Local\Temp\claude\C--Users-doubl-OneDrive--1--p
 
 WATCH = 'https://www.youtube.com/watch?v='
 UA = {'User-Agent': 'Mozilla/5.0'}
-FPS = 0.5          # フレーム展開のレート
+FPS = float(os.environ.get('QR_FPS') or 0.5)   # フレーム展開のレート(QR_FPS で上書き)
 FPS_SHORT = 2      # SHORT_SEC 秒に満たない短い動画はこちらで細かく見る
 SHORT_SEC = 60
 WARP = 512         # QR を切り出すときの正方形サイズ
@@ -190,13 +190,15 @@ def read_texts(img, hits=None):
 
 
 def skippable(texts, found):
-    """写っているのが「もう行列を取れた YW コード」と「別ゲームの QR」だけなら飛ばす。"""
-    return bool(texts) and all(t and (not PAYLOAD.match(t) or t in found) for t in texts)
+    """写っているのが「もう行列を取れた YW コード」と「別ゲームの QR」だけなら飛ばす。
+
+    found のキーは大文字。同じコインでも符号化方式で大小が変わるため揃えて比べる。"""
+    return bool(texts) and all(t and (not PAYLOAD.match(t) or t.upper() in found) for t in texts)
 
 
 def add(state, payload, m, vid, title):
     for it in state['items']:
-        if it['payload'] == payload:
+        if it['payload'].upper() == payload.upper():   # 大小違いは同じコイン
             if vid not in it['sources']:
                 it['sources'].append(vid)
             return False
@@ -219,12 +221,14 @@ def thumbnail(vid):
 def process(state, vid, title):
     """1本を全編処理する。動画を取得できなかったときは None を返し、処理済みに記録しない。"""
     sec = duration(vid)
-    fps = FPS_SHORT if 0 < sec < SHORT_SEC else FPS
-    found = {}      # payload -> matrix
+    # QR_FPS を明示したときは短尺の既定(FPS_SHORT)より優先する
+    fps = FPS if os.environ.get('QR_FPS') else (FPS_SHORT if 0 < sec < SHORT_SEC else FPS)
+    found = {}      # payload(大文字) -> (実際の payload, matrix)
 
     img = thumbnail(vid)
     if img is not None:
-        found.update(scan(img))
+        for p, m in scan(img).items():
+            found.setdefault(p.upper(), (p, m))
 
     frames = os.path.join(WORK, vid)
     path, err, ok = None, '', True
@@ -246,13 +250,13 @@ def process(state, vid, title):
                 hits = zbar_hits(f)         # 1フレームにつき1回だけ拡大して読む
                 if not skippable(read_texts(f, hits), found):
                     for p, m in scan(f, hits).items():
-                        found.setdefault(p, m)
+                        found.setdefault(p.upper(), (p, m))
                 if i % 200 == 0:
                     print('    %d/%d フレーム / QR %d 件' % (i, len(names), len(found)), flush=True)
     finally:
         cleanup(vid, frames)
 
-    new = sum(add(state, p, m, vid, title) for p, m in found.items())
+    new = sum(add(state, p, m, vid, title) for p, m in found.values())
     if path and not ok:
         # フレーム展開に失敗した本は 0 件で確定させず、再実行で拾い直す
         print('  未完了 %s: フレーム展開に失敗したので処理済みにしない' % vid, flush=True)
@@ -275,6 +279,8 @@ def main():
     only = set(sys.argv[1:])             # 引数で動画 ID を絞ると試走できる
     if only:
         order = [t for t in order if t[0] in only]
+        done -= only                                     # ID 指定なら処理済みでもやり直す
+        state['videos'] = [v for v in state['videos'] if v['id'] not in only]
     todo = [t for t in order if t[0] not in done]
     print('対象 %d 本 / 処理済み %d 本 / 今回 %d 本'
           % (len(order), len(order) - len(todo), len(todo)), flush=True)

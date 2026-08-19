@@ -96,6 +96,9 @@ h1 .sub{font-size:13px; color:var(--ink-3); letter-spacing:.08em; font-family:va
 .meterbar > i{display:block; height:100%; background:var(--gold-line); border-radius:99px; transition:width .35s ease}
 
 /* ---------- group switch + category tabs (2段・横スクロールなし) ---------- */
+.xlink{margin:7px 0 0; text-align:right; font-size:11.5px; letter-spacing:.04em}
+.xlink a{color:var(--gold); text-decoration:none; border-bottom:1px solid var(--gold-line); padding-bottom:1px}
+
 .cattier{display:flex; flex-direction:column; gap:6px; padding:2px 0 6px}
 .groups{
   display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
@@ -252,6 +255,7 @@ footer{
         <span class="of num" id="totAll">/ 0</span>
       </div>
     </div>
+    <p class="xlink"><a href="../">← 妖怪大辞典 チェック表</a></p>
     <div class="cattier">
       <div class="groups" id="groups" role="group" aria-label="コインの種類"></div>
       <nav class="cats" id="cats" role="tablist" aria-label="カテゴリ"></nav>

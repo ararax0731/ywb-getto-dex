@@ -84,6 +84,9 @@ h1 .sub{font-size:13px; color:var(--ink-3); letter-spacing:.08em; font-family:va
 .total .of{font-family:var(--mono); font-size:14px; color:var(--ink-3)}
 .total .pct{font-size:12px; color:var(--gold); font-weight:700; font-family:var(--mono)}
 
+.xlink{margin:7px 0 0; text-align:right; font-size:11.5px; letter-spacing:.04em}
+.xlink a{color:var(--gold); text-decoration:none; border-bottom:1px solid var(--gold-line); padding-bottom:1px}
+
 .meterbar{height:4px; background:var(--panel-3); border-radius:99px; overflow:hidden}
 .meterbar > i{display:block; height:100%; background:var(--gold-line); border-radius:99px; transition:width .35s ease}
 
@@ -465,6 +468,7 @@ footer a{color:var(--ink-2)}
       </div>
     </div>
     <div class="meterbar"><i id="totBar" style="width:0%"></i></div>
+    <p class="xlink"><a href="https://ararax0731.github.io/ywb-getto-dex/qr/">ゲームで読む配布QRコード一覧 →</a></p>
     <div class="summary" id="summary"></div>
     <nav class="tabs" role="tablist" id="tabs"></nav>
   </div>
@@ -1022,7 +1026,7 @@ function equipDetail(e){
         const partName = (p.kind === 'equipment' ? '装備：' : '') + esc(p.name) + ' ×' + p.count;
         const partHow = p.kind === 'equipment'
           ? '<span class="baseequipnote">（さらに前段の装備が必要）</span>'
-          : '<span class="howlabel">入手：</span>' + esc(p.location);
+          : '<span class="howlabel">入手例：</span>' + esc(p.location);
         return '<div class="basepart"><div class="recipename">' + partName + '</div><div class="recipehow">' + partHow + '</div></div>';
       }).join('');
       return '<div class="reciperow base"><div class="recipename">強化元：' + esc(r.name) + ' ×' + r.count +
@@ -1030,10 +1034,10 @@ function equipDetail(e){
         '）</span></div><div class="baseparts">' + parts + '</div></div>';
     }
     return '<div class="reciperow"><div class="recipename">' + esc(r.name) + ' ×' + r.count +
-      '</div><div class="recipehow"><span class="howlabel">入手：</span>' + esc(r.method) + '</div></div>';
+      '</div><div class="recipehow"><span class="howlabel">入手例：</span>' + esc(r.method) + '</div></div>';
   }).join('');
   return '<div class="equipdetail" id="equip-detail-' + e.id + '" hidden><div class="recipehead">必要素材' +
-    '<span class="note">強化元の作り方・主な入手場所を表示</span></div><div class="reciperows">' + rows + '</div></div>';
+    '<span class="note">強化元の作り方と、入手例を1件ずつ表示（入手先は他にもあります）</span></div><div class="reciperows">' + rows + '</div></div>';
 }
 function renderEquipment(){
   const useOrder = ['アタッカー','タンク','ヒーラー','周回用'];
