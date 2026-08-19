@@ -2,8 +2,8 @@
 
 全470体の図鑑チェック表。ようかいの輪・レジェンド解放・進化/合成・魂・実用装備21種を、逆引き（この妖怪が何に必要か）まで含めて1枚のHTMLにまとめたもの。
 
-- 公開先: GitHub Pages（プライベートリポジトリ、URLを知っている人だけが開ける）
-- チェック状態は `localStorage`（キー `ywb-getto-dex-v1`）に保存。**端末ごとに独立**で、他の人とは共有されない。
+- 公開先: GitHub Pages（リポジトリは**公開**。検索避けは `robots.txt` と noindex のみで、URLを知っていれば誰でも開ける）
+- チェック状態は `localStorage`（図鑑=`ywb-getto-dex-v1` / QR=`ywb-getto-dex-qr-v1`）に保存。**端末ごとに独立**で、他の人とは共有されない。
 
 ## 構成
 
@@ -22,6 +22,13 @@
 | `src/template.html` | 画面のHTML・CSS・スクリプト本体。`__DATA__` がデータの差し込み口 |
 | `src/check.js` | 生成物を最小DOMスタブ上で実行して全画面を描画し、崩れ・数の不一致を検出する |
 | `src/serve.js` | `index.html` をそのまま配信する確認用サーバ（http://127.0.0.1:8791） |
+| `qr/index.html` | 配布QRコードのページ（スマホで表示して3DSで読み取る）。単体で完結 |
+| `qr/qr-modules.json` | 上のページが読むQRデータ（モジュール行列。公式QRとビット一致） |
+| `src/qr-fetch.py` `src/qr-collect.py` | ゲームの匠から配布QRの画像とメタ情報を集める |
+| `src/qr-matrix.py` | QR画像からモジュール行列を抜き出す・復号し直して検証する |
+| `src/qr-video.py` | YouTube動画からQRを拾う（対象は `src/qr-video-targets.json`） |
+| `src/qr-build.py` | ゲームの匠＋動画のQRを統合して `qr/qr-modules.json` を書き出す |
+| `src/qr-check-modules.py` | 生成したQRデータを全件復号して元のURLと一致するか確かめる |
 
 ## 更新のしかた
 

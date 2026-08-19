@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#EDEFF5" media="(prefers-color-scheme:light)">
+<meta name="theme-color" content="#11131A" media="(prefers-color-scheme:dark)">
+<meta name="apple-mobile-web-app-title" content="月兎組 QR">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Ctext%20y%3D%22.9em%22%20font-size%3D%2288%22%3E%F0%9F%8C%99%3C%2Ftext%3E%3C%2Fsvg%3E">
+<title>配布QRコード｜妖怪ウォッチバスターズ 月兎組</title>
+<style>*,*::before,*::after{box-sizing:border-box}body{margin:0}</style>
+</head>
+<body>
+<style>
+:root{
+  --ground:#EDEFF5; --panel:#FFFFFF; --panel-2:#F5F6FA; --panel-3:#E9ECF3;
+  --ink:#181B24; --ink-2:#4B5162; --ink-3:#7B8296;
+  --line:#DCDFE9; --line-2:#C6CBDA;
+  --gold:#9A6F17; --gold-line:#C9A03C; --gold-wash:#F3E8CB;
+  --stamp:#B23528; --stamp-wash:#F6E3E0;
+  --ok:#2C7A57;
+  --aka:#BC4038; --shiro:#37699F; --tsuki:#71539F;
+  --shadow:0 1px 2px rgba(20,25,45,.06), 0 8px 24px -16px rgba(20,25,45,.28);
+  --serif:"Yu Mincho","YuMincho","Hiragino Mincho ProN","HiraMinProN-W3","Noto Serif JP","Songti SC",serif;
+  --sans:"Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic","Meiryo","Noto Sans JP",system-ui,-apple-system,sans-serif;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,"Courier New",monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ground:#11131A; --panel:#181B25; --panel-2:#1F232F; --panel-3:#262B39;
+    --ink:#E8EAF1; --ink-2:#AFB6C6; --ink-3:#7D8496;
+    --line:#2A2F3D; --line-2:#3A4152;
+    --gold:#DDB55F; --gold-line:#8A6E2E; --gold-wash:#2E2712;
+    --stamp:#E0685B; --stamp-wash:#331C19;
+    --ok:#5CBE91;
+    --aka:#E0736A; --shiro:#78A6E2; --tsuki:#AE8DE2;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#11131A; --panel:#181B25; --panel-2:#1F232F; --panel-3:#262B39;
+  --ink:#E8EAF1; --ink-2:#AFB6C6; --ink-3:#7D8496;
+  --line:#2A2F3D; --line-2:#3A4152;
+  --gold:#DDB55F; --gold-line:#8A6E2E; --gold-wash:#2E2712;
+  --stamp:#E0685B; --stamp-wash:#331C19;
+  --ok:#5CBE91;
+  --aka:#E0736A; --shiro:#78A6E2; --tsuki:#AE8DE2;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 30px -18px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+:root[data-theme="light"]{
+  --ground:#EDEFF5; --panel:#FFFFFF; --panel-2:#F5F6FA; --panel-3:#E9ECF3;
+  --ink:#181B24; --ink-2:#4B5162; --ink-3:#7B8296;
+  --line:#DCDFE9; --line-2:#C6CBDA;
+  --gold:#9A6F17; --gold-line:#C9A03C; --gold-wash:#F3E8CB;
+  --stamp:#B23528; --stamp-wash:#F6E3E0;
+  --ok:#2C7A57;
+  --aka:#BC4038; --shiro:#37699F; --tsuki:#71539F;
+  --shadow:0 1px 2px rgba(20,25,45,.06), 0 8px 24px -16px rgba(20,25,45,.28);
+  color-scheme:light;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:15px; line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit; color:inherit; background:none; border:none; cursor:pointer}
+:focus-visible{outline:2px solid var(--gold-line); outline-offset:2px; border-radius:3px}
+.wrap{max-width:1140px; margin:0 auto; padding:0 20px}
+.num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+/* ---------- header ---------- */
+header.top{
+  position:sticky; top:0; z-index:30;
+  background:color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.masthead{display:flex; flex-wrap:wrap; align-items:flex-end; gap:8px 20px; padding:14px 0 10px}
+.eyebrow{font-size:11px; letter-spacing:.18em; color:var(--ink-3); margin:0 0 2px; font-weight:600}
+h1{
+  font-family:var(--serif); font-weight:600; font-size:26px; line-height:1.2;
+  margin:0; letter-spacing:.04em; text-wrap:balance;
+}
+h1 .sub{font-size:13px; color:var(--ink-3); letter-spacing:.08em; font-family:var(--sans); font-weight:500; margin-left:10px}
+.total{margin-left:auto; display:flex; align-items:baseline; gap:10px}
+.total .big{font-family:var(--mono); font-size:30px; font-weight:600; letter-spacing:-.02em; font-variant-numeric:tabular-nums}
+.total .of{font-family:var(--mono); font-size:14px; color:var(--ink-3)}
+
+.meterbar{height:4px; background:var(--panel-3); border-radius:99px; overflow:hidden}
+.meterbar > i{display:block; height:100%; background:var(--gold-line); border-radius:99px; transition:width .35s ease}
+
+/* ---------- category tabs ---------- */
+nav.cats{
+  display:flex; gap:4px; overflow-x:auto; padding:2px 0 8px;
+  scrollbar-width:none; -webkit-overflow-scrolling:touch;
+}
+nav.cats::-webkit-scrollbar{display:none}
+.cat{
+  flex:none; min-height:44px; padding:5px 13px; border-radius:8px;
+  border:1px solid var(--line-2); background:var(--panel); color:var(--ink-3);
+  font-size:13px; font-weight:600; white-space:nowrap; line-height:1.35;
+  display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
+}
+.cat:hover{border-color:var(--ink-3); color:var(--ink-2)}
+.cat[aria-selected="true"]{background:var(--ink); border-color:var(--ink); color:var(--panel)}
+.cat .c{font-family:var(--mono); font-size:10.5px; font-weight:500; opacity:.7; font-variant-numeric:tabular-nums}
+
+/* ---------- toolbar ---------- */
+.toolbar{display:flex; align-items:center; gap:9px 14px; flex-wrap:wrap; padding:12px 0 10px}
+.progress{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-2)}
+.progress b{font-family:var(--mono); font-size:13px; color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums}
+.progress .meterbar{width:72px}
+.tools{display:flex; gap:6px; margin-left:auto; flex-wrap:wrap}
+.ghost{
+  border:1px solid var(--line-2); border-radius:7px; padding:6px 12px; min-height:44px;
+  font-size:12.5px; color:var(--ink-2); background:var(--panel);
+  display:inline-flex; align-items:center; gap:6px;
+}
+.ghost:hover{border-color:var(--ink-3); color:var(--ink)}
+.ghost[aria-pressed="true"]{background:var(--ink); color:var(--panel); border-color:var(--ink)}
+.note{font-size:12px; color:var(--ink-3); line-height:1.7; margin:0 0 12px; max-width:64ch}
+
+/* ---------- grid ---------- */
+main{min-height:60vh; padding-bottom:64px}
+.grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:9px;
+  align-content:start;
+}
+.qcell{
+  background:var(--panel); border:1px solid var(--line); border-radius:9px;
+  box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column;
+}
+.qcell.got{border-color:var(--stamp); background:var(--stamp-wash)}
+.qopen{
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  padding:8px 6px 5px; width:100%; text-align:center; min-width:0;
+}
+.qopen:hover{background:var(--panel-2)}
+.qcell.got .qopen:hover{background:transparent}
+.qbox{
+  width:88px; height:88px; display:grid; place-items:center;
+  background:#FFFFFF; border:1px solid var(--line); border-radius:4px;
+}
+.qbox canvas{display:block; image-rendering:pixelated}
+.qname{
+  font-size:12.5px; font-weight:600; line-height:1.35; margin-top:5px;
+  width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.qcell.got .qname{color:var(--ink-2)}
+.qno{font-family:var(--mono); font-size:10px; color:var(--ink-3); font-variant-numeric:tabular-nums; letter-spacing:-.02em}
+.qmark{
+  min-height:44px; border-top:1px solid var(--line); color:var(--ink-3);
+  font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:5px;
+}
+.qmark:hover{background:var(--panel-2); color:var(--ink-2)}
+.qmark .st{
+  width:19px; height:19px; border-radius:99px; border:1.5px dashed var(--line-2);
+  display:grid; place-items:center; font-family:var(--serif); font-size:10px; font-weight:700; color:transparent;
+  transition:transform .15s ease, border-color .15s, color .15s, background .15s;
+}
+.qcell.got .qmark{color:var(--stamp); border-top-color:color-mix(in srgb,var(--stamp) 35%,transparent)}
+.qcell.got .qmark .st{border:2px solid var(--stamp); border-style:solid; color:var(--stamp); background:var(--panel); transform:rotate(-9deg)}
+.empty{padding:44px 20px; text-align:center; color:var(--ink-3); font-size:14px}
+
+footer{
+  border-top:1px solid var(--line); margin-top:40px; padding:18px 0 40px;
+  font-size:12px; color:var(--ink-3); line-height:1.9;
+}
+
+/* ---------- fullscreen viewer (3DS 読み取り用・テーマ非依存の純白固定) ---------- */
+.viewer{
+  position:fixed; inset:0; z-index:80;
+  background:#FFFFFF; color:#111111;
+  display:flex; flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  color-scheme:light;
+}
+.viewer[hidden]{display:none}
+.viewer button{color:#111111}
+.viewer :focus-visible{outline:2px solid #111111; outline-offset:2px}
+.vtop{display:flex; align-items:center; gap:10px; padding:6px 10px 4px; flex:none}
+.vtitle{min-width:0; flex:1}
+.vtitle b{display:block; font-size:15px; font-weight:700; line-height:1.3; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.vtitle span{display:block; font-family:var(--mono); font-size:11px; color:#555555; font-variant-numeric:tabular-nums}
+.vclose{
+  flex:none; width:44px; height:44px; border-radius:8px; border:1px solid #CCCCCC;
+  display:grid; place-items:center; font-size:16px; line-height:1;
+}
+.vstage{
+  flex:1; min-height:0; display:grid; place-items:center; overflow:hidden;
+  touch-action:pan-y; padding:2px;
+}
+#vcanvas{display:block; background:#FFFFFF; image-rendering:pixelated}
+.vhint{flex:none; margin:0; padding:3px 12px 1px; text-align:center; font-size:11px; color:#666666; line-height:1.5}
+.vbar{flex:none; display:flex; align-items:stretch; gap:8px; padding:6px 10px 10px}
+.vnav{
+  flex:none; width:56px; min-height:48px; border:1px solid #CCCCCC; border-radius:8px;
+  display:grid; place-items:center; font-size:15px; font-weight:600;
+}
+.vnav[disabled]{opacity:.35; cursor:default}
+.vmark{
+  flex:1; min-height:48px; border:1px solid #CCCCCC; border-radius:8px;
+  font-size:14px; font-weight:700; display:grid; place-items:center;
+}
+.vmark[aria-pressed="true"]{background:#111111; color:#FFFFFF; border-color:#111111}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important; transition-duration:.001ms !important}
+}
+@media (max-width:640px){
+  .wrap{padding:0 13px}
+  .masthead{flex-wrap:nowrap; align-items:flex-end; padding:10px 0 8px}
+  .masthead > div:first-child{min-width:0; flex:1}
+  .eyebrow{font-size:9.5px; letter-spacing:.08em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  h1{font-size:19px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  h1 .sub{display:none}
+  .total{flex:none; gap:5px}
+  .total .big{font-size:24px}
+  .grid{gap:8px}
+  .qbox{width:84px; height:84px}
+  .qname{font-size:12px}
+}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="masthead">
+      <div>
+        <p class="eyebrow">妖怪ウォッチバスターズ 月兎組</p>
+        <h1>配布QRコード<span class="sub">3DSのカメラで読み取る</span></h1>
+      </div>
+      <div class="total">
+        <span class="big num" id="totGot">0</span>
+        <span class="of num" id="totAll">/ 0</span>
+      </div>
+    </div>
+    <nav class="cats" id="cats" role="tablist" aria-label="カテゴリ"></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="toolbar">
+    <div class="progress">
+      <span>済</span>
+      <b id="catGot">0</b>
+      <span class="num" id="catAll">/ 0</span>
+      <span class="meterbar"><i id="catMeter" style="width:0%"></i></span>
+    </div>
+    <div class="tools">
+      <button class="ghost" id="hideUsed" aria-pressed="false" type="button">使用済を隠す</button>
+    </div>
+  </div>
+  <p class="note">QRを押すと全画面で表示します。3DSの「QRコードよみとり」で、スマホの画面を写して読み取ってください。<br>読み取りにくいときは、スマホの明るさを最大にして、画面から10〜20cmほど離すと合いやすくなります。</p>
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" hidden>表示できるQRコードがありません。</p>
+</main>
+
+<footer class="wrap">
+  <p>使用済のチェックはこの端末のブラウザ内(localStorage)にのみ保存されます。</p>
+</footer>
+
+<div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-label="QRコード全画面表示">
+  <div class="vtop">
+    <div class="vtitle">
+      <b id="vName">-</b>
+      <span id="vMeta">-</span>
+    </div>
+    <button class="vclose" id="vClose" type="button" aria-label="閉じる">✕</button>
+  </div>
+  <div class="vstage" id="vStage"><canvas id="vCanvas"></canvas></div>
+  <p class="vhint">画面の明るさを上げてください</p>
+  <div class="vbar">
+    <button class="vnav" id="vPrev" type="button" aria-label="前のQRコード">←</button>
+    <button class="vmark" id="vMark" type="button" aria-pressed="false">使用済にする</button>
+    <button class="vnav" id="vNext" type="button" aria-label="次のQRコード">→</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+(function(){
+
+/* ---------- state ---------- */
+const KEY = 'ywb-getto-dex-qr-v1';
+const QUIET = 4;                 // クワイエットゾーン(モジュール4個分)
+const THUMB = 88;                // 一覧セルのQR目標サイズ(CSS px)
+
+const S = {
+  cats: [],
+  items: [],
+  byCat: new Map(),
+  cat: null,
+  used: new Set(),
+  hideUsed: false,
+  view: [],       // 現在グリッドに並んでいる item 配列(ビューア移動もこの順)
+  vIndex: -1
+};
+
+const $ = (id) => document.getElementById(id);
+const dpr = () => Math.max(1, window.devicePixelRatio || 1);
+const labelOf = (it) => it.name || it.date || ('#' + it.id);
+
+function load(){
+  try{
+    const raw = JSON.parse(localStorage.getItem(KEY) || '{}');
+    if(Array.isArray(raw.used)) raw.used.forEach(id => S.used.add(id));
+  }catch(e){}
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify({v:1, used:[...S.used]})); }catch(e){}
+}
+
+/* ---------- QR 描画 ---------- */
+// rows は各行 n ビットを MSB 先頭で詰めた16進文字列。x 列目は byte[x>>3] の 1<<(7-(x&7))。
+function bitsOf(it){
+  if(it._b) return it._b;
+  const bytes = it.rows.map(hex => {
+    const len = hex.length >> 1;
+    const a = new Uint8Array(len);
+    for(let i=0;i<len;i++) a[i] = parseInt(hex.substr(i*2,2),16);
+    return a;
+  });
+  it._b = bytes;
+  return bytes;
+}
+
+// 1モジュール=整数ピクセル。devicePixelRatio 込みの実ピクセルで計算する。
+function drawQR(canvas, it, targetCss){
+  const n = it.n, total = n + QUIET*2, r = dpr();
+  let mod = Math.floor(targetCss * r / total);
+  if(mod < 1) mod = 1;
+  const px = mod * total;
+  canvas.width = px;
+  canvas.height = px;
+  canvas.style.width  = (px / r) + 'px';
+  canvas.style.height = (px / r) + 'px';
+
+  const ctx = canvas.getContext('2d', {alpha:false});
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, px, px);
+  ctx.fillStyle = '#000000';
+
+  const bytes = bitsOf(it);
+  for(let y=0; y<n; y++){
+    const b = bytes[y];
+    let run = -1;
+    for(let x=0; x<n; x++){
+      const on = (b[x>>3] >> (7 - (x & 7))) & 1;
+      if(on){ if(run < 0) run = x; }
+      else if(run >= 0){ ctx.fillRect((QUIET+run)*mod, (QUIET+y)*mod, (x-run)*mod, mod); run = -1; }
+    }
+    if(run >= 0) ctx.fillRect((QUIET+run)*mod, (QUIET+y)*mod, (n-run)*mod, mod);
+  }
+  return px / r;
+}
+
+/* ---------- 一覧(遅延描画) ---------- */
+const io = ('IntersectionObserver' in window) ? new IntersectionObserver((entries) => {
+  for(const e of entries){
+    const cv = e.target;
+    if(e.isIntersecting){
+      if(cv.dataset.drawn !== '1' && cv._it){
+        drawQR(cv, cv._it, THUMB);
+        cv.dataset.drawn = '1';
+      }
+    }else if(cv.dataset.drawn === '1'){
+      // 画面外のcanvasはバッキングストアを解放する(253件でもメモリが膨らまないように)
+      cv.width = 0; cv.height = 0;
+      cv.dataset.drawn = '0';
+    }
+  }
+}, {rootMargin:'320px 0px'}) : null;
+
+function renderGrid(){
+  const grid = $('grid');
+  const list = S.byCat.get(S.cat) || [];
+  S.view = S.hideUsed ? list.filter(it => !S.used.has(it.id)) : list;
+
+  if(io) grid.querySelectorAll('canvas').forEach(cv => io.unobserve(cv));
+  grid.textContent = '';
+
+  const frag = document.createDocumentFragment();
+  const catName = (S.cats.find(c => c.id === S.cat) || {}).name || '';
+  for(const it of S.view){
+    const cell = document.createElement('div');
+    cell.className = 'qcell' + (S.used.has(it.id) ? ' got' : '');
+    cell.dataset.id = it.id;
+
+    const open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'qopen';
+    open.dataset.act = 'open';
+    open.setAttribute('aria-label', catName + ' ' + labelOf(it) + ' のQRコードを全画面で表示');
+
+    const box = document.createElement('span');
+    box.className = 'qbox';
+    const cv = document.createElement('canvas');
+    cv._it = it;                 // 1858件からの線形探索を避けて要素に直接持たせる
+    cv.dataset.drawn = '0';
+    cv.setAttribute('aria-hidden', 'true');
+    box.appendChild(cv);
+
+    const nm = document.createElement('span');
+    nm.className = 'qname';
+    nm.textContent = labelOf(it);
+    const no = document.createElement('span');
+    no.className = 'qno';
+    no.textContent = (it.name && it.date ? it.date + ' · ' : '') + '#' + it.id;
+
+    open.append(box, nm, no);
+
+    const mark = document.createElement('button');
+    mark.type = 'button';
+    mark.className = 'qmark';
+    mark.dataset.act = 'mark';
+    mark.setAttribute('aria-pressed', S.used.has(it.id) ? 'true' : 'false');
+    mark.setAttribute('aria-label', labelOf(it) + ' の使用済');
+    const st = document.createElement('span');
+    st.className = 'st';
+    st.textContent = '済';
+    mark.append(st, document.createTextNode('使用済'));
+
+    cell.append(open, mark);
+    frag.appendChild(cell);
+  }
+  grid.appendChild(frag);
+  $('empty').hidden = S.view.length > 0;
+
+  if(io) grid.querySelectorAll('canvas').forEach(cv => io.observe(cv));
+  else grid.querySelectorAll('canvas').forEach(cv => { drawQR(cv, cv._it, THUMB); cv.dataset.drawn = '1'; });
+}
+
+function renderCats(){
+  const nav = $('cats');
+  nav.textContent = '';
+  for(const c of S.cats){
+    const list = S.byCat.get(c.id) || [];
+    const got = list.reduce((a, it) => a + (S.used.has(it.id) ? 1 : 0), 0);
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'cat';
+    b.setAttribute('role', 'tab');
+    b.setAttribute('aria-selected', c.id === S.cat ? 'true' : 'false');
+    b.dataset.cat = c.id;
+    const t = document.createElement('span');
+    t.textContent = c.name;
+    const n = document.createElement('span');
+    n.className = 'c';
+    n.textContent = got + ' / ' + list.length;
+    b.append(t, n);
+    nav.appendChild(b);
+  }
+}
+
+function renderCounts(){
+  const list = S.byCat.get(S.cat) || [];
+  const got = list.reduce((a, it) => a + (S.used.has(it.id) ? 1 : 0), 0);
+  $('catGot').textContent = got;
+  $('catAll').textContent = '/ ' + list.length;
+  $('catMeter').style.width = (list.length ? got / list.length * 100 : 0) + '%';
+  $('totGot').textContent = S.used.size;
+  $('totAll').textContent = '/ ' + S.items.length;
+  const sel = $('cats').querySelector('[data-cat="' + S.cat + '"] .c');
+  if(sel) sel.textContent = got + ' / ' + list.length;
+}
+
+function setUsed(id, on){
+  if(on) S.used.add(id); else S.used.delete(id);
+  save();
+  const cell = $('grid').querySelector('.qcell[data-id="' + id + '"]');
+  if(cell){
+    cell.classList.toggle('got', on);
+    const m = cell.querySelector('.qmark');
+    if(m) m.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+  renderCounts();
+  if(!$('viewer').hidden && S.view[S.vIndex] && S.view[S.vIndex].id === id){
+    const vm = $('vMark');
+    vm.setAttribute('aria-pressed', on ? 'true' : 'false');
+    vm.textContent = on ? '使用済' : '使用済にする';
+  }
+  // 「使用済を隠す」表示中は、済にした時点で一覧から外す
+  if(S.hideUsed && on && $('viewer').hidden) renderGrid();
+}
+
+/* ---------- 全画面ビューア ---------- */
+let wakeLock = null;
+async function acquireWakeLock(){
+  try{
+    if('wakeLock' in navigator && !wakeLock){
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    }
+  }catch(e){ /* 非対応・拒否は握り潰す */ }
+}
+function releaseWakeLock(){
+  try{ if(wakeLock) wakeLock.release(); }catch(e){}
+  wakeLock = null;
+}
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && !$('viewer').hidden) acquireWakeLock();
+});
+
+let lastFocus = null;
+
+function drawViewer(){
+  const it = S.view[S.vIndex];
+  if(!it) return;
+  const stage = $('vStage');
+  const avail = Math.max(80, Math.min(stage.clientWidth - 4, stage.clientHeight - 4));
+  drawQR($('vCanvas'), it, avail);
+
+  $('vName').textContent = labelOf(it);
+  const catName = (S.cats.find(c => c.id === it.cat) || {}).name || '';
+  $('vMeta').textContent = catName + ' · #' + it.id + (it.name && it.date ? ' · ' + it.date : '')
+    + ' · ' + (S.vIndex + 1) + ' / ' + S.view.length;
+
+  const on = S.used.has(it.id);
+  const vm = $('vMark');
+  vm.setAttribute('aria-pressed', on ? 'true' : 'false');
+  vm.textContent = on ? '使用済' : '使用済にする';
+  $('vPrev').disabled = S.vIndex <= 0;
+  $('vNext').disabled = S.vIndex >= S.view.length - 1;
+}
+
+function openViewer(id){
+  const i = S.view.findIndex(it => it.id === id);
+  if(i < 0) return;
+  S.vIndex = i;
+  lastFocus = document.activeElement;
+  $('viewer').hidden = false;
+  document.body.style.overflow = 'hidden';
+  drawViewer();
+  $('vClose').focus();
+  acquireWakeLock();
+}
+function closeViewer(){
+  $('viewer').hidden = true;
+  document.body.style.overflow = '';
+  releaseWakeLock();
+  if(S.hideUsed) renderGrid();
+  if(lastFocus && document.contains(lastFocus)) lastFocus.focus();
+  lastFocus = null;
+}
+function step(d){
+  const i = S.vIndex + d;
+  if(i < 0 || i >= S.view.length) return;
+  S.vIndex = i;
+  drawViewer();
+}
+
+/* ---------- events ---------- */
+$('cats').addEventListener('click', (e) => {
+  const b = e.target.closest('.cat');
+  if(!b) return;
+  S.cat = Number(b.dataset.cat);
+  $('cats').querySelectorAll('.cat').forEach(x => x.setAttribute('aria-selected', x === b ? 'true' : 'false'));
+  renderGrid();
+  renderCounts();
+  window.scrollTo({top:0});
+});
+
+$('grid').addEventListener('click', (e) => {
+  const btn = e.target.closest('button[data-act]');
+  if(!btn) return;
+  const id = Number(btn.closest('.qcell').dataset.id);
+  if(btn.dataset.act === 'open') openViewer(id);
+  else setUsed(id, !S.used.has(id));
+});
+
+$('hideUsed').addEventListener('click', () => {
+  S.hideUsed = !S.hideUsed;
+  $('hideUsed').setAttribute('aria-pressed', S.hideUsed ? 'true' : 'false');
+  renderGrid();
+});
+
+$('vClose').addEventListener('click', closeViewer);
+$('vPrev').addEventListener('click', () => step(-1));
+$('vNext').addEventListener('click', () => step(1));
+$('vMark').addEventListener('click', () => {
+  const it = S.view[S.vIndex];
+  if(it) setUsed(it.id, !S.used.has(it.id));
+});
+
+document.addEventListener('keydown', (e) => {
+  if($('viewer').hidden) return;
+  if(e.key === 'Escape'){ e.preventDefault(); closeViewer(); }
+  else if(e.key === 'ArrowLeft'){ e.preventDefault(); step(-1); }
+  else if(e.key === 'ArrowRight'){ e.preventDefault(); step(1); }
+});
+
+// 左右スワイプで前後移動
+let sx = 0, sy = 0, sid = null;
+const stage = $('vStage');
+stage.addEventListener('pointerdown', (e) => { sid = e.pointerId; sx = e.clientX; sy = e.clientY; });
+stage.addEventListener('pointerup', (e) => {
+  if(sid !== e.pointerId) return;
+  sid = null;
+  const dx = e.clientX - sx, dy = e.clientY - sy;
+  if(Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+});
+stage.addEventListener('pointercancel', () => { sid = null; });
+
+let rt = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(rt);
+  rt = setTimeout(() => { if(!$('viewer').hidden) drawViewer(); }, 120);
+});
+
+/* ---------- boot ---------- */
+async function fetchData(){
+  for(const url of ['./qr-modules.json', './sample-modules.json']){
+    try{
+      const res = await fetch(url, {cache:'no-cache'});
+      if(!res.ok) continue;
+      const d = await res.json();
+      if(d && Array.isArray(d.items) && d.items.length) return d;
+    }catch(e){ /* 次の候補へ */ }
+  }
+  return null;
+}
+
+(async function(){
+  load();
+  const d = await fetchData();
+  if(!d){
+    $('empty').hidden = false;
+    $('empty').textContent = 'QRデータを読み込めませんでした。qr-modules.json / sample-modules.json を確認してください。';
+    return;
+  }
+  S.cats = d.categories || [];
+  S.items = d.items || [];
+  for(const c of S.cats) S.byCat.set(c.id, []);
+  for(const it of S.items){
+    if(!S.byCat.has(it.cat)) S.byCat.set(it.cat, []);
+    S.byCat.get(it.cat).push(it);
+  }
+  // categories に無い cat が来ても落ちないようにする
+  for(const id of S.byCat.keys()){
+    if(!S.cats.some(c => c.id === id)) S.cats.push({id:id, name:'その他 ' + id});
+  }
+  S.cat = S.cats.length ? S.cats[0].id : null;
+  renderCats();
+  renderGrid();
+  renderCounts();
+})();
+
+// 検証用フック(復号チェックで canvas を取り出すために使う)
+window.__qr = {S: S, drawQR: drawQR, openViewer: openViewer, step: step, closeViewer: closeViewer};
+
+})();
+</script>
+</body>
+</html>
