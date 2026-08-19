@@ -11,8 +11,10 @@ def decode(img):
     return _decode_img(p)
 
 def _sample(b, n):
-    px = b.shape[0] / n
-    return np.array([[1 if b[int((y + .5) * px), int((x + .5) * px)] < 128 else 0
+    # 縦横で刻み幅を分ける。切り出し前の縦長フレームをそのまま渡されると
+    # 高さ基準の刻みが横幅を飛び越して IndexError になっていた。
+    sy, sx = b.shape[0] / n, b.shape[1] / n
+    return np.array([[1 if b[int((y + .5) * sy), int((x + .5) * sx)] < 128 else 0
                       for x in range(n)] for y in range(n)], np.uint8)
 
 FINDER = np.array([[1,1,1,1,1,1,1],[1,0,0,0,0,0,1],[1,0,1,1,1,0,1],
@@ -57,7 +59,10 @@ except Exception:                       # pyzbar が無くても動く
 
 def _decode_img(img):
     """cv2 で読めない模様が稀にあるため pyzbar を併用する。"""
-    t, _, _ = _det.detectAndDecode(img)
+    try:
+        t, _, _ = _det.detectAndDecode(img)
+    except cv2.error:               # 稀に cv2 内部で落ちる画像がある
+        t = ''
     if t:
         return t
     if _zbar is not None:

@@ -28,10 +28,17 @@ FPS = 0.5          # フレーム展開のレート
 FPS_SHORT = 2      # SHORT_SEC 秒に満たない短い動画はこちらで細かく見る
 SHORT_SEC = 60
 WARP = 512         # QR を切り出すときの正方形サイズ
+UPSCALE = 3        # 低解像度の一覧動画向け。等倍だと zbar も cv2 も何も読めない
+LONG_SIDE = 1400   # 拡大後の長辺の目安(720p を 3 倍すると 1 フレームが遅すぎる)
 FORMAT = 'bv*[height<=720][ext=mp4]/bv*[height<=720]/best[height<=720]/best'
 # これが無いと既定クライアントが android_vr に落ちて全動画 403 になる
 CLIENT = ['--extractor-args', 'youtube:player_client=android']
 PAYLOAD = re.compile(r'^https?://YW\.B-BOYS\.JP/', re.I)
+
+try:
+    from pyzbar.pyzbar import decode as _zbar
+except Exception:                    # pyzbar が無くても cv2 経路だけで動く
+    _zbar = None
 
 
 def encode_rows(m):
@@ -104,6 +111,29 @@ def cleanup(vid, frames):
     shutil.rmtree(frames, ignore_errors=True)
 
 
+def zbar_hits(img):
+    """3倍に拡大して zbar で読む。(payload, 四隅) の一覧を返す。
+
+    QR を一覧表示する動画は 360p 程度で、cv2 の検出器は 1 枚も見つけられない。
+    拡大してから zbar に渡すと 1 フレームで 20 枚以上読めるので、これを主経路にする。"""
+    if _zbar is None:
+        return []
+    k = min(UPSCALE, max(1.0, LONG_SIDE / max(img.shape[:2])))   # 元から大きい絵は拡大しない
+    up = img if k <= 1.01 else cv2.resize(img, None, fx=k, fy=k, interpolation=cv2.INTER_CUBIC)
+    hits = []
+    try:
+        found = _zbar(up)
+    except Exception:
+        return []
+    for d in found:
+        if d.type != 'QRCODE':
+            continue
+        text = d.data.decode('utf-8', 'replace')
+        pts = [[pt.x, pt.y] for pt in d.polygon]
+        hits.append((text, pts if len(pts) == 4 else None, up))
+    return hits
+
+
 def crop(img, pts):
     """検出した四隅で QR を正方形に起こす(クワイエットゾーン無しの素の格子にする)。"""
     p = np.asarray(pts, np.float32).reshape(4, 2)
@@ -112,9 +142,18 @@ def crop(img, pts):
     return cv2.warpPerspective(img, M, (WARP, WARP))
 
 
-def scan(img):
+def scan(img, hits=None):
     """1枚の画像から YW の {payload: matrix} を返す。"""
     got = {}
+    for text, pts, up in (hits if hits is not None else zbar_hits(img)):
+        if not PAYLOAD.match(text) or text in got or pts is None:
+            continue
+        try:
+            m, payload = qr_matrix.extract(crop(up, pts))
+        except (cv2.error, IndexError):
+            m, payload = None, ''
+        if m is not None and payload.upper() == text.upper():
+            got[text] = m
     det = cv2.QRCodeDetector()
     try:
         ok, texts, pts, _ = det.detectAndDecodeMulti(img)
@@ -124,25 +163,30 @@ def scan(img):
         for i in range(len(pts)):
             try:
                 m, payload = qr_matrix.extract(crop(img, pts[i]))
-            except cv2.error:
+            except (cv2.error, IndexError):
                 m, payload = None, ''
             if m is not None and PAYLOAD.match(payload) and payload not in got:
                 got[payload] = m
     if not got:                       # 切り出しが効かないときは画面全体で試す
-        m, payload = qr_matrix.extract(img)
+        try:
+            m, payload = qr_matrix.extract(img)
+        except (cv2.error, IndexError):
+            m, payload = None, ''
         if m is not None and PAYLOAD.match(payload):
             got[payload] = m
     return got
 
 
-def read_texts(img):
-    """cv2 が素直に読めた payload の一覧(読めなかった QR は '' で混ざる)。"""
+def read_texts(img, hits=None):
+    """写っている payload の一覧(読めなかった QR は '' で混ざる)。"""
     det = cv2.QRCodeDetector()
     try:
         ok, texts, _, _ = det.detectAndDecodeMulti(img)
     except cv2.error:
-        return []
-    return list(texts) if ok else []
+        ok, texts = False, []
+    out = list(texts) if ok else []
+    out += [t for t, _, _ in (hits if hits is not None else zbar_hits(img))]
+    return out
 
 
 def skippable(texts, found):
@@ -199,8 +243,9 @@ def process(state, vid, title):
                 if f is None:
                     continue
                 # 既に行列を取れた QR しか写っていないフレームは飛ばす
-                if not skippable(read_texts(f), found):
-                    for p, m in scan(f).items():
+                hits = zbar_hits(f)         # 1フレームにつき1回だけ拡大して読む
+                if not skippable(read_texts(f, hits), found):
+                    for p, m in scan(f, hits).items():
                         found.setdefault(p, m)
                 if i % 200 == 0:
                     print('    %d/%d フレーム / QR %d 件' % (i, len(names), len(found)), flush=True)
