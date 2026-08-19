@@ -135,6 +135,19 @@ def main():
                 continue
             seen.add(key)
             vs.append((key, guess_cat(t), it['n'], it['rows']))
+    nv = len(vs)
+
+    im = load('qr-image.json')            # 動画が落とせないコインを画像から補った分
+    if im:
+        by_name = {name: c for c, (name, _) in CAT.items()}
+        for it in im['items']:
+            key = it['payload'].upper()
+            if key in seen:
+                continue
+            if it['cat'] not in by_name:  # フォルダ名の綴り違いを黙って分類不明にしない
+                raise SystemExit('qr-images に未知のコイン名フォルダ: ' + it['cat'])
+            seen.add(key)
+            vs.append((key, by_name[it['cat']], it['n'], it['rows']))
     vs.sort()
     used_id = set(x['id'] for x in items)
     for p, c, n, r in vs:

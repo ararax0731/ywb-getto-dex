@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""qr-modules.json / qr-video.json の往復検証。
+"""qr-modules.json / qr-video.json / qr-image.json の往復検証。
 
 保存済みの全件について rows → 行列 → 再描画 → 復号 が payload と一致するか確かめる。
 行列そのものを再エンコードして rows と一致するか(可逆か)も見る。"""
@@ -53,7 +53,8 @@ def check(path, label):
 def main():
     a = check(os.path.join(HERE, 'qr-modules.json'), 'qr-modules.json')
     b = check(os.path.join(HERE, 'qr-video.json'), 'qr-video.json')
-    if not (a and b):
+    c = check(os.path.join(HERE, 'qr-image.json'), 'qr-image.json')
+    if not (a and b and c):
         sys.exit(1)
     print('往復検証 すべて一致')
 
