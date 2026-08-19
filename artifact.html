@@ -390,6 +390,7 @@ h2{font-family:var(--serif); font-size:19px; font-weight:600; letter-spacing:.04
 .recipename{font-weight:600; color:var(--ink)}
 .recipehow{color:var(--ink-3)}
 .howlabel{color:var(--ink-2)}
+.howmore{color:var(--ink-3)}
 .baseequipnote{color:var(--ink-3)}
 .basemethod{color:var(--ink-2); font-weight:600}
 .baseparts{grid-column:1 / -1; display:flex; flex-direction:column; gap:2px; margin-left:12px; padding-left:8px; border-left:2px solid var(--line-2)}
@@ -1012,6 +1013,7 @@ function equipRow(e){
     '<span class="equipeffect">' + esc(e.effect) + '</span><span class="equipopenhint" aria-hidden="true">▶</span></button>' +
     equipDetail(e) + '</div></article>';
 }
+function manySource(name){ return /の(宝玉|カタマリ)$/.test(name); }
 function equipDetail(e){
   const recipe = e.recipe || {requirements:[], acquisition:null};
   if (!recipe.requirements.length) {
@@ -1026,18 +1028,20 @@ function equipDetail(e){
         const partName = (p.kind === 'equipment' ? '装備：' : '') + esc(p.name) + ' ×' + p.count;
         const partHow = p.kind === 'equipment'
           ? '<span class="baseequipnote">（さらに前段の装備が必要）</span>'
-          : '<span class="howlabel">入手例：</span>' + esc(p.location);
+          : manySource(p.name) ? '<span class="howmore">入手条件多数あり</span>'
+          : '<span class="howlabel">入手：</span>' + esc(p.location);
         return '<div class="basepart"><div class="recipename">' + partName + '</div><div class="recipehow">' + partHow + '</div></div>';
       }).join('');
       return '<div class="reciperow base"><div class="recipename">強化元：' + esc(r.name) + ' ×' + r.count +
         '</div><div class="recipehow"><span class="basemethod">作り方（' + esc(r.baseRecipe.method.replace('レシピ','')) +
         '）</span></div><div class="baseparts">' + parts + '</div></div>';
     }
+    const how = manySource(r.name) ? '<span class="howmore">入手条件多数あり</span>'
+      : '<span class="howlabel">入手：</span>' + esc(r.method);
     return '<div class="reciperow"><div class="recipename">' + esc(r.name) + ' ×' + r.count +
-      '</div><div class="recipehow"><span class="howlabel">入手例：</span>' + esc(r.method) + '</div></div>';
+      '</div><div class="recipehow">' + how + '</div></div>';
   }).join('');
-  return '<div class="equipdetail" id="equip-detail-' + e.id + '" hidden><div class="recipehead">必要素材' +
-    '<span class="note">強化元の作り方と、入手例を1件ずつ表示（入手先は他にもあります）</span></div><div class="reciperows">' + rows + '</div></div>';
+  return '<div class="equipdetail" id="equip-detail-' + e.id + '" hidden><div class="recipehead">必要素材</div><div class="reciperows">' + rows + '</div></div>';
 }
 function renderEquipment(){
   const useOrder = ['アタッカー','タンク','ヒーラー','周回用'];

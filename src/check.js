@@ -368,11 +368,13 @@ console.log('チェック保存', JSON.parse(store['ywb-getto-dex-v1'] || '{}').
   if ((eh.match(/data-equip-open=/g) || []).length !== 11 || (eh.match(/class="equipdetail"/g) || []).length !== 11) problems.push('装備素材の開閉UIが21件ない');
   if (/class="equiptoggle"[^>]*aria-label=/.test(eh)) problems.push('装備の開閉ボタンがaria-labelで内容を上書きしている');
   if ((eh.match(/class="equiptoggle"[^>]*aria-expanded="false"[^>]*aria-controls="equip-detail-/g) || []).length !== 11) problems.push('装備の開閉状態・対象の関連付けが21件ない');
-  for (const text of ['必要素材','強化元の作り方・主な入手場所を表示','強化元：真鬼砕き・黒','作り方（新規）','黒鬼・ノーマルモード・大当たり']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
+  for (const text of ['必要素材','入手条件多数あり','強化元：真鬼砕き・黒','作り方（新規）','黒鬼・ノーマルモード・大当たり']) if (!eh.includes(text)) problems.push('装備詳細の表示がない: ' + text);
   const baseRequirements = D_.equipment.flatMap(e => e.recipe.requirements).filter(r => r.kind === 'equipment' && r.baseRecipe).flatMap(r => r.baseRecipe.requirements);
   if ((eh.match(/class="basepart"/g) || []).length !== baseRequirements.length) problems.push('強化元装備の素材入手場所が全件描画されていない');
   if (baseRequirements.some(r => r.kind === 'material' && (!r.location?.trim() || !r.source?.trim()))) problems.push('強化元装備の素材入手場所・出典が不足している');
   if (!eh.includes('<span class="howlabel">入手：</span>') || /content:'入手：'/.test(html)) problems.push('「入手：」が実テキストで統一されていない');
+  if (/(イサマシ|ゴーケツ|フシギ|プリチー|ポカポカ|ウスラカゲ|ブキミー|ニョロロン)の(宝玉|カタマリ) ×\d+<\/div><div class="recipehow"><span class="howlabel">/.test(eh)) problems.push('族の宝玉・カタマリに具体的な入手先が残っている');
+  if (!/あやとりさまの紅宝玉 ×\d+<\/div><div class="recipehow"><span class="howlabel">入手：<\/span>あやとりさま/.test(eh)) problems.push('族以外の素材まで入手先が消えている');
   if (!eh.includes('装備：巨大釜のフタ') || !eh.includes('（さらに前段の装備が必要）') || eh.includes('入手：前段の装備')) problems.push('前段装備の案内が不明瞭');
   if (!/\.reciperow\s*,\s*\.basepart\s*\{[^}]*grid-template-columns\s*:\s*1fr\s*;[^}]*gap\s*:\s*0\s*[;}]/.test(html)) problems.push('スマホで強化元素材が1列表示になっていない');
   const methodsByMaterial = new Map();
