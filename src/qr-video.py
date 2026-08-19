@@ -84,7 +84,7 @@ def media(vid):
 
 def download(vid):
     """動画を落として (パス, エラー文) を返す。落とせなければ (None, エラー文)。"""
-    cmd = ([sys.executable, '-m', 'yt_dlp', '-q', '--no-warnings', '-f', FORMAT,
+    cmd = ([sys.executable, '-m', 'yt_dlp', '-q', '--no-warnings', '--no-part', '-f', FORMAT,
             '-o', os.path.join(WORK, vid + '.%(ext)s')] + CLIENT + [WATCH + vid])
     r = run(cmd)
     path = media(vid)
@@ -183,7 +183,7 @@ def process(state, vid, title):
         found.update(scan(img))
 
     frames = os.path.join(WORK, vid)
-    path, err = None, ''
+    path, err, ok = None, '', True
     try:
         path, err = download(vid)
         if path:
@@ -192,6 +192,7 @@ def process(state, vid, title):
                      os.path.join(frames, 'f%06d.png')])
             if r.returncode != 0:
                 print('  フレーム展開失敗 %s: %s' % (vid, r.stderr.strip()[-200:]), flush=True)
+                ok = False
             names = sorted(os.listdir(frames)) if os.path.isdir(frames) else []
             for i, name in enumerate(names, 1):
                 f = cv2.imread(os.path.join(frames, name))
@@ -207,6 +208,10 @@ def process(state, vid, title):
         cleanup(vid, frames)
 
     new = sum(add(state, p, m, vid, title) for p, m in found.items())
+    if path and not ok:
+        # フレーム展開に失敗した本は 0 件で確定させず、再実行で拾い直す
+        print('  未完了 %s: フレーム展開に失敗したので処理済みにしない' % vid, flush=True)
+        return None
     if not path:
         # サムネイルから拾えた分は残すが、処理済みにはしない(再実行で拾い直す)
         print('  取得失敗 %s: %s' % (vid, err), flush=True)

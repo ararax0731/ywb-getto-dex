@@ -3,38 +3,116 @@
 
 極玉・1つ星・アイテム・ブーストは対象外。動画由来のQRは題名からカテゴリを推定する。
 id は「使用済み」の保存キーなので再ビルドしても変わってはいけない。
-ゲームの匠はサイト側のidをそのまま、動画由来は payload 順に 100000+ を振る。
+ゲームの匠はサイト側のidをそのまま、動画由来は payload のハッシュから導出する
+(連番だと動画を1本足すだけで後続のidが全部ずれ、保存済みの「使用済み」が別のQRを指す)。
+カテゴリidは保存に使われていないので、体系を組み替えてよい。
 """
-import json, os, re
+import hashlib, json, os, re
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC, OUT = os.path.join(ROOT, 'src'), os.path.join(ROOT, 'qr')
 
-CAT = {1: '赤コイン', 2: '黄色コイン', 3: 'オレンジコイン', 4: '桃コイン', 5: '緑コイン',
-       6: '青コイン', 7: '紫コイン', 8: '水色コイン', 11: '貴重なコイン', 14: 'グレートコイン'}
-COLOR = [('赤', 1), ('黄色', 2), ('オレンジ', 3), ('桃', 4), ('緑', 5), ('青', 6), ('紫', 7), ('水色', 8)]
+# id → (表示名, グループ)。表示順は id 昇順。
+CAT = {
+    1: ('赤コイン', 'カラーコイン'),
+    2: ('黄色コイン', 'カラーコイン'),
+    3: ('オレンジコイン', 'カラーコイン'),
+    4: ('桃コイン', 'カラーコイン'),
+    5: ('緑コイン', 'カラーコイン'),
+    6: ('青コイン', 'カラーコイン'),
+    7: ('紫コイン', 'カラーコイン'),
+    8: ('水色コイン', 'カラーコイン'),
+    21: ('赤コインG', 'カラーコインG'),
+    22: ('黄色コインG', 'カラーコインG'),
+    23: ('オレンジコインG', 'カラーコインG'),
+    24: ('桃コインG', 'カラーコインG'),
+    25: ('緑コインG', 'カラーコインG'),
+    26: ('青コインG', 'カラーコインG'),
+    27: ('紫コインG', 'カラーコインG'),
+    28: ('水色コインG', 'カラーコインG'),
+    31: ('5つ星コイン', '貴重なコイン'),
+    32: ('福ガシャコイン', '貴重なコイン'),
+    33: ('スペシャルコイン', '貴重なコイン'),
+    39: ('分類不明', '貴重なコイン'),
+}
+GREAT = 20              # カラーコインid + GREAT = グレート版のid
+UNKNOWN = 39
+# 色名の正規表現(オレンジは「橙」表記も拾う)。互いに部分文字列にならないので順序は問わない。
+# 英語題名の動画があるので英名も見る。水色(Light Blue)は青(Blue)より先に置く。
+COLOR = [(r'赤|Red', 1), (r'黄色|Yellow', 2), (r'オレンジ|橙|Orange', 3), (r'桃|Pink', 4),
+         (r'緑|Green', 5), (r'水色|Light[ 　]*Blue', 8), (r'青|Blue', 6), (r'紫|Purple', 7)]
+G_TAIL = r'[ 　]*[GgＧｇ]'      # 「コインG」「コイン　G」「コインＧ」
 DROP = {9, 10, 12, 13}          # 極玉 / 1つ星 / アイテム / ブースト
 
-def guess_cat(title):
-    """動画の題名からカテゴリを推定する。判別できなければ貴重なコイン扱い。"""
-    if re.search(r'コインG|コイン　G|グレート', title):
-        return 14
-    for w, c in COLOR:
-        if re.search(w + r'コイン', title):
+
+def color_of(text, tail):
+    """text から「色名 + コイン(Coin) + tail」を探して色番号(1〜8)を返す。無ければ None。"""
+    for pat, c in COLOR:
+        if re.search(r'(?:' + pat + r')(?:コイン|[ 　]*Coin)' + tail, text, re.I):
             return c
-    return 11
+    return None
+
+
+def precious_of(text):
+    """貴重なコインの種別を返す。判別できなければ None。"""
+    if re.search(r'[5５]つ?星|五つ?星', text):   # 「5星コイン」表記の動画もある
+        return 31
+    if re.search(r'[福副]ガシャ', text):        # 「副ガシャ」表記の動画が実在する
+        return 32
+    if 'スペシャル' in text:
+        return 33
+    return None
+
+
+def guess_cat(text):
+    """動画の題名からカテゴリを推定する。グレート → 貴重 → 通常色 の順に見る。"""
+    c = color_of(text, G_TAIL)
+    if c:
+        return GREAT + c
+    p = precious_of(text)
+    if p:
+        return p
+    c = color_of(text, '')
+    return c if c else UNKNOWN
+
+
+def great_cat(name):
+    """ゲームの匠のグレート(cat 14)を、アイテム名の色でグレート各色へ振り分ける。"""
+    c = color_of(name, G_TAIL) or color_of(name, '')
+    return GREAT + c if c else UNKNOWN
+
 
 def load(name):
     p = os.path.join(SRC, name)
     return json.load(open(p, encoding='utf-8')) if os.path.exists(p) else None
 
+
+def payload_id(payload, used):
+    """payload から動画由来QRのidを作る。衝突したら payload に連番を足して振り直す
+    (取り合いにしないので、他の項目の有無に関わらず同じ payload は同じ id になる)。"""
+    for k in range(1000):
+        key = payload if k == 0 else '%s#%d' % (payload, k)
+        i = 100000 + int(hashlib.md5(key.encode('utf-8')).hexdigest()[:10], 16) % 900000000
+        if i not in used:
+            return i
+    raise RuntimeError('id衝突: ' + payload)
+
+
 def main():
     items, seen = [], set()
     for it in load('qr-modules.json')['items']:
-        if it['cat'] in DROP or it['payload'] in seen:
+        key = it['payload'].upper()             # 大小違いは同じコイン(符号化方式の違い)
+        if it['cat'] in DROP or key in seen:
             continue
-        seen.add(it['payload'])
-        items.append({'id': it['id'], 'cat': it['cat'], 'name': it.get('name', ''),
+        seen.add(key)
+        name = it.get('name', '')
+        if it['cat'] == 14:
+            cat = great_cat(name)
+        elif it['cat'] == 11:
+            cat = precious_of(name) or UNKNOWN
+        else:
+            cat = it['cat']
+        items.append({'id': it['id'], 'cat': cat, 'name': name,
                       'date': it.get('date', ''), 'n': it['n'], 'rows': it['rows']})
     ng = len(items)
 
@@ -42,19 +120,24 @@ def main():
     if v:
         title = {x['id']: x['title'] for x in v.get('videos', [])}
         for it in v['items']:
-            if it['payload'] in seen:
+            key = it['payload'].upper()
+            if key in seen:
                 continue
             t = it.get('title') or title.get((it.get('sources') or [''])[0], '')
             if '極玉' in t:
                 continue
-            seen.add(it['payload'])
-            vs.append((it['payload'], guess_cat(t), it['n'], it['rows']))
-    vs.sort()                                   # payload順 = 再ビルドしてもidが動かない
-    for k, (p, c, n, r) in enumerate(vs):
-        items.append({'id': 100000 + k, 'cat': c, 'name': '', 'date': '', 'n': n, 'rows': r})
+            seen.add(key)
+            vs.append((key, guess_cat(t), it['n'], it['rows']))
+    vs.sort()
+    used_id = set(x['id'] for x in items)
+    for p, c, n, r in vs:
+        i = payload_id(p, used_id)              # 他の項目が増減してもidは動かない
+        used_id.add(i)
+        items.append({'id': i, 'cat': c, 'name': '', 'date': '', 'n': n, 'rows': r})
 
     items.sort(key=lambda x: (x['cat'], x['id']))
-    cats = [{'id': c, 'name': CAT[c]} for c in sorted(CAT) if any(x['cat'] == c for x in items)]
+    cats = [{'id': c, 'name': CAT[c][0], 'group': CAT[c][1]}
+            for c in sorted(CAT) if any(x['cat'] == c for x in items)]
 
     os.makedirs(OUT, exist_ok=True)
     dst = os.path.join(OUT, 'qr-modules.json')
@@ -62,8 +145,14 @@ def main():
               ensure_ascii=False, separators=(',', ':'))
     print('ゲームの匠 %d件 + 動画 %d件 = %d件  %.2f MB' %
           (ng, len(vs), len(items), os.path.getsize(dst) / 1048576))
+    g = None
     for c in cats:
-        print('  %-12s %5d' % (c['name'], sum(1 for x in items if x['cat'] == c['id'])))
+        if c['group'] != g:
+            g = c['group']
+            print('[%s] %d件' % (g, sum(1 for x in items
+                                        if CAT.get(x['cat'], ('', ''))[1] == g)))
+        print('  %-16s %5d' % (c['name'], sum(1 for x in items if x['cat'] == c['id'])))
+
 
 if __name__ == '__main__':
     main()

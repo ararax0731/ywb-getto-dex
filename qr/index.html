@@ -95,21 +95,33 @@ h1 .sub{font-size:13px; color:var(--ink-3); letter-spacing:.08em; font-family:va
 .meterbar{height:4px; background:var(--panel-3); border-radius:99px; overflow:hidden}
 .meterbar > i{display:block; height:100%; background:var(--gold-line); border-radius:99px; transition:width .35s ease}
 
-/* ---------- category tabs ---------- */
-nav.cats{
-  display:flex; gap:4px; overflow-x:auto; padding:2px 0 8px;
-  scrollbar-width:none; -webkit-overflow-scrolling:touch;
+/* ---------- group switch + category tabs (2段・横スクロールなし) ---------- */
+.cattier{display:flex; flex-direction:column; gap:6px; padding:2px 0 6px}
+.groups{
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr));
+  width:min(100%,420px);
+  padding:3px; border:1px solid var(--line-2); border-radius:9px; background:var(--panel-3);
 }
-nav.cats::-webkit-scrollbar{display:none}
+.gkind{
+  min-width:0; min-height:36px; padding:6px 4px; border-radius:6px;
+  color:var(--ink-3); font-size:12.5px; font-weight:600; line-height:1.35;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.gkind:hover{color:var(--ink-2)}
+.gkind[aria-pressed="true"]{background:var(--panel); color:var(--ink); box-shadow:var(--shadow)}
+nav.cats{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:2px; width:100%}
 .cat{
-  flex:none; min-height:44px; padding:5px 13px; border-radius:8px;
-  border:1px solid var(--line-2); background:var(--panel); color:var(--ink-3);
-  font-size:13px; font-weight:600; white-space:nowrap; line-height:1.35;
-  display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
+  min-width:0; min-height:40px; padding:5px 2px 4px;
+  border-bottom:2px solid transparent; color:var(--ink-3);
+  font-size:12.5px; font-weight:600; line-height:1.3; letter-spacing:.01em;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
-.cat:hover{border-color:var(--ink-3); color:var(--ink-2)}
-.cat[aria-selected="true"]{background:var(--ink); border-color:var(--ink); color:var(--panel)}
-.cat .c{font-family:var(--mono); font-size:10.5px; font-weight:500; opacity:.7; font-variant-numeric:tabular-nums}
+.cat:hover{color:var(--ink-2)}
+.cat[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--stamp)}
+.cat .c{
+  display:block; margin-top:1px; font-family:var(--mono); font-size:10px; font-weight:500;
+  color:var(--ink-3); letter-spacing:0; font-variant-numeric:tabular-nums;
+}
 
 /* ---------- toolbar ---------- */
 .toolbar{display:flex; align-items:center; gap:9px 14px; flex-wrap:wrap; padding:12px 0 10px}
@@ -118,13 +130,13 @@ nav.cats::-webkit-scrollbar{display:none}
 .progress .meterbar{width:72px}
 .tools{display:flex; gap:6px; margin-left:auto; flex-wrap:wrap}
 .ghost{
-  border:1px solid var(--line-2); border-radius:7px; padding:6px 12px; min-height:44px;
+  border:1px solid var(--line-2); border-radius:7px; padding:5px 11px; min-height:34px;
   font-size:12.5px; color:var(--ink-2); background:var(--panel);
   display:inline-flex; align-items:center; gap:6px;
 }
 .ghost:hover{border-color:var(--ink-3); color:var(--ink)}
 .ghost[aria-pressed="true"]{background:var(--ink); color:var(--panel); border-color:var(--ink)}
-.note{font-size:12px; color:var(--ink-3); line-height:1.7; margin:0 0 12px; max-width:64ch}
+.note{font-size:12px; color:var(--ink-3); line-height:1.7; margin:22px 0 0; max-width:64ch}
 
 /* ---------- grid ---------- */
 main{min-height:60vh; padding-bottom:64px}
@@ -149,11 +161,11 @@ main{min-height:60vh; padding-bottom:64px}
 }
 .qbox canvas{display:block; image-rendering:pixelated}
 .qname{
-  font-size:12.5px; font-weight:600; line-height:1.35; margin-top:5px;
+  font-family:var(--mono); font-size:12.5px; font-weight:600; line-height:1.35; margin-top:5px;
   width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-variant-numeric:tabular-nums;
 }
 .qcell.got .qname{color:var(--ink-2)}
-.qno{font-family:var(--mono); font-size:10px; color:var(--ink-3); font-variant-numeric:tabular-nums; letter-spacing:-.02em}
 .qmark{
   min-height:44px; border-top:1px solid var(--line); color:var(--ink-3);
   font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:5px;
@@ -240,7 +252,10 @@ footer{
         <span class="of num" id="totAll">/ 0</span>
       </div>
     </div>
-    <nav class="cats" id="cats" role="tablist" aria-label="カテゴリ"></nav>
+    <div class="cattier">
+      <div class="groups" id="groups" role="group" aria-label="コインの種類"></div>
+      <nav class="cats" id="cats" role="tablist" aria-label="カテゴリ"></nav>
+    </div>
   </div>
 </header>
 
@@ -256,9 +271,9 @@ footer{
       <button class="ghost" id="hideUsed" aria-pressed="false" type="button">使用済を隠す</button>
     </div>
   </div>
-  <p class="note">QRを押すと全画面で表示します。3DSの「QRコードよみとり」で、スマホの画面を写して読み取ってください。<br>読み取りにくいときは、スマホの明るさを最大にして、画面から10〜20cmほど離すと合いやすくなります。</p>
   <div class="grid" id="grid"></div>
   <p class="empty" id="empty" hidden>表示できるQRコードがありません。</p>
+  <p class="note">QRを押すと全画面で表示します。3DSの「QRコードよみとり」で、スマホの画面を写して読み取ってください。<br>読み取りにくいときは、スマホの明るさを最大にして、画面から10〜20cmほど離すと合いやすくなります。</p>
 </main>
 
 <footer class="wrap">
@@ -295,6 +310,8 @@ const S = {
   cats: [],
   items: [],
   byCat: new Map(),
+  groups: [],     // グループ名の配列(categories の並び順)
+  group: null,
   cat: null,
   used: new Set(),
   hideUsed: false,
@@ -304,7 +321,11 @@ const S = {
 
 const $ = (id) => document.getElementById(id);
 const dpr = () => Math.max(1, window.devicePixelRatio || 1);
-const labelOf = (it) => it.name || it.date || ('#' + it.id);
+// 見出しはカテゴリ内の通し番号だけ。絞り込みで飛んでも振り直さない(_no はカテゴリ全件での位置)。
+const labelOf = (it) => String(it._no);
+// タブは「オレンジG」のようにコインを省く(グループ名で文脈が分かるため)
+const shortOf = (name) => name.replace('コイン', '') || name;
+const catOf = (id) => S.cats.find(c => c.id === id) || null;
 
 function load(){
   try{
@@ -410,18 +431,15 @@ function renderGrid(){
     const nm = document.createElement('span');
     nm.className = 'qname';
     nm.textContent = labelOf(it);
-    const no = document.createElement('span');
-    no.className = 'qno';
-    no.textContent = (it.name && it.date ? it.date + ' · ' : '') + '#' + it.id;
 
-    open.append(box, nm, no);
+    open.append(box, nm);
 
     const mark = document.createElement('button');
     mark.type = 'button';
     mark.className = 'qmark';
     mark.dataset.act = 'mark';
     mark.setAttribute('aria-pressed', S.used.has(it.id) ? 'true' : 'false');
-    mark.setAttribute('aria-label', labelOf(it) + ' の使用済');
+    mark.setAttribute('aria-label', catName + ' ' + labelOf(it) + ' の使用済');
     const st = document.createElement('span');
     st.className = 'st';
     st.textContent = '済';
@@ -437,10 +455,25 @@ function renderGrid(){
   else grid.querySelectorAll('canvas').forEach(cv => { drawQR(cv, cv._it, THUMB); cv.dataset.drawn = '1'; });
 }
 
+function renderGroups(){
+  const box = $('groups');
+  box.textContent = '';
+  for(const g of S.groups){
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'gkind';
+    b.dataset.group = g;
+    b.setAttribute('aria-pressed', g === S.group ? 'true' : 'false');
+    b.textContent = g;
+    box.appendChild(b);
+  }
+}
+
 function renderCats(){
   const nav = $('cats');
   nav.textContent = '';
   for(const c of S.cats){
+    if(c.group !== S.group) continue;
     const list = S.byCat.get(c.id) || [];
     const got = list.reduce((a, it) => a + (S.used.has(it.id) ? 1 : 0), 0);
     const b = document.createElement('button');
@@ -448,15 +481,28 @@ function renderCats(){
     b.className = 'cat';
     b.setAttribute('role', 'tab');
     b.setAttribute('aria-selected', c.id === S.cat ? 'true' : 'false');
+    b.setAttribute('aria-label', c.name);
     b.dataset.cat = c.id;
     const t = document.createElement('span');
-    t.textContent = c.name;
+    t.textContent = shortOf(c.name);
     const n = document.createElement('span');
     n.className = 'c';
     n.textContent = got + ' / ' + list.length;
     b.append(t, n);
     nav.appendChild(b);
   }
+}
+
+// グループを切り替えたら、そのグループの先頭カテゴリを選ぶ
+function setGroup(g){
+  const first = S.cats.find(c => c.group === g);
+  if(!first) return;
+  S.group = g;
+  S.cat = first.id;
+  renderGroups();
+  renderCats();
+  renderGrid();
+  renderCounts();
 }
 
 function renderCounts(){
@@ -518,9 +564,9 @@ function drawViewer(){
   drawQR($('vCanvas'), it, avail);
 
   $('vName').textContent = labelOf(it);
-  const catName = (S.cats.find(c => c.id === it.cat) || {}).name || '';
-  $('vMeta').textContent = catName + ' · #' + it.id + (it.name && it.date ? ' · ' + it.date : '')
-    + ' · ' + (S.vIndex + 1) + ' / ' + S.view.length;
+  const catName = (catOf(it.cat) || {}).name || '';
+  // 通し番号はカテゴリ全件での位置なので、総数も絞り込み前の件数を出す
+  $('vMeta').textContent = catName + ' · ' + it._no + ' / ' + (S.byCat.get(it.cat) || []).length;
 
   const on = S.used.has(it.id);
   const vm = $('vMark');
@@ -557,6 +603,13 @@ function step(d){
 }
 
 /* ---------- events ---------- */
+$('groups').addEventListener('click', (e) => {
+  const b = e.target.closest('.gkind');
+  if(!b || b.dataset.group === S.group) return;
+  setGroup(b.dataset.group);
+  window.scrollTo({top:0});
+});
+
 $('cats').addEventListener('click', (e) => {
   const b = e.target.closest('.cat');
   if(!b) return;
@@ -644,16 +697,26 @@ async function fetchData(){
   }
   // categories に無い cat が来ても落ちないようにする
   for(const id of S.byCat.keys()){
-    if(!S.cats.some(c => c.id === id)) S.cats.push({id:id, name:'その他 ' + id});
+    if(!S.cats.some(c => c.id === id)) S.cats.push({id:id, name:'その他 ' + id, group:'その他'});
   }
-  S.cat = S.cats.length ? S.cats[0].id : null;
+  for(const c of S.cats){
+    if(!c.group) c.group = 'その他';
+    if(!S.groups.includes(c.group)) S.groups.push(c.group);
+  }
+  // 通し番号はカテゴリ全件での位置で固定する(「使用済を隠す」でも振り直さない)
+  for(const list of S.byCat.values()) list.forEach((it, i) => { it._no = i + 1; });
+
+  S.group = S.groups.length ? S.groups[0] : null;
+  S.cat = (S.cats.find(c => c.group === S.group) || S.cats[0] || {}).id ?? null;
+  renderGroups();
   renderCats();
   renderGrid();
   renderCounts();
 })();
 
 // 検証用フック(復号チェックで canvas を取り出すために使う)
-window.__qr = {S: S, drawQR: drawQR, openViewer: openViewer, step: step, closeViewer: closeViewer};
+window.__qr = {S: S, drawQR: drawQR, openViewer: openViewer, step: step, closeViewer: closeViewer,
+               setGroup: setGroup};
 
 })();
 </script>
