@@ -46,6 +46,12 @@ COLOR = [(r'赤|Red', 1), (r'黄色|Yellow', 2), (r'オレンジ|橙|Orange', 3)
 G_TAIL = r'[ 　]*[GgＧｇ]'      # 「コインG」「コイン　G」「コインＧ」
 DROP = {9, 10, 12, 13}          # 極玉 / 1つ星 / アイテム / ブースト
 
+# 動画由来で実機NGが確定したコードブロック（コード先頭3文字＝コインの種類）。
+# 54O: 「スペシャルコインのQRコード100枚」由来の101件。3DS実機で2〜4枚目が読み取れず、
+#      5〜6枚目はブーストコインだった（2026-08-20 検証）。匠の 54OI48 だけは名前付きの
+#      正解データなので残す（除外するのは動画由来のみ）。
+BAD_BLOCK = {'54O'}
+
 
 def color_of(text, tail):
     """text から「色名 + コイン(Coin) + tail」を探して色番号(1〜8)を返す。無ければ None。"""
@@ -146,6 +152,8 @@ def main():
             src = it.get('sources') or []
             t = it.get('title') or (title.get(src[0], '') if src else '')
             if '極玉' in t:
+                continue
+            if key[20:23] in BAD_BLOCK:
                 continue
             seen.add(key)
             vs.append((key, guess_cat(t), it['n'], it['rows']))
