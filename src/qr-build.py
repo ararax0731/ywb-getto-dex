@@ -52,6 +52,13 @@ DROP = {9, 10, 12, 13}          # 極玉 / 1つ星 / アイテム / ブースト
 #      正解データなので残す（除外するのは動画由来のみ）。
 BAD_BLOCK = {'54O'}
 
+# 出典が信用できない動画。ここにしか出てこないコードだけを落とす
+# (他の動画にも載っているコードは、その動画の信頼度で判断するので残す)。
+BAD_VIDEO = {
+    'hvedSnrlUBM',   # 妖怪ウォッチ ポカポカ族（緑コイン）QRコード13枚
+    '3Sx7BPWR9MU',   # 妖怪ウォッチ：緑コインQRコード100枚
+}
+
 
 def color_of(text, tail):
     """text から「色名 + コイン(Coin) + tail」を探して色番号(1〜8)を返す。無ければ None。"""
@@ -154,6 +161,8 @@ def main():
             if '極玉' in t:
                 continue
             if key[20:23] in BAD_BLOCK:
+                continue
+            if src and not (set(src) - BAD_VIDEO):
                 continue
             seen.add(key)
             vs.append((key, guess_cat(t), it['n'], it['rows']))
