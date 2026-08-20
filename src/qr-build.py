@@ -59,6 +59,13 @@ BAD_VIDEO = {
     '3Sx7BPWR9MU',   # 妖怪ウォッチ：緑コインQRコード100枚
 }
 
+# 消すほどではないが分類が疑わしい動画。この動画にしか出てこないコードには
+# 注意フラグ(w=1)を立て、カテゴリの末尾へまとめる。
+WARN_VIDEO = {
+    'crajgaPRl8Y',   # 五つ星コインなど50枚のQRコード読み直し動画（複数種が混在）
+    '9WXcpIHGSuM',   # 2016年マクドナルド妖怪ウォッチカレンダー5つ星コインQRコード
+}
+
 
 def color_of(text, tail):
     """text から「色名 + コイン(Coin) + tail」を探して色番号(1〜8)を返す。無ければ None。"""
@@ -165,7 +172,8 @@ def main():
             if src and not (set(src) - BAD_VIDEO):
                 continue
             seen.add(key)
-            vs.append((key, guess_cat(t), it['n'], it['rows']))
+            w = 1 if src and not (set(src) - WARN_VIDEO) else 0
+            vs.append((key, guess_cat(t), it['n'], it['rows'], w))
 
     im = load('qr-image.json')            # 動画が落とせないコインを画像から補った分
     if im:
@@ -177,15 +185,19 @@ def main():
             if it['cat'] not in by_name:  # フォルダ名の綴り違いを黙って分類不明にしない
                 raise SystemExit('qr-images に未知のコイン名フォルダ: ' + it['cat'])
             seen.add(key)
-            vs.append((key, by_name[it['cat']], it['n'], it['rows']))
+            vs.append((key, by_name[it['cat']], it['n'], it['rows'], 0))
     vs.sort()
     used_id = set(x['id'] for x in items)
-    for p, c, n, r in vs:
+    for p, c, n, r, w in vs:
         i = payload_id(p, used_id)              # 他の項目が増減してもidは動かない
         used_id.add(i)
-        items.append({'id': i, 'cat': c, 'n': n, 'rows': r})
+        d = {'id': i, 'cat': c, 'n': n, 'rows': r}
+        if w:
+            d['w'] = 1
+        items.append(d)
 
-    items.sort(key=lambda x: (x['cat'], x['id']))
+    # 注意フラグ付きはカテゴリの末尾へ(通し番号は前から詰めて振られる)
+    items.sort(key=lambda x: (x['cat'], x.get('w', 0), x['id']))
     cats = [{'id': c, 'name': CAT[c][0], 'group': CAT[c][1]}
             for c in sorted(CAT) if any(x['cat'] == c for x in items)]
 

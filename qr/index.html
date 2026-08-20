@@ -152,6 +152,13 @@ main{min-height:60vh; padding-bottom:64px}
   box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column;
 }
 .qcell.got{border-color:var(--stamp); background:var(--stamp-wash)}
+/* 出典の分類が疑わしい分。カテゴリの末尾にまとめて置いてある */
+.qcell.warn{border-color:var(--gold-line); background:var(--gold-wash)}
+.qcell.warn.got{border-color:var(--stamp); background:var(--stamp-wash)}
+.qwarn{
+  display:block; width:100%; font-size:10.5px; font-weight:700; line-height:1.3;
+  color:var(--gold); letter-spacing:.03em; margin-top:1px;
+}
 .qopen{
   display:flex; flex-direction:column; align-items:center; gap:2px;
   padding:8px 6px 5px; width:100%; text-align:center; min-width:0;
@@ -282,6 +289,7 @@ footer{
 
 <footer class="wrap">
   <p>使用済のチェックはこの端末のブラウザ内(localStorage)にのみ保存されます。</p>
+  <p><b>⚠ 要確認</b> … 出典動画の分類が怪しく、別のコインが混ざっている可能性がある分。各カテゴリの末尾にまとめてあります。</p>
 </footer>
 
 <div class="viewer" id="viewer" hidden role="dialog" aria-modal="true" aria-label="QRコード全画面表示">
@@ -415,14 +423,14 @@ function renderGrid(){
   const catName = (S.cats.find(c => c.id === S.cat) || {}).name || '';
   for(const it of S.view){
     const cell = document.createElement('div');
-    cell.className = 'qcell' + (S.used.has(it.id) ? ' got' : '');
+    cell.className = 'qcell' + (S.used.has(it.id) ? ' got' : '') + (it.w ? ' warn' : '');
     cell.dataset.id = it.id;
 
     const open = document.createElement('button');
     open.type = 'button';
     open.className = 'qopen';
     open.dataset.act = 'open';
-    open.setAttribute('aria-label', catName + ' ' + labelOf(it) + ' のQRコードを全画面で表示');
+    open.setAttribute('aria-label', catName + ' ' + labelOf(it) + (it.w ? ' (要確認)' : '') + ' のQRコードを全画面で表示');
 
     const box = document.createElement('span');
     box.className = 'qbox';
@@ -437,6 +445,12 @@ function renderGrid(){
     nm.textContent = labelOf(it);
 
     open.append(box, nm);
+    if(it.w){
+      const wn = document.createElement('span');
+      wn.className = 'qwarn';
+      wn.textContent = '⚠ 要確認';
+      open.appendChild(wn);
+    }
 
     const mark = document.createElement('button');
     mark.type = 'button';
@@ -570,7 +584,8 @@ function drawViewer(){
   $('vName').textContent = labelOf(it);
   const catName = (catOf(it.cat) || {}).name || '';
   // 通し番号はカテゴリ全件での位置なので、総数も絞り込み前の件数を出す
-  $('vMeta').textContent = catName + ' · ' + it._no + ' / ' + (S.byCat.get(it.cat) || []).length;
+  $('vMeta').textContent = catName + ' · ' + it._no + ' / ' + (S.byCat.get(it.cat) || []).length
+                         + (it.w ? ' · ⚠ 要確認(別のコインの可能性あり)' : '');
 
   const on = S.used.has(it.id);
   const vm = $('vMark');
